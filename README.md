@@ -14,8 +14,8 @@
 
 <ul class="incremental">
 <li><a href="">gmxtop</a></li>
-<li><a href="">gmxmmpbsa</a></li>
-<li><a href="">FitMol</a></li>
+<li><a href="">gmx_mmpbsa</a></li>
+<li><a href="">fitmol</a> <a href="./fitmol/FitMol.f90">code</a> <a href="./fitmol/README.md">README</a></li>
 </li>
 </ul>
 

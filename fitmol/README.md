@@ -1,0 +1,123 @@
+# README
+
+- by Ryan
+
+This FitMol Fortran program is designed to perform a rotation on a molecule such that it minimizes the RMSD of its coordinates with respect to a __reference__ molecule.
+
+## Compiling
+
+Before running the program, you should compile the `FitMol.f90` file, using a suitable Fortran compiler. Examples of possible compile commands are:
+
+```
+	ifort    FitMol.f90 -o fitmol.exe
+	gfortran FitMol.f90 -o fitmol.exe
+```
+
+## Running
+
+### interactive
+
+After compiling, this is how to use the `fitmol` program interactively(See more details following, regarding how to prepare the input file):
+
+1. Call the program via    `./fitmol.exe`
+2. Program will ask for name of the input `.xyz` file.
+3. Enter the name, less the `.xyz` extension.
+4. Program will ask if you want to fit now.
+5. Enter `y` and return.
+
+This program will then print to the screen the rotation matrix determined for the test molecule, as well as some other information.
+
+__multiple fitting__
+
+More than one molecule can be fitted at the same time. To do this, the first molecule
+in the `.xyz` file must be the reference molecule. As many other molecules as you wish can
+be concatenated below it.
+
+__center__
+
+By default, the center of rotation is the geometrical center of the molecule in each `.xyz` file. If you want to use a different center of rotation, make the first character(s) of the `.xyz` comment line match the atom number you wish to use.
+
+For example, the following file has only two molecules in it, and is requesting that `fitmol` use the 4th atom as the center of rotation:
+
+```
+	5
+	4 ref
+	C        -1.48058263    0.37621359    0.00000000
+	H        -1.12392821   -0.63259642    0.00000000
+	H        -1.12390979    0.88061178    0.87365150
+	H        -1.12390979    0.88061178   -0.87365150
+	H        -2.55058263    0.37622677    0.00000000
+	5
+	rot-1
+	C        -4.44483465    5.42771734    3.70387923
+	H        -3.62171823    5.47750008    4.38571575
+	H        -5.24576124    4.87701765    4.15125653
+	H        -4.77786291    6.41821850    3.47388006
+	H        -4.13399585    4.93813311    2.80466484
+```
+
+__weighting__
+
+Additionally, if you wish to give special weight/importance to certain atoms during the fitting/rotation, you can list their weight(s) next to them in the reference structure.
+
+For example, the following file is letting `fitmol` use the center of geometry as the center of rotation, but has given special weight to the `C` atom:
+
+```
+5
+4 ref
+C            -1.48058263    0.37621359    0.00000000   20.0
+H            -1.12392821   -0.63259642    0.00000000    1.0
+H            -1.12390979    0.88061178    0.87365150    1.0
+H            -1.12390979    0.88061178   -0.87365150    1.0
+H            -2.55058263    0.37622677    0.00000000    1.0
+5
+rot-1
+C            -4.44483465    5.42771734    3.70387923
+H            -3.62171823    5.47750008    4.38571575
+H            -5.24576124    4.87701765    4.15125653
+H            -4.77786291    6.41821850    3.47388006
+H            -4.13399585    4.93813311    2.80466484
+```
+
+__output__
+
+The program will produce an output file called `<input_filename>~Fit.xyz`, which is a valid `.xyz` file of all the molecules, and the non-reference molecules have been rotated according to the RMSD-minimizing rotation matrices. In addition, the weights of the reference molecule are printed, and the RMSD of each fitted molecule is printed in its comment line.
+
+For example, this file shows two identical methane molecules using no special weights, so that upon rotation, an RMSD of zero was obtained:
+
+```
+           5
+ref Ref Mol
+C     -0.000000020   0.000000090   0.000000000     1.0
+H      0.356654400  -1.008809920   0.000000000     1.0
+H      0.356672820   0.504398280   0.873651500     1.0
+H      0.356672820   0.504398280  -0.873651500     1.0
+H     -1.070000020   0.000013270   0.000000000     1.0
+           5
+rot-1 RMSD(Fit)=    0.000000
+C     -0.000000020   0.000000088  -0.000000004
+H      0.356654403  -1.008809916   0.000000003
+H      0.356672819   0.504398275   0.873651502
+H      0.356672818   0.504398279  -0.873651502
+H     -1.070000019   0.000013274   0.000000000
+```
+
+### non-interactive
+
+Alternatively, the program can be run non-interactively by simply giving the name of the input file. For example, the following syntax would execute the `fitmol` program on a file called `ch4.xyz`:
+
+```
+	./fitmol.exe ch4
+```
+
+For non-interactive execution, the center of rotation can be defined with a second commandline argument. For example,  the following syntax would execute the `fitmol` program on a file called `ch4.xyz`, using atom #1 as the rotation center:
+
+```
+	./fitmol.exe ch4 1
+```
+
+## TODO
+
+1. maximum number of atoms is fixed to 2000. Using allocatable array.
+2. all molecules should have the same numner of atoms.
+3. fitting and RMSD calculation use different set of atoms.
