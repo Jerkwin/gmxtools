@@ -553,8 +553,8 @@ var CHINESE = {
 var DEFAULT_OPTIONS = {
     mode:               'markdeep',
     detectMath:         true,
-    //lang:               {keyword:{}}, // English
-    lang:               CHINESE, //{keyword:{}}, // English
+    lang:               {keyword:{}}, // English
+    //lang:               CHINESE, //{keyword:{}}, // English
     tocStyle:           'auto',
     hideEmptyWeekends:  true,
     showLabels:         false,
