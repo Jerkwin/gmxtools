@@ -17,7 +17,6 @@
             initialize();
         };
 
-
     if (navigator.userAgent.match(/iPhone/i)) {
         initialize();
 
