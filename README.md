@@ -25,7 +25,9 @@
 <td>fitmol</td>
 <td><a href="./fitmol/README.md.html">README</a></td>
 <td><a href="./fitmol/FitMol.f90">FitMol.f90</a></td>
-<td><a href="./fitmol/ch4.xyz">ch4.xyz</a></td>
+<td><a href="./fitmol/ch4.xyz">ch4.xyz</a><br>
+<a href="./fitmol/ch4_ch3oh.xyz">ch4_ch3oh.xyz</a>
+</td>
 </tr>
 
 </table>
@@ -38,6 +40,5 @@ If you have any quesiotns about these tools, please let me know.
 <li><a href="https://groups.google.com/forum/#!forum/gmxtool">Google Forum</a></li>
 <li><a href="https://github.com/Jerkwin/gmxtool/issues">GitHub issues</a></li>
 </ul>
-
 
 </div></body>

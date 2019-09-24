@@ -1,161 +1,179 @@
 Program FitMol
 	integer, parameter:: n = 2000, Lxyz = 1, Lout = 2
 
-	integer i, ierr, Narg, Lsta, Natm, Icnt
-	real*8  RMSD, x(3, n), y(3, n), z(3, n), w(n), Xcnt(3), q(4), u(3, 3)
-	logical	YesBat, YesOrg
-	character*8 Satm(n)
-	character*256	txt, Finp, Tite
+	integer i, Ierr, Narg, Lsta, Natm, Icnt, Nfit, Nmol
+	real*8  RMSD, XYZref(3,n), XYZmol(3,n), XYZrot(3,n), Wref(n), Xcnt(3), q(4), u(3, 3)
+	logical	YesBat
+	character*8 Sref(n), Smol(n)
+	character*256	txt, Tips
 	common /Lsta/ Lsta
+
+	integer, allocatable:: Ifit(:)
+	real*8,  allocatable:: w(:), x(:,:), y(:,:), z(:,:)
 
 	Icnt = 0
 	YesBat = .false.
-	YesOrg = .false.
 
-	Narg = Iargc()-1
+	Narg = Iargc()
 	if(Narg>0) then
 		YesBat = .true.
-		call getarg(1, Finp)
-		i = index(Finp, '.xyz')-1
-		if(i>0) Finp = Finp(1:i)
-		open(unit=Lxyz, file=trim(Finp)//'.xyz', status='old', IOstat=Ierr)
-		open(unit=Lout, file=trim(Finp)//'~Fit.xyz', IOstat=Ierr)
-		read(Lxyz, *, IOstat=Ierr) Natm
-		read(Lxyz, '(A256)', IOstat=Ierr) Tite
-		if(Narg==2) then
-			call getarg(2, Finp)
-			read(Finp, *) Icnt
-			YesOrg = .true.
+		call getarg(1, txt)
+		i = index(txt, '.xyz', .true.)-1; if(i>0) txt = txt(1:i)
+		open(unit=Lxyz, file=trim(txt)//'.xyz', status='old', IOstat=Ierr)
+		open(unit=Lout, file=trim(txt)//'~Fit.xyz', IOstat=Ierr)
+		if(Narg>1) then
+			call getarg(2, txt)
+			read(txt, *) Icnt
 		end if
 		goto 100
 	end if
 
 	print*, '>>>>>>>>>>>>>>>>Program FitMol Running <<<<<<<<<<<<<<<<'
-	print*,	'>>>>>>>>>>>>>>>>    Jicun LI           <<<<<<<<<<<<<<<<'
-	print*, '>>>>>>>>>>>>>>>>  2019-08-21 14:44:52  <<<<<<<<<<<<<<<<'
+	print*, '>>>>>>>>>>>>>>>>        Jicun LI       <<<<<<<<<<<<<<<<'
+	print*, '>> 2019-09-23: No. of atoms can be different for each mol.'
+	print*, '>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<'
+	print*
 
-	print*, '>>Type XYZ File Name (*.xyz/Exit):'
-	read*, Finp
-	if (index(Finp, 'exit')/=0 .or. index(Finp, 'Exit')/=0) &
-	&	stop '>>Normal Exit of Program FitMol.'
+	print*, '>>Type XYZ File Name (*.xyz/exit):'
+	read*, txt
+	if(index(txt, 'exit')/=0) stop '>>Normal Exit of Program FitMol.'
 
-	i = index(Finp, '.xyz')-1
-	if(i>0) Finp = Finp(1:i)
-	open(unit=Lxyz, file=trim(adjustl(Finp))//'.xyz', status='old', IOstat=Ierr)
-	do  while(Ierr/=0)
-		print*, '>>XYZ Input File  .\'//trim(adjustl(Finp))//'.xyz  NOT Exist !'
-		print*, '>>Revise Input File Name (*.xyz/Exit):'
-		read*, Finp
-		if (index(Finp, 'exit')/=0 .or. index(Finp, 'Exit')/=0) &
-	&		stop '>>Normal Exit of Program FitMol.'
-		i = index(Finp, '.xyz')-1
-		if(i>0) Finp = Finp(1:i)
-		open(unit=Lxyz, file=trim(adjustl(Finp))//'.xyz', status='old', IOstat=Ierr)
+	i = index(txt, '.xyz', .true.)-1; if(i>0) txt = txt(1:i)
+	open(unit=Lxyz, file=trim(adjustl(txt))//'.xyz', status='old', IOstat=Ierr)
+	do while(Ierr/=0)
+		print*, '>>XYZ Input File  .\'//trim(adjustl(txt))//'.xyz  NOT Exist !'
+		print*, '>>Revise Input File Name (*.xyz/exit):'
+		read*, txt
+		if (index(txt, 'exit')/=0) stop '>>Normal Exit of Program FitMol.'
+		i = index(txt, '.xyz')-1; if(i>0) txt = txt(1:i)
+		open(unit=Lxyz, file=trim(adjustl(txt))//'.xyz', status='old', IOstat=Ierr)
 	end do
-	open(unit=Lout, file=trim(adjustl(Finp))//'~Fit.xyz', IOstat=Ierr)
+	open(unit=Lout, file=trim(adjustl(txt))//'~Fit.xyz', IOstat=Ierr)
+
+100	print*, '>>XYZ Input File:  .\', trim(adjustl(txt))//'.xyz'
 
 	read(Lxyz, *, IOstat=Ierr) Natm
-	read(Lxyz, '(A256)', IOstat=Ierr) Tite
-	read(Tite, *, IOstat=Ierr) Icnt
-	if (Ierr==0) YesOrg = .true.
+	read(Lxyz, '(A256)', IOstat=Ierr) txt
+	if(Icnt==0) then
+		read(txt, *, IOstat=Ierr) Icnt
+		if(Ierr/=0) Icnt=0
+	end if
 
-	print*, '>>Input File is  .\', trim(adjustl(Finp))//'.xyz'
-100	print*, '>>Input File Readin.'
+	print*, '>>Input File Readin.'
 	print*
-	write(*, '(A, I4)') '>>>>No. of Atoms         ', Natm
-	if(YesOrg) write(*, '(A, I4)') '>>>>New Origin Fixed at Atom     ', Icnt
+	write(*, '(A, I4)') ' >>>>No. of Atoms of Ref. Mol.      ', Natm
+	if(Icnt==0) write(*, '(A, I4)') ' >>>>Rotation Origin is the weighted centriod.'
+	if(Icnt/=0) write(*, '(A, I4)') ' >>>>Rotation Origin Fixed at Atom     ', Icnt
 
 	if (.NOT.YesBat) then
 		Lsta = 6
 		print*
 		print*, '>>FitMol Calculation Will Run.'
 		print*
-		print*, '>>Run File Now ? Y/N'
+		print*, '>>Run Now ? Y/N'
 		read*, txt
-		if (txt.EQ.'N' .or. txt.EQ.'n') stop '>>Normal Exit of Program FitMol.'
+		if(txt=='N' .or. txt=='n') stop '>>Normal Exit of Program FitMol.'
 	end if
 
 	print*
 	print*, '>>FitMol Calculation Running...'
+	print*
 
-	read(Lxyz, '(A256)', IOstat=Ierr) Tite
-	read(Tite, *, IOstat=Ierr) txt, txt, txt, txt, w(1)
 	rewind(Lxyz)
+	read(Lxyz, *) Natm
+	read(Lxyz, '(A256)') Tips
+	read(Lxyz, '(A256)') txt; backspace(Lxyz)
+	read(txt, *, IOstat=Ierr) Sref(1), Wref(1), Wref(1), Wref(1), Wref(1)
 
-	read(Lxyz, *)
-	read(Lxyz, *) Tite
-	if(Ierr==0) then
-		read(Lxyz, *) (Satm(i), x(1, i), x(2, i), x(3, i), w(i), i=1, Natm)
-	else
-		w = 1.D0
-		read(Lxyz, *) (Satm(i), x(1, i), x(2, i), x(3, i), i=1, Natm)
-	end if
+	Wref=0.d0
+	do i=1, Natm
+		if(Ierr/=0) read(Lxyz, *) Sref(i), XYZref(1,i), XYZref(2,i), XYZref(3,i)
+		if(Ierr==0) read(Lxyz, *) Sref(i), XYZref(1,i), XYZref(2,i), XYZref(3,i), Wref(i)
+	end do
 
-	if (YesOrg) Xcnt(1:3) = x(1:3, Icnt)
-	call center(Natm, x, w, YesOrg, Xcnt)
-
-	if (.NOT. YesBat) write(Lsta, '(A, /, 3F14.9/)') 'Center of Reference Molecule X', Xcnt
+	call center(Icnt, Natm, XYZref, Wref, Xcnt)
+	if(.NOT. YesBat) write(Lsta, '(A, 3F14.9)') 'Center of Mol. Ref.: ', Xcnt
 
 	write(Lout, *) Natm
-	write(Lout, '(A)') trim(Tite)//' Ref Mol'
-	write(Lout, '(A4, 3F14.9, F8.1)') (Satm(i), x(1, i), x(2, i), x(3, i), w(i), i=1, Natm)
+	write(Lout, '(A)') trim(Tips)//' Ref Mol'
+	write(Lout, '(A4, 3F14.9, F8.1)') (Sref(i), XYZref(:, i), Wref(i), i=1, Natm)
 
-	Ierr=0
+	Nfit=0
+	do i=1, Natm
+		if(Wref(i)>0.d0) then
+			Nfit=Nfit+1
+		end if
+	end do
+	if(.NOT. YesBat) write(Lsta, '(A, I4, /)') 'No. of Atoms used to fit: ', Nfit
+
+	allocate(Ifit(Nfit), w(Nfit), x(3, Nfit), y(3, Nfit), z(3, Nfit))
+
+	Nfit=0
+	do i=1, Natm
+		if(Wref(i)>0.d0) then
+			Nfit=Nfit+1
+			Ifit(Nfit)=i
+			w(Nfit)=Wref(i)
+			x(1:3, Nfit)=XYZref(1:3,i)
+		end if
+	end do
+
+	Nmol=0; Ierr=0
 	do
-		read(Lxyz, *, IOstat=Ierr) Natm
-		if (Ierr/=0) exit
-		read(Lxyz, '(A256)', IOstat=Ierr) Tite
-		read(Lxyz, *) (txt, y(1, i), y(2, i), y(3, i), i=1, Natm)
+		read(Lxyz, *, IOstat=Ierr) Natm; if(Ierr/=0) exit
+		read(Lxyz, '(A256)', IOstat=Ierr) Tips
+		do i=1, Natm
+			read(Lxyz, *) Smol(i), XYZmol(1, i), XYZmol(2, i), XYZmol(3, i)
+		end do
 
-		if (YesOrg) Xcnt(1:3) = y(1:3, Icnt)
-		call center(Natm, y, w, YesOrg, Xcnt)
+		call center(Icnt, Natm, XYZmol, Wref, Xcnt)
 
+		do i=1, Nfit
+			y(1:3, i)=XYZmol(1:3, Ifit(i))
+		end do
+
+		Nmol=Nmol+1
 		if (.NOT. YesBat)  then
-			write(Lsta, '(/, A, /, 3F14.9/)') '>>>>Center of Fitting Molecule Y', Xcnt
+			write(Lsta, '(A, I4, A, 3F14.9/)') 'Center of Mol. ', Nmol, ': ', Xcnt
 			write(Lsta, '(A)') 'Atom     Xref          Yref          Zref' &
 	&						//'          Xfit          Yfit          Zfit'
-			do	i=1, Natm
-				write(Lsta, '(X, A4, 6F14.9)') &
-	&				Satm(i), x(1,i), x(2,i), x(3,i), y(1,i), y(2,i), y(3,i)
-			end do
+			write(Lsta, '(X, A4, 6F14.9, F8.1)') (Sref(i), x(:,i), y(:,i), w(i), i=1, Nfit)
 			write(Lsta, *)
 		end if
 
 		u = 0.d0; u(1,1) = 1.d0; u(2,2) = 1.d0; u(3,3) = 1.d0
 		if(.NOT.YesBat) then
-			call analyz (n, x, y, w, u)
-			write (Lsta, '(/, A)') 'Fitting    X = RY'
+			call analyz(Nfit, x, y, w, u)
+			write (Lsta, '(/, A)') 'Fitting    XYZref = R x XYZmol'
 		end if
 
-		call qtrfit (Natm, y, x, w, q, u, ierr)
-		call rotmol (Natm, y, z, u)
-		if (.NOT.YesBat) call analyz (Natm, z, x, w, u)
+		call qtrfit(Nfit, y, x, w, q, u, Ierr)
+		call rotmol(Nfit, y, z, u)
+		if (.NOT.YesBat) call analyz(Nfit, z, x, w, u)
 
-		if (YesOrg) Xcnt(1:3) = z(1:3, Icnt)
-		call center(Natm, z, w, YesOrg, Xcnt)
+		call rotmol(Natm, XYZmol, XYZrot, u)
 
 		if (.NOT.YesBat) then
 			write(Lsta, *)
-			write(Lsta, '(A)') 'Atom      RYx           RYy           RYz' &
-	&						// '           Xx            Xy            Xz            |RY-X|'
+			write(Lsta, '(A)') 'Atom     Xfit          Yfit          Zfit' &
+	&						// '          Xref          Yref          Zref         |Fit-Ref|'
 			do	i=1, Natm
-				write(Lsta, '(X, A4, 7F14.9)') Satm(i), z(1,i), z(2,i), z(3,i), &
-			&				x(1,i), x(2,i), x(3,i), sqrt( (x(1,i)-z(1,i))**2 &
-			&				+ (x(2,i)-z(2,i))**2 + (x(3,i)-z(3,i))**2)
+				write(Lsta, '(X, A4, 7F14.9)') Smol(i), XYZrot(:,i), &
+			&				XYZmol(:,i), norm2(XYZrot(:,i)-XYZmol(:,i))
 			end do
 		end if
 
-		RMSD = 0.D0
-		do	i = 1, Natm
+		RMSD = 0.d0
+		do	i = 1, Nfit
 			RMSD = RMSD + w(i)* ( (x(1,i)-z(1,i))**2 + (x(2,i)-z(2,i))**2 &
 	&							+ (x(3,i)-z(3,i))**2 )
 		end do
-		RMSD = sqrt(RMSD/dble(Natm))
+		RMSD = sqrt(RMSD/dble(Nfit))
 
 		write(Lout, *) Natm
-		write(Lout, '(A, A, F12.6)') trim(Tite), ' RMSD(Fit)=', RMSD
-		do	i = 1, Natm
-			write(Lout, '(A4, 3F14.9)') Satm(i), z(1,i), z(2,i), z(3,i)
+		write(Lout, '(A, A, F12.6)') trim(Tips), ' RMSD(Fit)=', RMSD
+		do i = 1, Natm
+			write(Lout, '(A4, 3F14.9)') Smol(i), XYZrot(:,i)
 		end do
 	end do
 
@@ -176,7 +194,27 @@ Program FitMol
 End Program FitMol
 !
 !
-Subroutine analyz (n, x, y, w, u)
+Subroutine center(Icnt, n, x, w, Xcnt)
+! center a molecule about its weighted centroid or other origin
+	integer i, n, Icnt
+	real*8  x(3, *), w(*), Xcnt(3), wnorm
+
+	if(Icnt/=0) then
+		Xcnt(1:3) = x(1:3, Icnt)
+	else
+		wnorm = 1.d0/sum(w(1:n))
+		Xcnt(1) = dot_product( x(1,1:n), w(1:n) )*wnorm
+		Xcnt(2) = dot_product( x(2,1:n), w(1:n) )*wnorm
+		Xcnt(3) = dot_product( x(3,1:n), w(1:n) )*wnorm
+	end if
+
+	do	i = 1, n
+		x(:, i) = x(:, i) - Xcnt(:)
+	end do
+End
+!
+!
+Subroutine analyz(n, x, y, w, u)
 ! analyze the x to y fit and the fitting matrix
 
 	integer i, j, n, Lsta
@@ -214,35 +252,7 @@ Subroutine analyz (n, x, y, w, u)
 End
 !
 !
-Subroutine center (n, x, w, YesOrg, Xcnt)
-! center a molecule about its weighted centroid or other origin
-	integer i, n
-	real*8  x(3, n), w(n), Xcnt(3), wnorm
-	logical YesOrg
-
-	if(.NOT.YesOrg) then
-		Xcnt = 0.0D0
-		wnorm = 0.0D0
-		do	i = 1, n
-			Xcnt(1) = Xcnt(1) + x(1, i) * w(i)
-			Xcnt(2) = Xcnt(2) + x(2, i) * w(i)
-			Xcnt(3) = Xcnt(3) + x(3, i) * w(i)
-			wnorm = wnorm + w (i)
-		end do
-		Xcnt(1) = Xcnt(1)/wnorm
-		Xcnt(2) = Xcnt(2)/wnorm
-		Xcnt(3) = Xcnt(3)/wnorm
-	end if
-
-	do	i = 1, n
-		x(1, i) = x(1, i) - Xcnt(1)
-		x(2, i) = x(2, i) - Xcnt(2)
-		x(3, i) = x(3, i) - Xcnt(3)
-	end do
-End
-!
-!
-Subroutine qtrfit (n, x, y, w, q, u, nr)
+Subroutine qtrfit(n, x, y, w, q, u, nr)
 ! Find the quaternion, q, [and left rotation matrix, u] that minimizes
 !   |qTXq - Y| ^ 2    [|uX - Y| ^ 2]
 !
