@@ -267,7 +267,8 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 
 	/REMARK/ {next}
 	/TITLE/ {Fout=FILENAME
-		txt=sprintf("%.1fns", $(NF-2)/1E3);
+		txt=$0; sub(/.*t= */,"",txt); sub(/ .*/,"",txt)
+		txt=sprintf("%.1fns", txt/1E3);
 		sub(".pdb", "~"txt, Fout)
 		Nfrm++; n=0
 		Fname[Nfrm]=Fout
