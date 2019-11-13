@@ -1,0 +1,953 @@
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style>
+html,body{
+  margin: 0; padding: 0;
+  font: 1.2em/1.5 Helvetica, Arial, "Microsoft YaHei", sans-serif;
+}
+
+.tab-wrapper{
+  position: relative;
+  height:3em;
+  background-color: #33344a;
+}
+
+.tab-wrapper .tab-radio{
+  display: none;
+}
+
+.tab-handler{
+  position: relative;
+  z-index: 2;
+  display: block;
+  float: left;
+  height: 2em;
+  padding: 0 2em;
+  color: #717181;
+  font-size: 1.5em;
+  line-height:2em;
+  transition: .3s;
+  transform: scale(.9);
+}
+
+.tab-radio:checked + .tab-handler{
+  color: #fff;
+  background-color: #e74c3c;
+  transform: scale(1);
+}
+.tab-radio:checked + .tab-handler + .tab-content{
+  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.tab-wrapper .tab-content{
+  visibility: hidden;
+  position: absolute;
+  top: 2.5em;
+  left: 2em;
+  width: 95%;
+  padding: 2em auto;
+  margin: 2em
+
+  color: #999;
+  font-size: 1.2em;
+  line-height: 1.8em;
+  background-color: #fff;
+  opacity: 0;
+  transition: transform .5s, opacity .7s;
+  transform: translateY(20px);
+}
+
+input[type="box"] {
+	font: bold 1.2em Consolas;
+	background: #F5F5F5;
+	border: 2px solid;
+	border-color: #CCC #EEE #EEE #CCC;
+}
+
+input[type="box"]:focus { background: #BBB; }
+
+table {display: none; font: bold .6em Consolas;}
+table { border-collapse: collapse; }
+table tr { border-top: 2px solid #ccc; }
+table tr:nth-child(2n) { background-color: #f8f8f8; }
+table tr td { border: 1px solid #ccc; padding: 0.5em; font-size: 1.2em;}
+table tr td :first-child { margin-top: 0; }
+table tr td :last-child { margin-bottom: 0; }
+table tr th {
+   font-weight: bold;
+   border: 2px solid #aaa;
+   padding: 1em 2em; }
+</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax:{processEscapes:true,inlineMath:[['$','$'],["\\(","\\)"]],skipTags:['script','noscript','style','textarea','pre','code']}});MathJax.Hub.Config({TeX:{extensions:["cancel.js","enclose.js","AMScd.js","mhchem.js"],Macros:{a:"\\alpha",b:"\\beta",c:"\\chi",d:"\\delta",e:"\\epsilon",f:"\\phi",g:"\\gamma",h:"\\eta",i:"\\iota",j:"\\varphi",k:"\\kappa",l:"\\lambda",m:"\\mu",n:"\\nu",o:"\\omicron",p:"\\pi",q:"\\theta",r:"\\rho",s:"\\sigma",t:"\\tau",u:"\\upsilon",v:"\\varpi",w:"\\omega",x:"\\xi",y:"\\psi",z:"\\zeta",D:"\\Delta",F:"\\Phi",G:"\\Gamma",J:"\\vartheta",L:"\\Lambda",P:"\\Pi",Q:"\\Theta",S:"\\Sigma",U:"\\Upsilon",V:"\\varsigma",W:"\\Omega",X:"\\Xi",Y:"\\Psi",ve:"\\varepsilon",vk:"\\varkappa",vq:"\\vartheta",vp:"\\varpi",vr:"\\varrho",vs:"\\varsigma",vf:"\\varphi",alg:"\\begin{align}",ealg:"\\end{align}",bmat:"\\begin{bmatrix}",Bmat:"\\begin{Bmatrix}",pmat:"\\begin{pmatrix}",Pmat:"\\begin{Pmatrix}",vmat:"\\begin{vmatrix}",Vmat:"\\begin{Vmatrix}",ebmat:"\\end{bmatrix}",eBmat:"\\end{Bmatrix}",epmat:"\\end{pmatrix}",ePmat:"\\end{Pmatrix}",evmat:"\\end{vmatrix}",eVmat:"\\end{Vmatrix}",AA:"\\unicode{x212B}",Sum:"\\sum\\limits",abs:['\\lvert #1\\rvert',1],rmd:['\\mathop{\\mathrm{d}#1}',1],bi:['\\boldsymbol{#1}',1],obar:['0\\!\\!\\!\\raise{.05em}{-}'],opar:['\\frac{\\partial #1}{\\partial #2}',2],oppar:['\\frac{\\partial^2 #1}{\\partial #2^2}',2]}}});MathJax.Hub.Queue(function(){all=MathJax.Hub.getAllJax();for(i=0;i<all.length;i+=1){all[i].SourceElement().parentNode.className+=' has-jax'}});</script>
+
+<div class="tab-wrapper">
+
+	<!--input type="radio" name="tab-radio" class="tab-radio" id="tab-radio-1">
+	<label for="tab-radio-1" class="tab-handler">计算器</label-->
+
+	<input type="radio" name="tab-radio" class="tab-radio" id="tab-radio-2" checked>
+	<label for="tab-radio-2" class="tab-handler tab-handler-2">单位换算</label>
+	<div class="tab-content">
+		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Len">长度&nbsp;&nbsp;
+		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Mas">质量&nbsp;&nbsp;
+		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Tim">时间&nbsp;&nbsp;
+		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Eng">能量&nbsp;&nbsp;
+		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Frc">力  &nbsp;&nbsp;
+		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Prs">压强&nbsp;&nbsp;
+		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Con">浓度&nbsp;&nbsp;
+		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Rho">密度&nbsp;&nbsp;
+		<input type="radio" onclick="setUnit(this.id)" name="unit" id="VDW">VDW参数<br>
+		<span style='font: .6em Consolas;'>
+		<ol><li>所用换算系数来源于CODATA-2018, 具体数值见 <a href='https://physics.nist.gov/cuu/Constants/Table/allascii.txt'>NIST CODATA 2018</a></li>
+		<li>支持下列js函数: ** pow sqrt exp log; abs ceil floor; min max round random; sin cos tan; asin acos atan atan2</li><li>
+		支持下列常量符号:pi; c:真空光速; Na:阿伏加德罗常数; qe:基元电荷; ang:埃; nm; 纳米; h:普朗克常数; hbar:h/2pi; amu:原子质量单位; ha:原子能量单位; bohr:原子长度单位; kb:玻尔兹曼常数; mu0:介磁常数; eps0:介电常数; me:电子质量; mp:质子质量; g:标准重力加速度; G:万有引力常数; atm:标准大气压; P0:标准压力; T0:标准温度; R:摩尔气体常数; c2j:卡焦互换; j2c:焦卡互换</li>
+		</ol><strong id='inputValue'></strong> </span>
+		<table id="TabLen" style="display: none;">
+		<tbody><tr><td>
+			<input type="box" name="Length" oninput="setVal(this.name,this.id)" id="L_m"> 米(m)<br>
+			<input type="box" name="Length" oninput="setVal(this.name,this.id)" id="L_km"> 千米(km)<br>
+			<input type="box" name="Length" oninput="setVal(this.name,this.id)" id="L_cm"> 厘米(cm)<br>
+			<input type="box" name="Length" oninput="setVal(this.name,this.id)" id="L_mm"> 毫米(mm)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_um"> 微米(&mu;m)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_nm"> 纳米(nm)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_pm"> 皮米(pm)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_fm"> 飞米(fm)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_bohr"> 玻尔(Bohr)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_ang"> 埃(&#197;)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_pnt"> 点(point)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_inch"> 英寸(inch)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_foot"> 英尺(foot)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_yard"> 码(yard)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_mile"> 英里(mile)<br>
+		</td></tr>
+		</table>
+
+		<table id="TabMas">
+		<tr><td>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_kg"> 千克(kg)<br>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_g"> 克(g)<br>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_mg"> 毫克(mg)<br>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_ug"> 微克(&mu;g)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_amu"> 原子质量(amu/Dalton)<br>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_emas"> 电子质量(me)<br>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_pmas"> 质子质量(mp)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_eV"> 电子伏(eV)<br>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_MeV"> 兆电子伏(MeV)<br>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_GeV"> 吉电子伏(GeV)<br>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_TeV"> 太电子伏(TeV)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_ton"> 吨(ton)<br>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_pd"> 磅(pound)<br>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_car"> 克拉(carat宝石)<br>
+			<input type="box" name="Mass" onInput="setVal(this.name,this.id)" id="M_onc"> 盎司(ounce)<br>
+		</td></tr>
+		</table>
+
+		<table id="TabTim">
+		<tr><td>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_s"> 秒(s)<br>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_minu"> 分(min)<br>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_h"> 时(h)<br>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_d"> 日(d)<br>
+		</td></tr>
+
+		<tr><td>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_ms"> 毫秒(ms)<br>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_us"> 微秒(&mu;s)<br>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_ns"> 纳秒(ns)<br>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_ps"> 皮秒(ps)<br>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_fs"> 飞秒(fs)<br>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_as"> 阿秒(as)<br>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_au"> 原子时间单位(au)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_m"> 月(m, 30 d)<br>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_a"> 年(a, 365 d)<br>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_am"> 平均月(29.53 d)<br>
+			<input type="box" name="Time" onInput="setVal(this.name,this.id)" id="T_aa"> 平均年(365.2422 d)<br>
+		</td></tr>
+		</table>
+
+		<table id="TabEng" style="display:block">
+		<tr><td>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="J"> 焦耳(J)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="cal"> 卡(cal)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="erg"> 尔格(erg)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="kJ_mol"> 千焦/摩尔(kJ/mol)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="kcal_mol"> 千卡/摩尔(kcal/mol)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="MJ_mol"> 兆焦/摩尔(MJ/mol)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Mcal_mol"> 兆卡/摩尔(Mcal/mol)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Hatr"> 哈垂(Hartree)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Ry"> 里德伯(Rydberg)<br>
+
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Ee2bohr"> 静电势能(e<sup>2</sup>/Bohr)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Ee2nm"> 静电势能(e<sup>2</sup>/nm)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Ee2A"> 静电势能(e<sup>2</sup>/&#197;)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Emd"> MD常用单位(amu-&#197;<sup>2</sup>/fs<sup>2</sup>)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Emd2"> MD常用单位(amu-nm<sup>2</sup>/ps<sup>2</sup>)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="K"> 热力学温度(K)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="kg"> 质量(kg)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="amu"> 原子质量(amu)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="eV"> 电子伏(eV)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="MeV"> 兆电子伏(MeV)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="GeV"> 吉电子伏(GeV)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="TeV"> 太电子伏(TeV)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="PeV"> 拍电子伏(PeV)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Em"> 米(m)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Ecm"> 厘米(cm)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Emm"> 毫米(mm)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Eum"> 微米(&mu;m)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Enm"> 纳米(nm)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Eang"> 埃(&#197;)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="invm"> 波数(m<sup>-1</sup>)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="invcm"> 厘米波数(cm<sup>-1</sup>)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Hz"> 赫兹(Hz)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="MHz"> 兆赫兹(MHz)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="GHz"> 吉赫兹(GHz)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="THz"> 太赫兹(THz)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="PHz"> 拍赫兹(PHz)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Energy" onInput="setVal(this.name,this.id)" id="Es">周期   秒(s)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name,this.id)" id="Ems">周期 毫秒(ms)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name,this.id)" id="Eus">周期 微秒(&mu;s)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name,this.id)" id="Ens">周期 纳秒(ns)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name,this.id)" id="Eps">周期 皮秒(ps)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name,this.id)" id="Efs">周期 飞秒(fs)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name,this.id)" id="Eas">周期 阿秒(as)<br>
+		</td></tr>
+		</table>
+
+		<table id="TabFrc">
+		<tr><td>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_N"> 牛顿(N)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_dyn"> 达因(dyn)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_mN"> 毫牛(mN)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_uN"> 微牛(&mu;N)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_nN"> 纳牛(nN)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_pN"> 皮牛(pN)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_au"> 原子单位(Hartree/Bohr)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_auA"> 原子埃单位(Hartree/&#197;)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_e2A"> 静电埃(e<sup>2</sup>/&#197;<sup>2</sup>)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_e2nm"> 静电纳米(e<sup>2</sup>/nm<sup>2</sup>)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_mpc"> MOPAC单位(kcal/mol-&#197;)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_md"> MD常见单位(kJ/mol-&#197;)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_gmx"> GROMACS单位(kJ/mol-nm)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_amu1"> MD常用单位(amu-&#197;/fs<sup>2</sup>)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_amu2"> MD常用单位(amu-nm/ps<sup>2</sup>)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_Pam"> 压强面积单位(Pa-m<sup>2</sup>)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_MPaA"> 压强面积单位(MPa-&#197;<sup>2</sup>)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_MPanm"> 压强面积单位(MPa-nm<sup>2</sup>)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_GPaA"> 压强面积单位(GPa-&#197;<sup>2</sup>)<br>
+			<input type="box" name="Force" onInput="setVal(this.name,this.id)" id="F_GPanm"> 压强面积单位(GPa-nm<sup>2</sup>)<br>
+		</td></tr>
+		</table>
+
+		<table id="TabPrs">
+		<tr><td>
+			<input type="box" name="Press" onInput="setVal(this.name,this.id)" id="P_Pa"> 帕斯卡(Pa)<br>
+			<input type="box" name="Press" onInput="setVal(this.name,this.id)" id="P_kPa"> 千帕(kPa)<br>
+			<input type="box" name="Press" onInput="setVal(this.name,this.id)" id="P_MPa"> 兆帕(Mpa)<br>
+			<input type="box" name="Press" onInput="setVal(this.name,this.id)" id="P_GPa"> 吉帕(Gpa)<br>
+			<input type="box" name="Press" onInput="setVal(this.name,this.id)" id="P_dyncm"> 达因/厘米<sup>2</sup>(dyn/cm<sup>2</sup>)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Press" onInput="setVal(this.name,this.id)" id="P_bar"> 巴(bar, 标准压力)<br>
+			<input type="box" name="Press" onInput="setVal(this.name,this.id)" id="P_atm"> 标准大气压(atm)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Press" onInput="setVal(this.name,this.id)" id="P_mmH2O"> 毫米水柱(mmH2O)<br>
+			<input type="box" name="Press" onInput="setVal(this.name,this.id)" id="P_mmHg"> 毫米汞柱(mmHg)<br>
+			<input type="box" name="Press" onInput="setVal(this.name,this.id)" id="P_Torr"> 托(Torr)<br>
+		</td></tr>
+		</table>
+
+		<table id="TabCon">
+		<tr><td>
+			<input type="box" name="Conc" onInput="setVal(this.name,this.id)" id="C_M"> M(mol/L)<br>
+			<input type="box" name="Conc" onInput="setVal(this.name,this.id)" id="C_mM"> mM(mmol/L)<br>
+			<input type="box" name="Conc" onInput="setVal(this.name,this.id)" id="C_uM"> &mu;M(&mu;mol/L)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Conc" onInput="setVal(this.name,this.id)" id="C_cm3"> molec/cm<sup>3</sup><br>
+			<input type="box" name="Conc" onInput="setVal(this.name,this.id)" id="C_nm3"> molec/nm<sup>3</sup><br>
+			<input type="box" name="Conc" onInput="setVal(this.name,this.id)" id="C_A3"> molec/&#197;<sup>3</sup><br>
+		</td></tr>
+		<tr><td>
+			<input type="checkbox" name="TP" onClick="setTP(this.name,this.id)" id="chk_TP" > 使用温度/压强计算(理想气体)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Conc" onInput="setTP(this.name,this.id)" id="C_K" value="298.15"> 温度(K)&nbsp;
+			<input type="radio" name="TP" id="rdo_K" checked> 固定<br>
+			<input type="box" name="Conc" onInput="setTP(this.name,this.id)" id="C_Pa" value="101325"> 压强(Pa)
+			<input type="radio" name="TP" id="rdo_Pa"> 固定<br>
+		</td></tr>
+		</table>
+
+		<table id="TabRho">
+		<tr><td>
+			<input type="box" name="Rho" onInput="setVal(this.name,this.id)" id="R_gmL"> g/mL(g/cm<sup>3</sup>, kg/L)<br>
+			<input type="box" name="Rho" onInput="setVal(this.name,this.id)" id="R_gL"> g/L(kg/m<sup>3</sup>)<br>
+			<input type="box" name="Rho" onInput="setVal(this.name,this.id)" id="R_amuA3"> amu/&#197;<sup>3</sup><br>
+		</td></tr>
+		<tr><td>
+			<input type="checkbox" name="MC" onClick="setMC(this.name,this.id)" id="chk_MC"> 使用分子量/摩尔浓度计算(纯物质)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Rho" onInput="setMC(this.name,this.id)" id="R_amu" value="18"> 分子量(amu, g/mol)
+			<input type="radio" name="MC" id="rdo_amu" checked> 固定<br>
+			<input type="box" name="Rho" onInput="setMC(this.name,this.id)" id="R_M" value="55.5"> 摩尔浓度(M, mol/L)
+			<input type="radio" name="MC" id="rdo_M"> 固定<br>
+		</td></tr>
+		</table>
+
+		<table id="TabVDW">
+		<tr>
+		<td>原子 1</td><td>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_sgm1" value='1'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_eps1" value='1'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_re1" value='1.122462048'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C61" value='4'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C121" value='4'><br>
+		</td><td>
+			&sigma;=(C<sub>12</sub>/C<sub>6</sub>)<sup>1/6</sup>(硬球半径)<br>
+			&epsilon;=C<sub>6</sub><sup>2</sup>/(4*C<sub>12</sub>)(势阱深度)<br>
+			Re=2<sup>1/6</sup>&sigma;(平衡距离)<br>
+			C<sub>6</sub>=4&epsilon;&sigma;<sup>6</sup><br>
+			C<sub>12</sub>=4&epsilon;&sigma;<sup>12</sup><br>
+		</td>
+		<td>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_sgm2" value='1'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_eps2" value='0.25'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_re2" value='1.122462048'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C62" value='1'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C122" value='1'><br>
+		</td>
+		<td>原子 2</td>
+		</tr>
+		<tr><td>LB组合规则<br>(Lorentz-Berthelot)<br>AMBER CHARMM</td>
+		<td>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_sgmLB" value='1'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_epsLB" value='0.5'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_reLB" value='1.122462048'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C6LB" value='2'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C12LB" value='2'><br>
+		</td><td>
+			&sigma;=(&sigma;<sub>1</sub>+&sigma;<sub>2</sub>)/2 (算术平均值)<br>
+			&epsilon;=sqrt(&epsilon;<sub>1</sub>*&epsilon;<sub>2</sub>) (几何平均值)<br>
+			Re=2<sup>1/6</sup>&sigma;<br>
+			C<sub>6</sub>=4&epsilon;&sigma;<sup>6</sup><br>
+			C<sub>12</sub>=4&epsilon;&sigma;<sup>12</sup><br>
+		</td>
+		</tr>
+		<tr><td>OPLS-AA组合规则<br>(几何平均值)<br><br><br>C6/C12组合规则<br>(C系数几何平均值)</td><td>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_sgmg" value='1'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_epsg" value='0.5'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_reg" value='1.122462048'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C6g" value='2'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C12g" value='2'><br>
+		</td><td>
+			&sigma;=sqrt(&sigma;<sub>1</sub>*&sigma;<sub>2</sub>)=(C<sub>12</sub>/C<sub>6</sub>)<sup>1/6</sup> (几何平均值)<br>
+			&epsilon;=sqrt(&epsilon;<sub>1</sub>*&epsilon;<sub>2</sub>)=C<sub>6</sub><sup>2</sup>/(4*C<sub>12</sub>) (几何平均值)<br>
+			Re=2<sup>1/6</sup>&sigma;<br>
+			C<sub>6</sub>=4&epsilon;&sigma;<sup>6</sup>=sqrt(C<sub>6</sub><sup>(1)</sup>*C<sub>6</sub><sup>(2)</sup>)<br>
+			C<sub>12</sub>=4&epsilon;&sigma;<sup>12</sup>=sqrt(C<sub>12</sub><sup>(1)</sup>*C<sub>12</sub><sup>(2)</sup>)<br>
+		</td>
+		</tr>
+		<tr><td>算术平均规则<br>(算术平均值)</td><td>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_sgma" value='1'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_epsa" value='0.5'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_rea" value='1.122462048'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C6a" value='2'><br>
+			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C12a" value='2'><br>
+		</td><td>
+			&sigma;=(&sigma;<sub>1</sub>+&sigma;<sub>2</sub>)/2 (算术平均值)<br>
+			&epsilon;=(&epsilon;<sub>1</sub>+&epsilon;<sub>2</sub>)/2 (算术平均值)<br>
+			Re=2<sup>1/6</sup>&sigma;<br>
+			C<sub>6</sub>=4&epsilon;&sigma;<sup>6</sup><br>
+			C<sub>12</sub>=4&epsilon;&sigma;<sup>12</sup><br>
+		</td>
+		</tr>
+		</table>
+	</div>
+
+	<input type="radio" name="tab-radio" class="tab-radio" id="tab-radio-3">
+	<label for="tab-radio-3" class="tab-handler">统计</label>
+
+	<div class="tab-content tab-content-3">
+		<table style="display: block;">
+		<tr><th>A数据集</th><th>B数据集</th></tr>
+		<tr><td><textarea id="datA" style="width: 200px; height: 300px; margin: 0px;"></textarea></td>
+			<td><textarea id="datB" style="width: 200px; height: 300px; margin: 0px;"></textarea></td></tr>
+		</tbody></table>
+
+		<br><input type="button" value="统计" onclick="getRMSE()" style="width:100px; height:30px">
+		数值换算因子<input type="box" id="fac" value="1" style="width:300px; height:30px">
+		输出格式<input type="box" id="fmt" value="9.3" style="width:100px; height:30px"><br>
+		数据个数: <span id="datNum"></span> 数据维数: <span id="datDim"></span><br><br>
+
+		<table style="display: block;">
+			<tbody><tr><th>数据点</th><th>加和<br>$$\text{SUM}=\Sum_{j=1}^{N_{dim} } a_{i,j}$$</th><th>平均值<br>$$\text{AVG}={\text{SUM} \over N_{dim} }$$</th><th>平方和<br>$\text{SSQ}=\Sum_{j=1}^{N_{dim} } a_{i,j}^2$</th><th>长度<br>$$\text{LEN}=\sqrt{\text{SSQ} }$$</th><th>方差<br>$$\text{VAR}=\s^2={\text{SSQ} \over N_{dim} }-\text{AVG}^2$$</th><th>总体标准偏差<br>$$\text{RMSD}=\s=\sqrt{\text{VAR} }$$</th><th>样本标准偏差<br>$$\text{RMSE}=s={\sqrt{N_{dim} } \over \sqrt{N_{dim}-1 } }\text{RMSD}$$</th></tr>
+
+			<tr><td>A</td><td id="sumA"></td><td id="avgA"></td><td id="ssqA"></td><td id="magA"></td><td id="varA"></td><td id="rmsdA"></td><td id="rmseA"></td></tr>
+			<!--tr><td>A长度</td><td id="summagA"></td><td id="avgmagA"></td><td id="magmagA"></td><td id="ssqmagA"></td><td id="varmagA"></td><td id="rmsdmagA"></td></tr-->
+
+			<tr><td>B</td><td id="sumB"></td><td id="avgB"></td><td id="ssqB"></td><td id="magB"></td><td id="varB"></td><td id="rmsdB"></td><td id="rmseB"></td></tr>
+			<!--tr><td>B长度</td><td id="summagB"></td><td id="avgmagB"></td><td id="magmagB"></td><td id="ssqmagB"></td><td id="varmagB"></td><td id="rmsdmagB"></td></tr-->
+
+			<!--tr><th>数据</th><th>加和<br>$$\text{SUM}=\Sum_{j=1}^{N_{dim} }(a_{i,j}-b_{i,j})$$</th><th>平均值<br>$$\text{AVG}={\text{SUM} \over N_{dim} }$$</th><th>平方和<br>$\text{SSQ}=\Sum_{j=1}^{N_{dim} } (a_{i,j}-b_{i,j})^2$</th><th>长度<br>$$\text{LEN}=\sqrt{\text{SSQ} }$$</th><th>方差<br>$$\text{VAR}={\text{SSQ} \over N_{dim} }$$</th><th>标准偏差<br>$$\text{RMSD}=\sqrt{\text{VAR} \over N_{dim} -1}$$</th><th>标准误差<br>$$\text{RMSD}=\sqrt{\text{VAR} \over N_{dim} }$$</th></tr-->
+
+			<tr><td>A-B</td><td id="sumC"></td><td id="avgC"></td><td id="ssqC"></td><td id="magC"></td><td id="varC"></td><td id="rmsdC"></td><td id="rmseC"></td></tr>
+			<!--tr><td>A-B长度</td><td id="summagC"></td><td id="avgmagC"></td><td id="ssqmagC"></td><td id="magmagC"></td><td id="varmagC"></td><td id="rmsemagC"></td></tr-->
+
+		</table>
+	</div>
+
+</div>
+
+<script>
+var $=function(id){return document.getElementById(id)}
+
+c=299792458           // exact 真空光速
+Navg=6.02214076E23    // exact 阿付加德罗常数
+echg=1.602176634E-19  // exact 基元电荷
+ang=1.E-10            // exact 埃
+nm=1.E-9              // exact 纳米
+h=6.62607015E-34      // exact 普朗克常数
+kb=1.380649E-23       // exact 玻尔兹曼常数
+g=9.80665             // exact 标准重力加速度
+atm=101325            // exact 标准大气压
+P0=100000             // exact 标准压力
+T0=298.15             // exact 标准压力
+R=8.314462618         // exact 摩尔气体常数
+c2j=4.184             // exact 卡焦互换
+
+hbar=.5*h/Math.PI     // 原子作用单位
+Na=Navg
+qe=echg
+pi=Math.PI
+j2cal=1./c2j
+
+amu=1.66053906660E-27    // 原子质量单位
+ha=4.3597447222071E-18   // 原子能量单位
+bohr=5.29177210903E-11   // 原子长度单位
+
+eps0=8.8541878128E-12    // 介电常数
+mu0 = 1.25663706212E-6   // 介磁常数
+me=9.1093837015E-31      // 电子质量
+mp=1.67262192369E-27     // 质子质量
+
+G=6.67430E-11            // 万有引力常数
+
+emas     = 9.1093837015e-31
+pmas     = 1.67262192369e-27
+
+aut      = 2.4188843265857e-17
+auf      = 8.2387234983e-8
+
+Rinf     = 2.1798723611035e-18    //  0.000 000 000 0042 e-18  J
+
+amu2eV    =    9.3149410242e8      //  0.0000000028e8eV
+amu2Hatr  =    3.4231776874e7      //  0.0000000010e7E_h
+amu2Hz    =    2.25234271871e23    //  0.00000000068e23Hz
+amu2invm  =    7.5130066104e14     //  0.0000000023e14m^-1
+amu2J     =    1.49241808560e-10   //  0.00000000045e-10J
+amu2K     =    1.08095401916e13    //  0.00000000033e13K
+amu2kg    =    1.66053906660e-27   //  0.00000000050e-27kg
+eV2amu    =    1.07354410233e-9    //  0.00000000032e-9u
+eV2Hatr   =    3.6749322175655e-2  //  0.0000000000071e-2E_h
+eV2Hz     =    2.417989242e14      //  (exact)Hz
+eV2invm   =    8.065543937e5       //  (exact)m^-1
+eV2J      =    1.602176634e-19     //  (exact)J
+eV2K      =    1.160451812e4       //  (exact)K
+eV2kg     =    1.782661921e-36     //  (exact)kg
+Hatr2amu  =    2.92126232205e-8    //  0.00000000088e-8u
+Hatr2eV   =   27.211386245988      //  0.000000000053eV
+Hatr2Hz   =    6.579683920502e15   //  0.000000000013e15Hz
+Hatr2invm =    2.1947463136320e7   //  0.0000000000043e7m^-1
+Hatr2J    =    4.3597447222071e-18 //  0.0000000000085e-18J
+Hatr2K    =    3.1577502480407e5   //  0.0000000000061e5K
+Hatr2kg   =    4.8508702095432e-35 //  0.0000000000094e-35kg
+Hz2amu    =    4.4398216652e-24    //  0.0000000013e-24u
+Hz2eV     =    4.135667696e-15     //  (exact)eV
+Hz2Hatr   =    1.5198298460570e-16 //  0.0000000000029e-16E_h
+Hz2invm   =    3.335640951e-9      //  (exact)m^-1
+Hz2J      =    6.62607015e-34      //  (exact)J
+Hz2K      =    4.799243073e-11     //  (exact)K
+Hz2kg     =    7.372497323e-51     //  (exact)kg
+invm2amu  =    1.33102505010e-15   //  0.00000000040e-15u
+invm2eV   =    1.239841984e-6      //  (exact)eV
+invm2Hatr =    4.5563352529120e-8  //  0.0000000000088e-8E_h
+invm2Hz   =      299792458         //  (exact)Hz
+invm2J    =    1.986445857e-25     //  (exact)J
+invm2K    =    1.438776877e-2      //  (exact)K
+invm2kg   =    2.210219094e-42     //  (exact)kg
+J2amu     =    6.7005352565e9      //  0.0000000020e9u
+J2eV      =    6.241509074e18      //  (exact)eV
+J2Hatr    =    2.2937122783963e17  //  0.0000000000045e17E_h
+J2Hz      =    1.509190179e33      //  (exact)Hz
+J2invm    =    5.034116567e24      //  (exact)m^-1
+J2K       =    7.242970516e22      //  (exact)K
+J2kg      =    1.112650056e-17     //  (exact)kg
+K2amu     =    9.2510873014e-14    //  0.0000000028e-14u
+K2eV      =    8.617333262e-5      //  (exact)eV
+K2Hatr    =    3.1668115634556e-6  //  0.0000000000061e-6E_h
+K2Hz      =    2.083661912e10      //  (exact)Hz
+K2invm    =   69.50348004          //  (exact)m^-1
+K2J       =    1.380649e-23        //  (exact)J
+K2kg      =    1.536179187e-40     //  (exact)kg
+kg2amu    =    6.0221407621e26     //  0.0000000018e26u
+kg2eV     =    5.609588603e35      //  (exact)eV
+kg2Hatr   =    2.0614857887409e34  //  0.0000000000040e34E_h
+kg2Hz     =    1.356392489e50      //  (exact)Hz
+kg2invm   =    4.524438335e41      //  (exact)m^-1
+kg2J      =    8.987551787e16      //  (exact)J
+kg2K      =    6.509657260e39      //  (exact)K
+
+L_m    =1.0;   L_km =1.E3;  L_cm =1.E-2;  L_mm =1.E-3;
+L_um   =1.E-6; L_nm =1.E-9; L_pm =1.E-12; L_fm =1.E-15
+L_bohr  =bohr;   L_ang =1.E-10
+L_pnt  =.0254/72.; L_inch =.0254; L_foot =.3048
+L_yard =.9144; L_mile =1609.344
+
+M_kg=1.0; M_g=1E-3; M_mg=1E-6; M_ug=1E-9
+M_emas=emas; M_pmas=pmas; M_amu=amu2kg
+M_eV=eV2kg; M_MeV=eV2kg*1E6; M_GeV=eV2kg*1E9; M_TeV=eV2kg*1E12
+M_ton=1E3; M_car=2E-4; M_onc=.028352; M_pd=.453632
+
+T_s=1.; T_minu=60; T_h=3600; T_d=86400
+T_ms=1E-3; T_us=1E-6; T_ns=1E-9; T_ps=1E-12; T_fs=1E-15; T_as=1E-18
+T_au=aut; T_m=30*T_d; T_a=365*T_d; T_am=29.53*T_d; T_aa=365.2422*T_d
+
+cal=4.184
+J2cal      = 1./cal
+J2erg      = 1./1.E-7
+J2kJ_mol   = Navg/1000.
+J2kcal_mol = Navg/1000.*J2cal
+J2MJ_mol   = Navg/1.E6
+J2Mcal_mol = Navg/1.E6*J2cal
+J2Emd      = 1./(amu*(ang/T_fs)**2)
+J2Emd2     = 1./(amu*(nm /T_ps)**2)
+J2Ry       = 1./Rinf
+invm2invcm=1.E-2
+Hatr2Ee2bohr=1.
+Hatr2Ee2A=ang/bohr
+Hatr2Ee2nm=nm/bohr
+
+m2Em=1; m2Ecm=1E2;  m2Emm=1E3;     m2Eum=1.E6;   m2Enm=1.E9; m2Eang=1.E10
+eV2MeV=1.E-6; eV2GeV=1.E-9; eV2TeV=1.E-12; eV2PeV=1.E-15
+Hz2MHz=1.E-6; Hz2GHz=1.E-9; Hz2THz=1.E-12; Hz2PHz=1.E-15
+Hz2Es=T_s; Hz2Ems=T_ms; Hz2Eus=T_us; Hz2Ens=T_ns; Hz2Eps=T_ps; Hz2Efs=T_fs; Hz2Eas=T_as
+
+F_N=1.0; F_dyn=1E-5; F_mN=1E-3; F_uN=1E-6; F_nN=1E-9; F_pN=1E-12
+F_au=auf; F_auA=Hatr2J/L_ang
+F_e2A=auf*bohr*bohr/(ang*ang); F_e2nm=auf*bohr*bohr/(nm*nm);
+F_mpc=1/J2kcal_mol/L_ang; F_gmx=1/J2kJ_mol/L_nm
+F_md=1/J2kJ_mol/L_ang
+F_amu1=amu2kg*ang/T_fs**2;
+F_amu2=amu2kg*nm/T_ps**2;
+
+P_Pa=1.; P_kPa=1E3; P_MPa=1E6; P_GPa=1E9
+P_dyncm=1E-1; P_bar=1E5; P_atm=101325
+P_mmH2O=1.004514556*g; P_mmHg=13.5951*g; P_Torr=P_mmHg
+
+F_Pam=1.0
+F_MPaA=P_MPa*ang**2; F_MPanm=P_MPa*nm**2
+F_GPaA=P_GPa*ang**2; F_GPanm=P_GPa*nm**2
+
+C_M=1.; C_mM=1E-3; C_uM=1E-6; C_A3=1/Navg*1E27; C_cm3=1/Navg*1E3; C_nm3=1/Navg*1E24
+
+R_gmL=1.; R_gL=1.E-3; R_amuA3=amu2kg*1E30*1E-3
+
+function setUnit(id) {
+	unit=document.getElementsByTagName('table')
+	for(i=0; i<unit.length; i++) unit[i].style.display='none'
+	$('Tab'+id).style.display='block'
+}
+
+$('V_sgmg').disabled=true; $('V_sgma').disabled=true
+$('V_epsg').disabled=true; $('V_epsa').disabled=true
+$('V_reg' ).disabled=true; $('V_rea' ).disabled=true
+$('V_C6g' ).disabled=true; $('V_C6a' ).disabled=true
+$('V_C12g').disabled=true; $('V_C12a').disabled=true
+
+$('V_sgmLB').disabled=true
+$('V_epsLB').disabled=true
+$('V_reLB' ).disabled=true
+$('V_C6LB' ).disabled=true
+$('V_C12LB').disabled=true
+
+function mathEval(str) {
+	var fun="abs acos asin atan atan2 ceil cos exp floor log max min pow random round sin sqrt tan toSource valueOf"
+	fun=fun.split(/\s+/)
+	for(var i=0, n=fun.length; i<n; i++)
+		str=str.replace(new RegExp(fun[i]+'\\(','g'), 'Math.'+fun[i]+'\(')
+	return eval(str)
+}
+
+function setVDW(name, id) {
+	var f=Math.pow(2, 1./6.)
+	val=mathEval($(id).value)
+
+	$('inputValue').innerHTML='输入框: '+$(id).value+' = '+mathEval($(id).value)
+
+	if(id=='V_sgm1' || id=='V_re1' || id=='V_eps1') {
+		if(id=='V_sgm1') { V_sgm1=val; V_re1=f*V_sgm1; V_eps1=mathEval($('V_eps1').value) }
+		if(id=='V_re1')  { V_re1=val;  V_sgm1=val/f;   V_eps1=mathEval($('V_eps1').value) }
+		if(id=='V_eps1') { V_eps1=val; V_sgm1=mathEval($('V_sgm1').value); V_re1=f*V_sgm1 }
+
+		V_C61=4*V_eps1*Math.pow(V_sgm1, 6)
+		V_C121=4*V_eps1*Math.pow(V_sgm1, 12)
+	} else if(id=='V_C61' || id=='V_C121') {
+		if(id=='V_C61')  { V_C61=val;  V_C121=mathEval($('V_C121').value) }
+		if(id=='V_C121') { V_C121=val; V_C61=mathEval($('V_C61').value) }
+
+		V_sgm1=Math.pow(V_C121/V_C61, 1./6.)
+		V_eps1=0.25*V_C61*V_C61/V_C121
+		V_re1=f*V_sgm1
+	}
+
+	if(id=='V_sgm2' || id=='V_re2' || id=='V_eps2') {
+		if(id=='V_sgm2') { V_sgm2=val; V_re2=f*V_sgm2; V_eps2=mathEval($('V_eps2').value) }
+		if(id=='V_re2')  { V_re2=val;  V_sgm2=val/f;   V_eps2=mathEval($('V_eps2').value) }
+		if(id=='V_eps2') { V_eps2=val; V_sgm2=mathEval($('V_sgm2').value); V_re2=f*V_sgm2 }
+
+		V_C62=4*V_eps2*Math.pow(V_sgm2, 6)
+		V_C122=4*V_eps2*Math.pow(V_sgm2, 12)
+	} else if(id=='V_C62' || id=='V_C122') {
+		if(id=='V_C62')  { V_C62=val;  V_C122=mathEval($('V_C122').value) }
+		if(id=='V_C122') { V_C122=val; V_C62=mathEval($('V_C62').value) }
+
+		V_sgm2=Math.pow(V_C122/V_C62, 1./6.)
+		V_eps2=0.25*V_C62*V_C62/V_C122
+		V_re2=f*V_sgm2
+	}
+
+	if(id.slice(-1)=='2') {
+		V_sgm1=mathEval($('V_sgm1').value)
+		V_eps1=mathEval($('V_eps1').value)
+		V_C61=mathEval($('V_C61').value)
+		V_C121=mathEval($('V_C121').value)
+		V_re1=f*V_sgm1
+	}
+	if(id.slice(-1)=='1') {
+		V_sgm2=mathEval($('V_sgm2').value)
+		V_eps2=mathEval($('V_eps2').value)
+		V_C62 =mathEval($('V_C62').value)
+		V_C122=mathEval($('V_C122').value)
+		V_re2=f*V_sgm2
+	}
+
+	V_sgmg=Math.sqrt(V_sgm1*V_sgm2); V_sgma=0.5*(V_sgm1+V_sgm2)
+	V_epsg=Math.sqrt(V_eps1*V_eps2); V_epsa=0.5*(V_eps1+V_eps2)
+	V_reg =Math.sqrt(V_re1*V_re2)  ; V_rea =0.5*(V_re1+V_re2)
+	V_C6g =Math.sqrt(V_C61*V_C62)  ; V_C6a =0.5*(V_C61+V_C62)
+	V_C12g=Math.sqrt(V_C121*V_C122); V_C12a=0.5*(V_C121+V_C122)
+
+	V_sgmLB=0.5*(V_sgm1+V_sgm2)
+	V_epsLB=Math.sqrt(V_eps1*V_eps2)
+	V_reLB =f*V_sgmLB
+	V_C6LB =4*V_epsLB*Math.pow(V_sgmLB, 6)
+	V_C12LB=4*V_epsLB*Math.pow(V_sgmLB, 12)
+
+	unit=document.getElementsByName(name)
+	for(i=0; i<unit.length; i++) {
+		if(unit[i].id!=id) unit[i].value=fmt(mathEval(unit[i].id))
+	}
+}
+
+function setTP(name, id) {
+	if(id=='chk_TP') {
+		$('C_M').disabled=$(id).checked
+		$('C_mM').disabled=$(id).checked
+		$('C_uM').disabled=$(id).checked
+		$('C_A3').disabled=$(id).checked
+		$('C_cm3').disabled=$(id).checked
+		$('C_nm3').disabled=$(id).checked
+		$('rdo_K').disabled=$(id).checked
+		$('rdo_Pa').disabled=$(id).checked
+		$('C_K').value=298.15
+		$('C_Pa').value=101325
+	}
+	var Temp=mathEval($('C_K').value), Pres=mathEval($('C_Pa').value)
+	$('C_M').value=fmt(Pres*1E-3/(R*Temp))
+	setVal('Conc', 'C_M')
+}
+
+function setMC(name, id) {
+	if(id=='chk_MC') {
+		$('R_gmL').disabled=$(id).checked
+		$('R_gL').disabled=$(id).checked
+		$('R_amuA3').disabled=$(id).checked
+		$('rdo_amu').disabled=$(id).checked
+		$('rdo_M').disabled=$(id).checked
+		$('R_amu').value=18
+		$('R_M').value=55.56
+	}
+	var C=mathEval($('R_M').value), M=mathEval($('R_amu').value)
+	$('R_gmL').value=fmt(M*C*1E-3)
+	setVal('Rho', 'R_gmL')
+}
+
+function setVal(name, id) {
+	var i, j, tmp, id2, txt, val
+
+	var drvUnit={ 'Emd':'J', 'Emd2':'J', 'invcm':'invm',
+		'cal':'J', 'erg':'J', 'Ry':'J',
+		'kcal_mol':'J', 'kJ_mol':'J',
+		'Mcal_mol':'J', 'MJ_mol':'J',
+		'MeV':'eV', 'GeV':'eV', 'TeV':'eV', 'PeV':'eV',
+		'MHz':'Hz', 'GHz':'Hz', 'PHz':'Hz', 'THz':'Hz',
+		'Em':'Rinvm', 'Ecm':'Rinvm', 'Emm':'Rinvm',
+		'Eum':'Rinvm', 'Enm':'Rinvm', 'Eang':'Rinvm',
+		'Ee2bohr':'Hatr', 'Ee2A':'Hatr', 'Ee2nm':'Hatr',
+		'Es': 'RinvHz', 'Ems': 'RinvHz', 'Eus': 'RinvHz',
+		'Ens': 'RinvHz', 'Eps': 'RinvHz', 'Efs': 'RinvHz',
+		'Eas': 'RinvHz'}
+
+	unit=document.getElementsByName(name)
+
+	$('inputValue').innerHTML='输入表达式: '+$(id).value+' = '+mathEval($(id).value)
+	if(name!='Energy') {
+		val=mathEval($(id).value+'*'+id); // 转换为基本单位
+		for(i=0; i<unit.length; i++) {
+			if(unit[i].id!=id) {
+				if(unit[i].id!='C_K' && unit[i].id!='C_Pa'
+					&& unit[i].id!='R_amu' && unit[i].id!='R_M') {
+					unit[i].value=fmt(mathEval(val+'/'+unit[i].id)) // 反转换
+				} else {
+					if(!$('chk_TP').checked) {
+						if(unit[i].id=='C_K'  && !$('rdo_K').checked)  $('C_K').value=fmt(mathEval($('C_Pa').value)*1E-3/(val*R))
+						if(unit[i].id=='C_Pa' && !$('rdo_Pa').checked) $('C_Pa').value=fmt(val*R*mathEval($('C_K').value)*1E3)
+					}
+					if(!$('chk_MC').checked) {
+						if(unit[i].id=='R_amu' && !$('rdo_amu').checked) $('R_amu').value=fmt(val/mathEval($('R_M').value))
+						if(unit[i].id=='R_M'   && !$('rdo_M').checked) $('R_M').value=fmt(val*1E3/mathEval($('R_amu').value))
+					}
+				}
+			}
+		}
+	} else {
+		val=mathEval($(id).value)
+		txt=drvUnit[id]
+		if(txt) {
+			if(txt=='Rinvm') { val=mathEval(1/val+'*m2'+id); txt='invm' }
+			else if(txt=='RinvHz') { val=mathEval(1/val+'/Hz2'+id); txt='Hz' }
+			else val=mathEval(val+'/'+txt+'2'+id)
+
+			$(txt).value=fmt(val)
+			id2=id
+			id=txt
+		}
+
+		for(i=0; i<unit.length; i++) {
+			tmp=id+'2'+unit[i].id
+			if(window[tmp] != undefined && unit[i].id!=id2) {
+				unit[i].value=fmt(mathEval(val+'*'+tmp))
+			}
+		}
+
+		for(i=0; i<unit.length; i++) {
+			tmp=unit[i].id
+			txt=drvUnit[tmp]
+			if(txt) {
+				if(txt=='Rinvm') {
+					val=1/$('invm').value
+					if(unit[i].id!=id2) unit[i].value=fmt(mathEval(val+'*m2'+tmp))
+				}
+				else if(txt=='RinvHz') {
+					val=1/$('Hz').value
+					if(unit[i].id!=id2) unit[i].value=fmt(mathEval(val+'/Hz2'+tmp))
+				} else {
+					val=$(txt).value
+					if(unit[i].id!=id2) unit[i].value=fmt(mathEval(val+'*'+txt+'2'+tmp))
+				}
+			}
+		}
+	}
+}
+
+function fmt(txt) {
+	txt=txt.toPrecision(15).replace(/0+e/,'e').replace(/\.0+$/,'.')
+	if(txt.indexOf('e')==-1 && txt.indexOf('.')!=-1) txt=txt.replace(/0+$/, '')
+	return txt
+}
+
+function printf() {
+	var map = {
+		s: function(str, fmt) { var n=str.length; return n>fmt ? str : str+Array(fmt-n+1).join(' ')},
+		f: function(str, fmt) { fmt=fmt.split('.'); str=parseFloat(str).toFixed(fmt[1]);
+			var m=fmt[0], n=str.length; return n>m ? str : Array(m-n+1).join('&nbsp;')+str
+		}
+	}
+	var args = Array.prototype.slice.call(arguments).slice();
+	return args.shift().toString().replace(/%(-*\d*\.*\d*)([sf])/g, function(_, fmt, type){
+		if(!args.length) throw new Error('Too few elements')
+		return map[type](args.shift().toString(), fmt);
+	});
+}
+
+Array.prototype.sum = function () {
+	for(var t=0,i=this.length; i--; t+=parseFloat(this[i])); return t;
+}
+Array.prototype.ssq = function () {
+	for(var t=0,i=this.length; i--; t+=parseFloat(this[i])*parseFloat(this[i])); return t;
+}
+Array.prototype.avg  = function () { return this.sum()/this.length }
+Array.prototype.mag  = function () { return Math.sqrt(this.ssq())  }
+Array.prototype.var  = function () { return this.ssq()/this.length - Math.pow(this.avg(), 2)  }
+Array.prototype.rmsd = function () { return Math.sqrt(this.var()) }
+Array.prototype.rmse = function () { return Math.sqrt(this.var()*this.length/(this.length-1)) }
+
+function getRMSE() {
+	var i, j, tmp, txt, Ndat=0, Ndim=0, NdatA, NdimA=0, NdatB, NdimB=0,
+		datA=[], sumA=[], avgA=[], magA=[], ssqA=[], varA=[], rmsdA=[],
+		datB=[], sumB=[], avgB=[], magB=[], ssqB=[], varB=[], rmsdB=[],
+		datC=[], sumC=[], avgC=[], magC=[], ssqC=[], varC=[], rmseC=[],
+		factor=parseFloat(mathEval($('fac').value)), digit='%'+$('fmt').value+'f'
+
+	txt=$('datA').value.replace(/^\s*\n*/,"").replace(/\s*\n*$/,"").replace(/\s+[\n|$]/g,"\n")
+	if(txt.length>0) { txt=txt.split('\n'); NdimA=txt[0].split(/\s+/).length }
+
+	NdatA=txt.length
+	for(i=0; i<NdatA; i++) {
+		datA[i]=txt[i].replace(/^\s+/,"").split(/\s+/)
+		j=datA[i].length; while(j--) datA[i][j] *= factor
+		sumA[i] = datA[i].sum()
+		avgA[i] = datA[i].avg()
+		magA[i] = datA[i].mag()
+		ssqA[i] = datA[i].ssq()
+		varA[i] = datA[i].var()
+		rmsdA[i] = datA[i].rmsd()
+		rmseA[i] = datA[i].rmse()
+	}
+	txt='<details>'; for(i=0;i<NdatA;i++) txt+=printf(digit,sumA[i])+'<br>'; $('sumA').innerHTML=txt+'</details>总计: '+printf(digit,sumA.sum())+'<br>平均: '+printf(digit,sumA.sum()/NdatA)
+	txt='<details>'; for(i=0;i<NdatA;i++) txt+=printf(digit,avgA[i])+'<br>'; $('avgA').innerHTML=txt+'</details>总计: '+printf(digit,avgA.sum())+'<br>平均: '+printf(digit,avgA.sum()/NdatA)
+	txt='<details>'; for(i=0;i<NdatA;i++) txt+=printf(digit,magA[i])+'<br>'; $('magA').innerHTML=txt+'</details>总计: '+printf(digit,magA.sum())+'<br>平均: '+printf(digit,magA.sum()/NdatA)
+	txt='<details>'; for(i=0;i<NdatA;i++) txt+=printf(digit,ssqA[i])+'<br>'; $('ssqA').innerHTML=txt+'</details>总计: '+printf(digit,ssqA.sum())+'<br>平均: '+printf(digit,ssqA.sum()/NdatA)
+	txt='<details>'; for(i=0;i<NdatA;i++) txt+=printf(digit,varA[i])+'<br>'; $('varA').innerHTML=txt +'<br><br>'
+	txt='<details>'; for(i=0;i<NdatA;i++) txt+=printf(digit,rmsdA[i])+'<br>';$('rmsdA').innerHTML=txt+'<br><br>'
+	txt='<details>'; for(i=0;i<NdatA;i++) txt+=printf(digit,rmseA[i])+'<br>';$('rmseA').innerHTML=txt+'<br><br>'
+
+	//$('summagA').innerHTML='' ; $('summagB').innerHTML='' ; $('summagC').innerHTML=''
+	//$('avgmagA').innerHTML='' ; $('avgmagB').innerHTML='' ; $('avgmagC').innerHTML=''
+	//$('magmagA').innerHTML='' ; $('magmagB').innerHTML='' ; $('magmagC').innerHTML=''
+	//$('ssqmagA').innerHTML='' ; $('ssqmagB').innerHTML='' ; $('ssqmagC').innerHTML=''
+	//$('varmagA').innerHTML='' ; $('varmagB').innerHTML='' ; $('varmagC').innerHTML=''
+	//$('rmsdmagA').innerHTML=''; $('rmsdmagB').innerHTML=''; $('rmsemagC').innerHTML=''
+	//if(NdatA>0) {
+	//	NdimA=datA[0].length
+	//	$('summagA').innerHTML=printf(digit, magA.sum())
+	//	$('avgmagA').innerHTML=printf(digit, magA.avg())
+	//	$('magmagA').innerHTML=printf(digit, magA.mag())
+	//	$('ssqmagA').innerHTML=printf(digit, magA.ssq())
+	//	$('varmagA').innerHTML=printf(digit, magA.var())
+	//	$('rmsdmagA').innerHTML=printf(digit, magA.rmsd())
+	//}
+
+	txt=$('datB').value.replace(/^\s*\n*/,"").replace(/\s*\n*$/,"").replace(/\s+[\n|$]/g,"\n")
+	if(txt.length>0) { txt=txt.split('\n'); NdimB=txt[0].split(/\s+/).length }
+
+	NdatB=txt.length
+	for(i=0; i<NdatB; i++) {
+		datB[i]=txt[i].replace(/^\s+/,"").split(/\s+/)
+		j=datB[i].length; while(j--) datB[i][j] *= factor
+		sumB[i] = datB[i].sum()
+		avgB[i] = datB[i].avg()
+		magB[i] = datB[i].mag()
+		ssqB[i] = datB[i].ssq()
+		varB[i] = datB[i].var()
+		rmsdB[i] = datB[i].rmsd()
+		rmseB[i] = datB[i].rmse()
+	}
+	txt='<details>'; for(i=0;i<NdatB;i++) txt+=printf(digit,sumB[i])+'<br>'; $('sumB').innerHTML=txt+'</details>总计: '+printf(digit,sumB.sum())+'<br>平均: '+printf(digit,sumB.sum()/NdatB)
+	txt='<details>'; for(i=0;i<NdatB;i++) txt+=printf(digit,avgB[i])+'<br>'; $('avgB').innerHTML=txt+'</details>总计: '+printf(digit,avgB.sum())+'<br>平均: '+printf(digit,avgB.sum()/NdatB)
+	txt='<details>'; for(i=0;i<NdatB;i++) txt+=printf(digit,magB[i])+'<br>'; $('magB').innerHTML=txt+'</details>总计: '+printf(digit,magB.sum())+'<br>平均: '+printf(digit,magB.sum()/NdatB)
+	txt='<details>'; for(i=0;i<NdatB;i++) txt+=printf(digit,ssqB[i])+'<br>'; $('ssqB').innerHTML=txt+'</details>总计: '+printf(digit,ssqB.sum())+'<br>平均: '+printf(digit,ssqB.sum()/NdatB)
+	txt='<details>'; for(i=0;i<NdatB;i++) txt+=printf(digit,varB[i])+'<br>'; $('varB').innerHTML=txt +'<br><br>'
+	txt='<details>'; for(i=0;i<NdatB;i++) txt+=printf(digit,rmsdB[i])+'<br>';$('rmsdB').innerHTML=txt+'<br><br>'
+	txt='<details>'; for(i=0;i<NdatB;i++) txt+=printf(digit,rmseB[i])+'<br>';$('rmseB').innerHTML=txt+'<br><br>'
+
+	//if(NdatB>0) {
+	//	NdimB=datB[0].length
+	//	$('summagB').innerHTML=printf(digit, magB.sum())
+	//	$('avgmagB').innerHTML=printf(digit, magB.avg())
+	//	$('magmagB').innerHTML=printf(digit, magB.mag())
+	//	$('ssqmagB').innerHTML=printf(digit, magB.ssq())
+	//	$('varmagB').innerHTML=printf(digit, magB.var())
+	//	$('rmsdmagB').innerHTML=printf(digit, magB.rmsd())
+	//}
+
+	Ndat=Math.min(NdatA, NdatB); $('datNum').innerHTML='A: '+NdatA+' B: '+NdatB+' A-B: '+Ndat
+	Ndim=Math.min(NdimA, NdimB); $('datDim').innerHTML='A: '+NdimA+' B: '+NdimB+' A-B: '+Ndim
+
+	for(i=0; i<Ndat; i++) {
+		datC[i]=[]
+		for(j=0; j<Ndim; j++) datC[i][j]=parseFloat(datA[i][j])-parseFloat(datB[i][j])
+		sumC[i] = datC[i].sum()
+		avgC[i] = datC[i].avg()
+		magC[i] = datC[i].mag()
+		ssqC[i] = datC[i].ssq()
+		varC[i] = datC[i].var()
+		rmsdC[i] = datC[i].rmsd()
+		rmseC[i] = datC[i].rmse()
+	}
+
+	txt='<details>'; for(i=0;i<Ndat;i++) txt+=printf(digit,sumC[i])+'<br>'; $('sumC').innerHTML=txt+'</details>总计: '+printf(digit,sumC.sum())+'<br>平均: '+printf(digit,sumC.sum()/Ndat)
+	txt='<details>'; for(i=0;i<Ndat;i++) txt+=printf(digit,avgC[i])+'<br>'; $('avgC').innerHTML=txt+'</details>总计: '+printf(digit,avgC.sum())+'<br>平均: '+printf(digit,avgC.sum()/Ndat)
+	txt='<details>'; for(i=0;i<Ndat;i++) txt+=printf(digit,magC[i])+'<br>'; $('magC').innerHTML=txt+'</details>总计: '+printf(digit,magC.sum())+'<br>平均: '+printf(digit,magC.sum()/Ndat)
+	txt='<details>'; for(i=0;i<Ndat;i++) txt+=printf(digit,ssqC[i])+'<br>'; $('ssqC').innerHTML=txt+'</details>总计: '+printf(digit,ssqC.sum())+'<br>平均: '+printf(digit,ssqC.sum()/Ndat)
+	txt='<details>'; for(i=0;i<Ndat;i++) txt+=printf(digit,varC[i])+'<br>'; $('varC').innerHTML=txt +'<br><br>'
+	txt='<details>'; for(i=0;i<Ndat;i++) txt+=printf(digit,rmseC[i])+'<br>';$('rmsdC').innerHTML=txt+'<br><br>'
+	txt='<details>'; for(i=0;i<Ndat;i++) txt+=printf(digit,rmseC[i])+'<br>';$('rmseC').innerHTML=txt+'<br><br>'
+
+	//if(Ndat>0) {
+	//	$('summagC').innerHTML=printf(digit, magC.sum())
+	//	$('avgmagC').innerHTML=printf(digit, magC.avg())
+	//	$('magmagC').innerHTML=printf(digit, magC.mag())
+	//	$('ssqmagC').innerHTML=printf(digit, magC.ssq())
+	//	$('varmagC').innerHTML=printf(digit, magC.var())
+	//	$('rmsemagC').innerHTML=printf(digit, magC.rmse())
+	//}
+}
+</script>
