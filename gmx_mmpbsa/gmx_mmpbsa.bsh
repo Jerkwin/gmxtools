@@ -3,6 +3,9 @@ echo "
 >>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
 >> 2019-09-19: push to gmxtool
 >> 2019-11-03: fix bug for time stamp
+>> 2019-11-06: apbs FILE.apbs &> FILE.out
+               on ubuntu 18.04 may not work, then delete &
+>> 2019-11-17: fix bug for c6, c12 of old version tpr
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 "
 
@@ -16,7 +19,7 @@ step=1				# 从第几步开始运行 step number to run
 dump='gmx dump'									# gmx dump
 trjconv='gmx trjconv -skip 1000'					# gmx trjconv
 #apbs='/path/APBS/bin/apbs'						# APBS(Linux)
-apbs='c:/apbs1.5/bin/apbs.exe'					# APBS(Windows)
+apbs='c:/apbs1.5/bin/apbs.exe'					# APBS(Windows), USE "/", NOT "\"
 export MCSH_HOME=/dev/null						# APBS io.mc
 
 trj=1EBZ.xtc		# 轨迹文件 trajectory file
@@ -140,8 +143,8 @@ $dump -quiet -s $tpr 2>>$scr \
 			if(idx==i%Atyp) {
 				sigma[idx]=0; epsilon[idx]=0
 				Rad[idx]=1.2 # 默认原子半径(A), 用于无半径参数的原子(主要为H)
-				C6=$3;  sub(",", "", C6);
-				C12=$5; sub(",", "", C12);
+				C6 =$0; sub(".*c6=",  "", C6);  sub(",.*", "", C6);
+				C12=$0; sub(".*c12=", "", C12); sub(",.*", "", C12);
 				if(C6*C12!=0) {
 					sigma[idx]=10*(C12/C6)^(1./6) # 转换单位为A
 					epsilon[idx]=C6^2/(4*C12)
