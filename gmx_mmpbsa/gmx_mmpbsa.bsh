@@ -6,6 +6,7 @@ echo "
 >> 2019-11-06: apbs FILE.apbs &> FILE.out
                on ubuntu 18.04 may not work, then delete &
 >> 2019-11-17: fix bug for c6, c12 of old version tpr
+>> 2019-12-10: fix bug for OPLS force field
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 "
 
@@ -236,7 +237,7 @@ fi; if [[ $step -le 3 ]]; then
 # 3. run MM-PBSA, pdb->pqr, apbs, then calculate MM, PB, SA
 ################################################################################
 awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
-	-v ff=$FF     -v PBEset="$PBEset" -v PBAset="$PBAset" \
+	-v ff=$ff     -v PBEset="$PBEset" -v PBAset="$PBAset" \
 	-v meshType=$meshType -v gridType=$gridType -v gmem=$gmem  \
 	-v fadd=$fadd -v cfac=$cfac -v df=$df -v RS="\r?\n" '
 	BEGIN {
