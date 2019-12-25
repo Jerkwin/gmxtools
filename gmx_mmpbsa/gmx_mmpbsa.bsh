@@ -7,21 +7,30 @@ echo "
                on ubuntu 18.04 may not work, then delete &
 >> 2019-11-17: fix bug for c6, c12 of old version tpr
 >> 2019-12-10: fix bug for OPLS force field
+>> 2019-12-24: fix bug for small time step
+>> Todo:       parallel APBS, focus
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 "
 
-step=1				# 从第几步开始运行 step number to run
+step=1	# 从第几步开始运行 step number to run
+		# 1. 预处理轨迹: 复合物完整化, 团簇化, 居中叠合, 然后生成pdb文件
+		#    pre-processe trajectory, whole, cluster, center, fit, then generate pdb file
+		# 2. 获取每个原子的电荷, 半径, LJ参数, 然后生成qrv文件
+		#    abstract atomic parameters, charge, radius, C6/C12, then generate qrv file
+		# 3. MM-PBSA计算: pdb->pqr, 输出apbs, 计算MM, APBS
+		#    run MM-PBSA, pdb->pqr, apbs, then calculate MM, PB, SA
 
 ################################################################################
 # 0. 设置运行环境, 计算参数
 # 0. setting up environmets and parameters
 ################################################################################
 
-dump='gmx dump'									# gmx dump
-trjconv='gmx trjconv -skip 1000'					# gmx trjconv
-#apbs='/path/APBS/bin/apbs'						# APBS(Linux)
-apbs='c:/apbs1.5/bin/apbs.exe'					# APBS(Windows), USE "/", NOT "\"
-export MCSH_HOME=/dev/null						# APBS io.mc
+gmx='/path/to/GMX/bin/gmx_mpi'			# gmx
+dump="$gmx dump"						# gmx dump
+trjconv="$gmx trjconv -skip 1000"		# gmx trjconv
+#apbs='/path/APBS/bin/apbs'				# APBS(Linux)
+apbs='c:/apbs1.5/bin/apbs.exe'			# APBS(Windows), USE "/", NOT "\"
+export MCSH_HOME=/dev/null				# APBS io.mc
 
 trj=1EBZ.xtc		# 轨迹文件 trajectory file
 tpr=1EBZ.tpr		# tpr文件  tpr file
@@ -236,10 +245,11 @@ fi; if [[ $step -le 3 ]]; then
 # 3. MM-PBSA计算: pdb->pqr, 输出apbs, 计算MM, APBS
 # 3. run MM-PBSA, pdb->pqr, apbs, then calculate MM, PB, SA
 ################################################################################
+dt=$(awk '/t=/{n++;sub(/.*t=/,"");sub(/step=.*/,"");t[n]=$0;if(n==2){print t[n]-t[1];exit}}' _$pid.pdb)
 awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 	-v ff=$ff     -v PBEset="$PBEset" -v PBAset="$PBAset" \
 	-v meshType=$meshType -v gridType=$gridType -v gmem=$gmem  \
-	-v fadd=$fadd -v cfac=$cfac -v df=$df -v RS="\r?\n" '
+	-v fadd=$fadd -v cfac=$cfac -v df=$df -v dt="$dt" -v RS="\r?\n" '
 	BEGIN {
 		while(getline < qrv) {
 			Qatm[$1]=$2; Ratm[$1]=$3;
@@ -268,13 +278,17 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 		minX= MAXPOS; maxX=-MAXPOS;
 		minY= MAXPOS; maxY=-MAXPOS;
 		minZ= MAXPOS; maxZ=-MAXPOS
+
+		fmt=sprintf(".9f",dt/1E3)
+		sub(/0*$/,"",fmt);sub(/.*\./,"",fmt)
+		fmt="~%."length(fmt)"fns"
 	}
 
 	/REMARK/ {next}
 	/TITLE/ {Fout=FILENAME
 		txt=$0; sub(/.*t= */,"",txt); sub(/ .*/,"",txt)
-		txt=sprintf("%.1fns", txt/1E3);
-		sub(".pdb", "~"txt, Fout)
+		txt=sprintf(fmt, txt/1E3);
+		sub(".pdb", txt, Fout)
 		Nfrm++; n=0
 		Fname[Nfrm]=Fout
 
@@ -406,7 +420,7 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 				dimAPBS(Fout"_lig", 3, minXlig[fr], maxXlig[fr], minYlig[fr], maxYlig[fr], minZlig[fr], maxZlig[fr])  > Fout".apbs"
 			}
 
-			cmd=apbs" "Fout".apbs  &> "Fout".out";
+			cmd=apbs" "Fout".apbs > "Fout".out 2>&1";
 			system(cmd); close(cmd)
 
 			txt=Fout".out";
