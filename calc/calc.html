@@ -79,16 +79,15 @@ table tr th {
    border: 2px solid #aaa;
    padding: 1em 2em; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="https://unpkg.com/svd-js" type="application/javascript"></script>
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax:{processEscapes:true,inlineMath:[['$','$'],["\\(","\\)"]],skipTags:['script','noscript','style','textarea','pre','code']}});MathJax.Hub.Config({TeX:{extensions:["cancel.js","enclose.js","AMScd.js","mhchem.js"],Macros:{a:"\\alpha",b:"\\beta",c:"\\chi",d:"\\delta",e:"\\epsilon",f:"\\phi",g:"\\gamma",h:"\\eta",i:"\\iota",j:"\\varphi",k:"\\kappa",l:"\\lambda",m:"\\mu",n:"\\nu",o:"\\omicron",p:"\\pi",q:"\\theta",r:"\\rho",s:"\\sigma",t:"\\tau",u:"\\upsilon",v:"\\varpi",w:"\\omega",x:"\\xi",y:"\\psi",z:"\\zeta",D:"\\Delta",F:"\\Phi",G:"\\Gamma",J:"\\vartheta",L:"\\Lambda",P:"\\Pi",Q:"\\Theta",S:"\\Sigma",U:"\\Upsilon",V:"\\varsigma",W:"\\Omega",X:"\\Xi",Y:"\\Psi",ve:"\\varepsilon",vk:"\\varkappa",vq:"\\vartheta",vp:"\\varpi",vr:"\\varrho",vs:"\\varsigma",vf:"\\varphi",alg:"\\begin{align}",ealg:"\\end{align}",bmat:"\\begin{bmatrix}",Bmat:"\\begin{Bmatrix}",pmat:"\\begin{pmatrix}",Pmat:"\\begin{Pmatrix}",vmat:"\\begin{vmatrix}",Vmat:"\\begin{Vmatrix}",ebmat:"\\end{bmatrix}",eBmat:"\\end{Bmatrix}",epmat:"\\end{pmatrix}",ePmat:"\\end{Pmatrix}",evmat:"\\end{vmatrix}",eVmat:"\\end{Vmatrix}",AA:"\\unicode{x212B}",Sum:"\\sum\\limits",abs:['\\lvert #1\\rvert',1],rmd:['\\mathop{\\mathrm{d}#1}',1],bi:['\\boldsymbol{#1}',1],obar:['0\\!\\!\\!\\raise{.05em}{-}'],opar:['\\frac{\\partial #1}{\\partial #2}',2],oppar:['\\frac{\\partial^2 #1}{\\partial #2^2}',2]}}});MathJax.Hub.Queue(function(){all=MathJax.Hub.getAllJax();for(i=0;i<all.length;i+=1){all[i].SourceElement().parentNode.className+=' has-jax'}});</script>
 
 <div class="tab-wrapper">
 
-	<!--input type="radio" name="tab-radio" class="tab-radio" id="tab-radio-1">
-	<label for="tab-radio-1" class="tab-handler">计算器</label-->
-
 	<input type="radio" name="tab-radio" class="tab-radio" id="tab-radio-2" checked>
 	<label for="tab-radio-2" class="tab-handler tab-handler-2">单位换算</label>
-	<div class="tab-content">
+	<div class="tab-content tab-content-2">
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Len">长度&nbsp;&nbsp;
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Mas">质量&nbsp;&nbsp;
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Tim">时间&nbsp;&nbsp;
@@ -101,7 +100,7 @@ table tr th {
 		<span style='font: .6em Consolas;'>
 		<ol><li>所用换算系数来源于CODATA-2018, 具体数值见 <a href='https://physics.nist.gov/cuu/Constants/Table/allascii.txt'>NIST CODATA 2018</a></li>
 		<li>支持下列js函数: ** pow sqrt exp log; abs ceil floor; min max round random; sin cos tan; asin acos atan atan2</li><li>
-		支持下列常量符号:pi; c:真空光速; Na:阿伏加德罗常数; qe:基元电荷; ang:埃; nm; 纳米; h:普朗克常数; hbar:h/2pi; amu:原子质量单位; ha:原子能量单位; bohr:原子长度单位; kb:玻尔兹曼常数; mu0:介磁常数; eps0:介电常数; me:电子质量; mp:质子质量; g:标准重力加速度; G:万有引力常数; atm:标准大气压; P0:标准压力; T0:标准温度; R:摩尔气体常数; c2j:卡焦互换; j2c:焦卡互换</li>
+		支持下列常量符号:pi; c:真空光速; Na:阿伏加德罗常数; qe:基元电荷; ang:埃; nm; 纳米; h:普朗克常数; hbar:h/2pi; amu:原子质量单位; ha:原子能量单位; bohr:原子长度单位; kb:玻尔兹曼常数; mu0:介磁常数; eps0:介电常数; me:电子质量; mp:质子质量; g:标准重力加速度; G:万有引力常数; atm:标准大气压; P0:标准压力; T0:标准温度; R:摩尔气体常数; c2j:卡焦互换; j2c:焦卡互换; debye:偶极矩单位德拜</li>
 		</ol><strong id='inputValue'></strong> </span>
 		<table id="TabLen" style="display: none;">
 		<tbody><tr><td>
@@ -413,7 +412,6 @@ table tr th {
 
 	<input type="radio" name="tab-radio" class="tab-radio" id="tab-radio-3">
 	<label for="tab-radio-3" class="tab-handler">统计</label>
-
 	<div class="tab-content tab-content-3">
 		<table style="display: block;">
 		<tr><th>A数据集</th><th>B数据集</th></tr>
@@ -443,6 +441,28 @@ table tr th {
 		</table>
 	</div>
 
+	<input type="radio" name="tab-radio" class="tab-radio" id="tab-radio-4">
+	<label for="tab-radio-4" class="tab-handler">回归</label>
+	<div class="tab-content tab-content-4" style="height:600;">
+		<div style="height:100%;width:100%;display:flex;justify-content:space-between;">
+			<div style="flex:0 0 40%;overflow:scroll;">
+				数据
+				<textarea id="data" style="width: 90%; height:60%; margin: 0px;">
+1 1 2
+2 1 3
+1 2 3
+				</textarea><br>
+				<input type="checkbox" id="Yconst">包含常数项<br>
+				<input type="checkbox" id="Y1st">第一列为Y<br>
+				<input type="button" value="线性回归" onClick="reg()" style="width:100px; height:30px"><br>
+				<span id='Yreg' style='font: .6em Consolas;'></span>
+			</div>
+
+			<div id='right' style="height:100%;flex:1;overflow:scroll">
+				<canvas id="myChart" style="width:90%; height:90%;"></canvas>
+			</div>
+	</div>
+
 </div>
 
 <script>
@@ -461,6 +481,7 @@ P0=100000             // exact 标准压力
 T0=298.15             // exact 标准压力
 R=8.314462618         // exact 摩尔气体常数
 c2j=4.184             // exact 卡焦互换
+debye=1.E-21/c        // exact Debye
 
 hbar=.5*h/Math.PI     // 原子作用单位
 Na=Navg
@@ -950,4 +971,106 @@ function getRMSE() {
 	//	$('rmsemagC').innerHTML=printf(digit, magC.rmse())
 	//}
 }
+
+var trim=function(s){return s.replace(/^\s*\n*/,"").replace(/\s*\n*$/,"").replace(/\s+[\n|$]/g,"\n")}
+function reg() {
+	let i, row, col
+
+	txt=trim($('data').value).split(/\n/)
+	row=txt.length
+
+	let A=[], b=[]
+	for(i=0; i<row; i++) {
+		A[i]=trim(txt[i]).split(/\s+/)
+		col=A[i].length
+		if($('Y1st').checked) {
+			b[i]=parseFloat(A[i][0])
+			for(j=0; j<col-1; j++) A[i][j]=parseFloat(A[i][j+1])
+		} else {
+			b[i]=parseFloat(A[i][col-1])
+			for(j=0; j<col-1; j++) A[i][j]=parseFloat(A[i][j])
+		}
+		if($('Yconst').checked) A[i][col-1]=1
+		else { col--; A[i].splice(col,1) }
+	}
+
+	let { u, v, q } = SVDJS.SVD(A)
+
+	x=[], xt=[]
+	for(i=0; i<col; i++) {
+		xt[i]=0
+		for(j=0; j<row; j++) xt[i] += u[j][i]*b[j]
+		xt[i] /= q[i]
+	}
+
+	str='Y = '
+	for(i=0; i<col; i++) {
+		x[i]=0
+		for(j=0; j<col; j++)  x[i] += v[i][j]*xt[j]
+		if(i==col-1) {
+			if($('Yconst').checked) str += printf('%.9f', x[i])
+			else str += printf('%.9f * X%0f', x[i], i+1)
+		} else   str += printf('%.9f * X%0f + ', x[i], i+1)
+	}
+	$('Yreg').innerHTML=str
+
+	var myChart = new Chart($("myChart").getContext('2d'), {
+		type: 'scatter',
+		options: {
+			responsive: false,
+			scales: {
+				xAxes: [{
+					type: 'linear',
+					position: 'bottom'
+				}],
+				yAxes: [{
+					display: true,
+					ticks: {
+					//	beginAtZero: true,
+					//	steps: 10,
+					//	stepValue: .1,
+					//	max: 10
+					}
+				}]
+			},
+		}
+		})
+
+	myChart.data.datasets=[]
+
+	data=[]
+	data[0]=[]; data[1]=[]
+
+	for(i=0; i<row; i++) {
+		data[0][i]={x:i+1, y:b[i]}
+		let y=0
+		for(j=0; j<col; j++) y += A[i][j]*x[j]
+		data[1][i]={x:i+1, y:y}
+	}
+	addData(myChart, data[0], "原始值", "red",3);
+	addData(myChart, data[1], "回归值 "+str, "blue",3);
+}
+
+function addData(chart, data, label, color, size) {
+	chart.data.datasets.push({
+		data: data,
+		label: label,
+		fill: false, //
+		fillColor : "#888",
+		borderColor: color,//曲线边框色,
+		backgroundColor: color,//填充色
+		//pointBackgroundColor: 'purple',//数据点的填充色
+		//pointBorderColor: 'blue',//数据点边框颜色
+		borderWidth: 4,//曲线的宽度
+		//borderDash: [2, 3],
+		pointBorderWidth: 4,//数据点边框的宽度
+		pointRadius: size, //数据点的大小
+		pointStyle:'circle',//'cross''crossRot''dash''line''rect''rectRounded''rectRot''star''triangle'
+		showLine: false, //如果为false,两数据点之间的线不会渲染
+		spanGaps: true, //如果为false,NaN data会在折线上有断点
+		steppedLine: false,//可选值[false, true, 'before', 'after'],为true,折线图的曲线会成直角，
+	});
+	chart.update();
+}
+
 </script>
