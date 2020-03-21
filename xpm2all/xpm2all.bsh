@@ -31,6 +31,15 @@ function xpm2xyzmat {
 }
 
 function xpm2gpl {
+#	G = "3-Helix"  3-turn helix (3/10 helix). Min length 3 residues.
+#	H = "A-Helix"  4-turn helix (α helix).   Min length 4 residues.
+#	I =            5-turn helix (π helix).   Min length 5 residues.
+#	B = "B-Bridge" beta-bridge residue. residue in isolated β-bridge (single pair β-sheet hydrogen bond formation)
+#	E = "B-Sheet"  extended strand (in beta ladder) in parallel and/or anti-parallel β-sheet conformation. Min length 2 residues.
+#	T = "Turn"     H-bonded turn (3, 4 or 5 turn)
+#	S = "Bend"     bend (the only non-hydrogen-bond based assignment)
+#	~ = "Coil"     C, loops/coil (residues which are not in any of the above conformations)
+
 	awk -v ssmode=$ssmode ' BEGIN{
 		fx=.5; if(ssmode=="box") fx=1;
 		color="pdb"
