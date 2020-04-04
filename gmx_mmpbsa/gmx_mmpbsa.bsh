@@ -312,7 +312,7 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 		Z   =substr($0,47,8); Z += 0
 		r=Ratm[INDX]
 
-		txt=sprintf("%-6s%5d %-4s %3s %s%4d    %8.3f%8.3f%8.3f%12.6f%12.6f", \
+		txt=sprintf("%-6s%5d %-4s %3s %s%4d    %8.3f %8.3f %8.3f %12.6f %12.6f", \
 			ATOM, INDX, NAME, RES, CHN, NUM, X, Y, Z, Qatm[INDX], r)
 
 		print txt > Fout"_com.pqr"
