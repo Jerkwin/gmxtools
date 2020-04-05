@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="https://jerkwin.github.io/jscss/pmd.min.css">
+<script src="https://jerkwin.github.io/jscss/ChemDoodleWeb.js"></script>
+
+<div class="wrap">
+
+<table>
+
+<tr><td colspan=2>
+大小(基本单元)：
+长 <input type="box" id="wid" value="8" style="width:30px;"/> &nbsp;&nbsp;&nbsp;&nbsp;
+宽 <input type="box" id="hig" value="0" style="width:30px;"/>(设为0则根据长度自动计算, 生成尽可能正方的构型)<br>
+</td></tr>
+
+<tr><td colspan=2>
+原子(基本结构)：
+键长(&#197;) <input type="box" id="rcc" value="1.4" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
+类型 <input type="box" id="atom" value="C C C C" style="width:150px;"/><br/>
+</td></tr>
+
+<tr><td colspan=2>
+氧化修饰(原子覆盖度%)：
+-O- <input type="box" id="fo" value="0" style="width:30px;"/>&nbsp;&nbsp;
+-OH <input type="box" id="foh" value="0" style="width:30px;"/> <input type='checkbox' id='ranOH'>随机取向&nbsp;&nbsp;
+-COOH <input type="box" id="fcooh" value="0" style="width:30px;"/> <input type='checkbox' id='ranCOOH'>随机取向
+</td></tr>
+
+<tr><td colspan=2>
+整体平移(基本键长倍数)：
+X方向 <input type="box" id="trsX" value="0" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
+Y方向 <input type="box" id="trsY" value="0" style="width:30px;" />&nbsp;&nbsp;&nbsp;&nbsp;
+Z方向(&#197;) <input type="box" id="trsZ" value="0" style="width:30px;"/>
+</td></tr>
+
+<tr><td colspan=2>
+孔洞类型：
+<input type="box" id="holeType" value="0" style="width:30px;"/>(0为圆形, 其他整数为正多边形)&nbsp;&nbsp;&nbsp;&nbsp;
+孔洞半径(&#197;)：<input type="box" id="rcnt" value="0" style="width:30px;"/><br>
+中心点位置：
+<input type="radio" name="hole" value="Atom"/>原子&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="radio" name="hole" value="Bond"/>键中点&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="radio" name="hole" value="Ring" checked="checked"/>碳环中心
+</td></tr>
+
+<tr><td colspan=2>
+Z 方向波动周期数：&nbsp;&nbsp;&nbsp;
+X方向 <input type="box" id="cycX" value="1" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
+Y方向 <input type="box" id="cycY" value="1" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
+波动振幅(&#197;) <input type="box" id="cycZ" value="0" style="width:30px;"/>
+</td></tr>
+
+<tr><td colspan=2>
+坐标随机涨落振幅(&#197;)：
+X方向 <input type="box" id="ranX" value="0" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
+Y方向 <input type="box" id="ranY" value="0" style="width:30px;" />&nbsp;&nbsp;&nbsp;&nbsp;
+Z方向 <input type="box" id="ranZ" value="0" style="width:30px;"/>
+</td></tr>
+
+<tr><td colspan=2>
+<input type="button" value="创建" onClick="genCoor()" style="font-size:1em;font-weight:bold;color:red;width:100%; height:30px" />
+</td></tr>
+
+<tr>
+    <td>
+        GROMACS构型文件(gro)<br/><textarea id="groCoor" style="width:400px; height:500px; resize: none"></textarea>
+    </td>
+    <td>
+        <figure><figurecaption>结构</figurecaption><br/>
+        <script>
+            ChemDoodle.default_backgroundColor = 'black';var Mol1=new ChemDoodle.TransformCanvas3D('Mol-1', 400,500);Mol1.specs.atoms_displayLabels_3D=false;Mol1.specs.atoms_resolution_3D = 15;Mol1.specs.bonds_resolution_3D = 15;Mol1.specs.shapes_color = '#fff';Mol1.specs.projectionPerspective_3D = false;Mol1.specs.set3DRepresentation('Ball and Stick');Mol1.specs.crystals_unitCellLineWidth = 1.5;Mol1.handle = null;Mol1.timeout = 15;Mol1.startAnimation = ChemDoodle._AnimatorCanvas.prototype.startAnimation;Mol1.stopAnimation = ChemDoodle._AnimatorCanvas.prototype.stopAnimation;Mol1.isRunning = ChemDoodle._AnimatorCanvas.prototype.isRunning;Mol1.dblclick = ChemDoodle.RotatorCanvas.prototype.dblclick;Mol1.nextFrame = function(delta){var matrix = [];ChemDoodle.lib.mat4.identity(matrix);var change = delta*Math.PI/15000;ChemDoodle.lib.mat4.rotate(matrix, change, [ 1, 0, 0 ]);ChemDoodle.lib.mat4.rotate(matrix, change, [ 0, 1, 0 ]);ChemDoodle.lib.mat4.rotate(matrix, change, [ 0, 0, 1 ]);ChemDoodle.lib.mat4.multiply(this.rotationMatrix, matrix)};var Fcif='';var cell=ChemDoodle.readCIF(Fcif, 1,1,1);Mol1.loadContent([cell.molecule], [cell.unitCell]);Mol1.startAnimation();var $=function(id){return document.getElementById(id)};function setSupercell1(){var cell=ChemDoodle.readCIF(Fcif, $("Mol1x").value, $("Mol1y").value, $("Mol1z").value);Mol1.loadContent([cell.molecule], [cell.unitCell]);Mol1.repaint()}function setModel1(model){Mol1.specs.set3DRepresentation(model);Mol1.setupScene();Mol1.repaint()}function setProj1(yesPers){Mol1.specs.projectionPerspective_3D = yesPers;Mol1.setupScene();Mol1.repaint()}
+        </script></figure>
+    </td>
+</tr>
+<tr><td colspan="2">
+视图: <input type="radio" name="group2" onclick="setProj1(true)">投影<input type="radio" name="group2" onclick="setProj1(false)" checked="">正交<br>模型: <input type="radio" name="model" onclick="setModel1(&#39;Ball and Stick&#39;)" checked="">球棍<input type="radio" name="model" onclick="setModel1(&#39;van der Waals Spheres&#39;)">范德华球<input type="radio" name="model" onclick="setModel1(&#39;Stick&#39;)">棍状<input type="radio" name="model" onclick="setModel1(&#39;Wireframe&#39;)">线框<input type="radio" name="model" onclick="setModel1(&#39;Line&#39;)">线型&nbsp;&nbsp; <input type='checkbox' onclick='Mol1.specs.atoms_displayLabels_3D=this.checked;Mol1.repaint()'>名称<br>超晶胞: X <input type="text" style="width:20px;" id="Mol1x" value="1">&nbsp;&nbsp;Y <input type="text" style="width:20px;" id="Mol1y" value="1">&nbsp;&nbsp;Z <input type="text" style="width:20px;" id="Mol1z" value="1">&nbsp;&nbsp;<input type="button" value="创建" onclick="setSupercell1()"><br>左键: 转动&nbsp;&nbsp; 滚轮: 缩放&nbsp;&nbsp; 双击: 开关自动旋转&nbsp;&nbsp; Alt+左键: 移动
+</td></tr>
+</table>
+</div>
+
+<script>
+/*<tr>
+    <td colspan="2">
+        GROMACS拓扑文件(itp)<br>
+        <textarea id="itp" style="width:820px; height:500px; resize: none"></textarea>
+    </td>
+</tr>*/
+var $=function(id){return document.getElementById(id)};
+
+function genCoor() {
+
+    var i, j, k, X0, Y0,
+        M=parseInt($("wid").value), N=parseInt($("hig").value),
+        a=parseFloat($("rcc").value), Rcnt=parseFloat($("rcnt").value),
+        fo=parseFloat($("fo").value)/100.,  Zo=1.2,
+        foh=parseFloat($("foh").value)/100., Rco=1.5, Roh=0.96, Acoh=108*Math.PI/180.,
+        fcooh=parseFloat($("fcooh").value)/100., Rcc=1.56, Rco2=1.2, Rcoh=1.33,
+        Acco2=124*Math.PI/180., Accoh=112*Math.PI/180.,
+        Xcyc=parseFloat($("cycX").value), Xran=parseFloat($("ranX").value),
+        Ycyc=parseFloat($("cycY").value), Yran=parseFloat($("ranY").value),
+        Zcyc=parseFloat($("cycZ").value), Zran=parseFloat($("ranZ").value),
+        Xtrs=parseFloat($("trsX").value), Ytrs=parseFloat($("trsY").value),
+        Ztrs=parseFloat($("trsZ").value),
+        atomList=$('atom').value, Nedge=parseInt($("holeType").value),
+        Icnt=3, Tcnt,
+        cnt=document.getElementsByName("hole")
+
+    if(cnt[0].checked) { Icnt=1; Tcnt=cnt[0].value }
+    if(cnt[1].checked) { Icnt=2; Tcnt=cnt[1].value }
+    if(cnt[2].checked) { Icnt=3; Tcnt=cnt[2].value }
+
+    if(N===0) N=parseInt(Math.round(Math.sqrt(3)*M/3.))
+
+    var t=Math.sqrt(3)/4., X=[], Y=[], pntXY=[]
+    var Wid=Math.sqrt(3)*a, Hig=3.*a
+
+    X[1]=0+t;               Y[1]=1/2.
+    X[4]=0+t;               Y[4]=5/2.
+    X[2]=Math.sqrt(3)/2.+t; Y[2]=1.;
+    X[3]=Math.sqrt(3)/2.+t; Y[3]=2.;
+
+    for(k=1; k<=4; k++) {
+        X[k] += Xtrs; X[k] *= a
+        Y[k] += Ytrs; Y[k] *= a
+    }
+
+    var colNum=M, rowNum=N,
+        Xbox=colNum*Wid,  Ybox=rowNum*Hig,
+        Xcnt=Xbox/2.+t*a, Ycnt=Ybox/2.
+
+    Xcyc *= 2.*Math.PI/Xbox
+    Ycyc *= 2.*Math.PI/Ybox
+
+    if(M%2!=N%2) {
+             if(Icnt==2) Xcnt -= Wid/2.
+        else if(Icnt==1) Ycnt += a
+    } else {
+             if(Icnt==1) Ycnt += a/2.
+        else if(Icnt==3) Xcnt -= Wid/2.
+    }
+
+    if(Nedge>2) {
+        t=-(0.5-1./Nedge)*Math.PI
+        for(i=0; i<Nedge; i++) {
+            t += 2*Math.PI/Nedge
+            pntXY[i]=[Xcnt+Rcnt*Math.cos(t), Ycnt+Rcnt*Math.sin(t)]
+        }
+    }
+
+    atomList=atomList.replace(/^\s+/,'').replace(/\s+$/,'').split(/\s+/)
+    i=atomList.length
+    if(i<4) for(j=i; j<4; j++) atomList[j]='C'
+
+    var Natm=0, Ninc=0, inc=[], Iinc=[], col=[], row=[],
+        Xatm=[], Yatm=[], Zatm=[], Satm=[]
+    for(j=0; j<N; j++) {
+        Y0=j*Hig
+        for(i=0; i<M; i++) {
+            X0=i*Wid
+            for(k=1; k<=4; k++) {
+                Natm++; Iinc[Natm]=0
+                col[Natm]=i+1;      row[Natm]=j+1;      Satm[Natm]=atomList[k-1]
+                Xatm[Natm]=X[k]+X0; Yatm[Natm]=Y[k]+Y0; Zatm[Natm]=Zcyc
+                if(Xcyc>0.) Zatm[Natm] *= Math.sin(Xatm[Natm]*Xcyc)
+                if(Ycyc>0.) Zatm[Natm] *= Math.sin(Yatm[Natm]*Ycyc)
+
+                isIn=1
+                if(Nedge==0) isIn=Math.pow(Xatm[Natm]-Xcnt,2)+Math.pow(Yatm[Natm]-Ycnt,2)<Math.pow(Rcnt,2)
+                if(Nedge >2) isIn=isInPolygon([Xatm[Natm],Yatm[Natm]], pntXY)
+                if(!isIn) { Ninc++; Iinc[Natm]=Ninc}
+            }
+        }
+    }
+
+	var Nbond=0, bond1=[], bond2=[]
+	bond1[0]=0; bond2[0]=0
+	for(i=1; i<=Natm; i++) {
+		j=i%4
+		if(j==1) {
+			Nbond++; bond1[Nbond]=i; bond2[Nbond]=i+1
+			idx=getIdx(M, N, col[i]-1, row[i],   2); if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+			idx=getIdx(M, N, col[i],   row[i]-1, 4); if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+		} else if(j==2) {
+			//Nbond++; bond1[Nbond]=i; bond2[Nbond]=i-1
+			Nbond++; bond1[Nbond]=i; bond2[Nbond]=i+1
+			idx=getIdx(M, N, col[i]+1, row[i], 1); if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+		} else if(j==3) {
+			Nbond++; bond1[Nbond]=i; bond2[Nbond]=i+1
+			//Nbond++; bond1[Nbond]=i; bond2[Nbond]=i-1
+			idx=getIdx(M, N, col[i]+1, row[i], 4); if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+		} else if(j==0) {
+			//Nbond++; bond1[Nbond]=i; bond2[Nbond]=i-1
+			idx=getIdx(M, N, col[i]-1, row[i],   3); if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+			idx=getIdx(M, N, col[i],   row[i]+1, 1); if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+		}
+	}
+
+	var bond=[]
+	bond[1]=[]; bond[2]=[]
+	for(i=0; i<=Nbond; i++) {
+		bond[1][i]=bond1[i]
+		bond[2][i]=bond2[i]
+	}
+
+	var Nmod=0, isAbove=0, atom=[]
+
+	for(i=0; i<=Natm; i++) atom[i]=i
+
+	var No=0
+	while(No<Math.ceil(Natm*fo) && bond1.length>1) {
+		idx=getRandInt(1, bond1.length-1)
+		i=bond1[idx]; j=bond2[idx]
+
+		No++
+		Nmod++
+		atom[i]=-1; atom[j]=-1
+		isAbove=(Math.random()<0.5) ? 1 : -1
+		Satm[Natm+Nmod]='O'
+
+		Xatm[Natm+Nmod]=Xatm[i]+.5*pbcCart(Xatm[j]-Xatm[i], Xbox)
+		Yatm[Natm+Nmod]=Yatm[i]+.5*pbcCart(Yatm[j]-Yatm[i], Ybox)
+		Zatm[Natm+Nmod]=Zatm[i]+ Zo*isAbove
+
+	   idx=bond1.indexOf(i); while(idx!=-1) { bond1.splice(idx,1); bond2.splice(idx,1); idx=bond1.indexOf(i)}
+	   idx=bond1.indexOf(j); while(idx!=-1) { bond1.splice(idx,1); bond2.splice(idx,1); idx=bond1.indexOf(j)}
+	   idx=bond2.indexOf(i); while(idx!=-1) { bond1.splice(idx,1); bond2.splice(idx,1); idx=bond2.indexOf(i)}
+	   idx=bond2.indexOf(j); while(idx!=-1) { bond1.splice(idx,1); bond2.splice(idx,1); idx=bond2.indexOf(j)}
+	}
+
+	idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1) }
+
+	console.log(atom)
+
+	var Noh=0
+	while(Noh<Math.ceil(Natm*foh) && atom.length>1) {
+		idx=getRandInt(1, atom.length-1)
+		i=atom[idx]
+        atom[idx]=-1
+
+        for(j=1; j<=Nbond; j++) {
+			if(bond[1][j]==i) {
+				idx=atom.indexOf(bond[2][j]); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(bond[2][j])}
+			}
+			if(bond[2][j]==i) {
+				idx=atom.indexOf(bond[1][j]); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(bond[1][j])}
+			}
+		}
+
+		Noh++
+		isAbove=(Math.random()<0.5) ? 1:-1
+		Nmod++
+		Satm[Natm+Nmod]='O'
+		Xatm[Natm+Nmod]=Xatm[i]
+		Yatm[Natm+Nmod]=Yatm[i]
+		Zatm[Natm+Nmod]=Zatm[i]+Rco*isAbove
+
+		Nmod++
+		t=30; if(i%2) t=90
+		if($('ranOH').checked) t += getRandInt(0, 2)*120
+		t *= Math.PI/180
+		Satm[Natm+Nmod]='H'
+		Xatm[Natm+Nmod]=Xatm[i]+Roh*Math.cos(Acoh-Math.PI/2)*Math.cos(t)
+		Yatm[Natm+Nmod]=Yatm[i]+Roh*Math.cos(Acoh-Math.PI/2)*Math.sin(t)
+		Zatm[Natm+Nmod]=Zatm[i]+(Rco+Roh*Math.sin(Acoh-Math.PI/2))*isAbove
+		idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1)}
+	}
+
+	idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1)}
+	var Ncooh=0
+	while(Ncooh<Math.ceil(Natm*fcooh) && atom.length>1) {
+		idx=getRandInt(1, atom.length-1)
+		i=atom[idx]
+		atom[idx]=-1
+
+        for(j=1; j<=Nbond; j++) {
+			if(bond[1][j]==i) {
+				idx=atom.indexOf(bond[2][j]); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(bond[2][j])}
+			}
+			if(bond[2][j]==i) {
+				idx=atom.indexOf(bond[1][j]); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(bond[1][j])}
+			}
+        }
+
+		Ncooh++
+		isAbove=(Math.random()<0.5) ? 1:-1
+
+		Nmod++
+		Satm[Natm+Nmod]='C'
+		Xatm[Natm+Nmod]=Xatm[i]
+		Yatm[Natm+Nmod]=Yatm[i]
+		Zatm[Natm+Nmod]=Zatm[i]+Rcc*isAbove
+
+		Nmod++
+		t=-5; if(i%2) t=-65
+        if($('ranCOOH').checked) t += getRandInt(0, 2)*120
+        t *= Math.PI/180
+		Satm[Natm+Nmod]='O'
+		Xatm[Natm+Nmod]=Xatm[i]+Rco2*Math.cos(Acco2-Math.PI/2)*Math.cos(t)
+		Yatm[Natm+Nmod]=Yatm[i]+Rco2*Math.cos(Acco2-Math.PI/2)*Math.sin(t)
+		Zatm[Natm+Nmod]=Zatm[i]+(Rcc+Rco2*Math.sin(Acco2-Math.PI/2))*isAbove
+
+		Nmod++
+		Satm[Natm+Nmod]='O'
+		Xatm[Natm+Nmod]=Xatm[i]+Rcoh*Math.cos(Accoh-Math.PI/2)*Math.cos(t+Math.PI)
+		Yatm[Natm+Nmod]=Yatm[i]+Rcoh*Math.cos(Accoh-Math.PI/2)*Math.sin(t+Math.PI)
+		Zatm[Natm+Nmod]=Zatm[i]+(Rcc+Rcoh*Math.sin(Accoh-Math.PI/2))*isAbove
+
+		Nmod++
+		Satm[Natm+Nmod]='H'
+		Xatm[Natm+Nmod]=Xatm[i]+Rcoh*Math.cos(Accoh-Math.PI/2)*Math.cos(t+Math.PI)
+		Yatm[Natm+Nmod]=Yatm[i]+Rcoh*Math.cos(Accoh-Math.PI/2)*Math.sin(t+Math.PI)
+		Zatm[Natm+Nmod]=Zatm[i]+(Rcc+Rcoh*Math.sin(Accoh-Math.PI/2)+Roh)*isAbove
+		idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1)}
+	}
+    var Fmol="MOL: "+M+" "+N+" Rcc="+printf('%5.3f',a)+" Rhole="+printf('%5.3f',Rcnt)+" Center: "+Tcnt+printf('%12.6f',Xcnt)+printf('%12.6f',Ycnt)+"\n"+(Ninc+Nmod)+"\n"
+        Fcif='data_GRA\n'+Ninc+Nmod+'\n_symmetry_space_group_name_\' \''
+        +'\n_cell_length_a '+Xbox+'\n_cell_length_b '+Ybox+'\n_cell_length_c '+10*a
+        +'\n_cell_angle_alpha 90\n_cell_angle_beta  90\n_cell_angle_gamma 90'
+        +'\nloop_\n_atom_site_label\n_atom_site_type_symbol\n_atom_site_fract_x\n_atom_site_fract_y\n_atom_site_fract_z\n'
+    j=0
+    for(i=1; i<=Natm+Nmod; i++) { if(Iinc[i] || i>Natm) {
+        j++
+        if(Xran) Xatm[i] += normRand(0, Xran)
+        if(Yran) Yatm[i] += normRand(0, Yran)
+        if(Zran) Zatm[i] += normRand(0, Zran)
+        Fmol += printf('    1MOL%7s%5f%8.3f%8.3f%8.3f\n', Satm[i], j, Xatm[i]*0.1, Yatm[i]*0.1, (Ztrs+Zatm[i])*0.1)
+        Fcif += printf('GRA %s %8.3f%8.3f%8.3f\n', Satm[i], Xatm[i]/Xbox, Yatm[i]/Ybox, Zatm[i]*.1/a)
+    }}
+    Fmol += printf('%12.6f %12.6f %12.6f\n', M*Wid*.1, N*Hig*.1, 2*a*.1)
+    if(Rcnt>0.5) Fcif += printf('GRA O %8.3f%8.3f 0.\n', Xcnt/Xbox, Ycnt/Ybox)
+
+    $("groCoor").value=Fmol
+    cell=ChemDoodle.readCIF(Fcif, 1,1,1);
+
+    for (i=0; i<cell.molecule.atoms.length-1; i++) cell.molecule.atoms[i].altLabel = i+1;
+
+    Mol1.loadContent([cell.molecule], [cell.unitCell])
+    Mol1.startAnimation();
+
+    //var adj=[],
+    //    Fitp='#include "oplsaa.ff/forcefield.itp"\n\n'
+    //    +"[ atomtypes ]\n"
+    //    +"; name   mass        charge  ptype    c6           c12\n"
+    //    +"  Cgra   12.01070    0.000     A      0.0          0.0\n\n"
+    //    +"[ moleculetype ]\n"
+    //    +"; molname   nrexcl\n"
+    //    +"  GRA       3\n\n"
+    //    +'#define Bond_12   3    0.12708  980.81328     17.529\n'
+    //    +'#define Bond_13   8    1          1.0\n'
+    //    +'#define Angle     1  120.       151.71184\n'
+    //    +'#define cisDih    1    0.        -0.8815688    2\n'
+    //    +'#define trsDih    1  180.        12.5515816    2\n\n'
+    //    +"[ atoms ]\n"
+    //    +";   ID  AtmTyp  Res# ResName AtmName Chg# charge\n"
+
+    //for(i=1; i<=Natm; i++) adj[i]=[]
+
+    //Ninc=0
+    //for(i=1; i<=Natm; i++) {
+    //    j=i%4
+    //    if(j==1) {
+    //        adj[i][1]=i+1
+    //        adj[i][2]=getIdx(colNum, rowNum, col[i]-1, row[i], 2)
+    //        adj[i][3]=getIdx(colNum, rowNum, col[i], row[i]-1, 4)
+    //    } else if(j==2) {
+    //        adj[i][1]=i-1;
+    //        adj[i][2]=i+1;
+    //        adj[i][3]=getIdx(colNum, rowNum, col[i]+1, row[i], 1)
+    //    } else if(j==3) {
+    //        adj[i][1]=i+1;
+    //        adj[i][2]=i-1;
+    //        adj[i][3]=getIdx(colNum, rowNum, col[i]+1, row[i], 4)
+    //    } else if(j==0) {
+    //        adj[i][1]=i-1;
+    //        adj[i][2]=getIdx(colNum, rowNum, col[i]-1, row[i], 3)
+    //        adj[i][3]=getIdx(colNum, rowNum, col[i], row[i]+1, 1)
+    //    }
+    //    if(Iinc[i]) { Ninc++; Fitp += printf(Ninc,5)+"    Cgra    1    GRA     Cgra     1   0\n" }
+    //}
+
+    //Nbnd=0
+    //Fitp += "[ bonds ]\n; 1-2 Morse Bond\n"
+    //for(i=1; i<=Natm; i++) { if(Iinc[i]) {
+    //    j=adj[i][1]; if(Iinc[j] && j>i) { Nbnd++; Fitp += printf(Iinc[i],5)+printf(Iinc[j],5)+'    Bond_12 ;#'+Nbnd+"\n" }
+    //    j=adj[i][2]; if(Iinc[j] && j>i) { Nbnd++; Fitp += printf(Iinc[i],5)+printf(Iinc[j],5)+'    Bond_12 ;#'+Nbnd+"\n" }
+    //    j=adj[i][3]; if(Iinc[j] && j>i) { Nbnd++; Fitp += printf(Iinc[i],5)+printf(Iinc[j],5)+'    Bond_12 ;#'+Nbnd+"\n" }
+    //}}
+
+    //N13=0
+    //Fitp += "; 1-3 Repulsion Bond\n"
+    //for(j=1; j<=Natm; j++) { if(Iinc[j]) {
+    //    i=adj[j][1]; k=adj[j][2]; if(Iinc[i] && Iinc[k]) { N13++; Fitp += printf(Math.min(Iinc[i],Iinc[k]),5)+printf(Math.max(Iinc[i],Iinc[k]),5)+'    Bond_13 ;#'+N13+'\n' }
+    //    i=adj[j][1]; k=adj[j][3]; if(Iinc[i] && Iinc[k]) { N13++; Fitp += printf(Math.min(Iinc[i],Iinc[k]),5)+printf(Math.max(Iinc[i],Iinc[k]),5)+'    Bond_13 ;#'+N13+'\n' }
+    //    i=adj[j][2]; k=adj[j][3]; if(Iinc[i] && Iinc[k]) { N13++; Fitp += printf(Math.min(Iinc[i],Iinc[k]),5)+printf(Math.max(Iinc[i],Iinc[k]),5)+'    Bond_13 ;#'+N13+'\n' }
+    //}}
+
+    //Nang=0
+    //Fitp += "[ angles ]\n"
+    //for(j=1; j<=Natm; j++) { if(Iinc[j]) {
+    //    i=adj[j][1]; k=adj[j][2]; if(Iinc[i] && Iinc[k]) { Nang++; Fitp += printf(Math.min(Iinc[i],Iinc[k]),5)+printf(Iinc[j],5)+printf(Math.max(Iinc[i],Iinc[k]),5)+'    Angle ;#'+Nang+'\n' }
+    //    i=adj[j][1]; k=adj[j][3]; if(Iinc[i] && Iinc[k]) { Nang++; Fitp += printf(Math.min(Iinc[i],Iinc[k]),5)+printf(Iinc[j],5)+printf(Math.max(Iinc[i],Iinc[k]),5)+'    Angle ;#'+Nang+'\n' }
+    //    i=adj[j][2]; k=adj[j][3]; if(Iinc[i] && Iinc[k]) { Nang++; Fitp += printf(Math.min(Iinc[i],Iinc[k]),5)+printf(Iinc[j],5)+printf(Math.max(Iinc[i],Iinc[k]),5)+'    Angle ;#'+Nang+'\n' }
+    //}}
+
+    //Ndih=0; Ntrs=0; Ncis=0
+    //Fitp += "[ dihedrals ]\n"
+    //for(j=1; j<=Natm; j++) { if(Iinc[j]) {
+    //    Xj=Xatm[j]; Yj=Yatm[j]
+    //    for(kk=1; kk<=3; kk++) {
+    //        k=adj[j][kk]
+    //        if(Iinc[k] && k>j) {
+    //            dXk=pbcCart(Xatm[k]-Xj, Xbox)
+    //            dYk=pbcCart(Yatm[k]-Yj, Ybox)
+    //            for(ii=1; ii<=3; ii++) {
+    //                i=adj[j][ii]
+    //                if(Iinc[i] && i!=k) {
+    //                    dXi=pbcCart(Xatm[i]-Xj, Xbox)
+    //                    dYi=pbcCart(Yatm[i]-Yj, Ybox)
+    //                    for(ll=1; ll<=3; ll++) {
+    //                        l=adj[k][ll]
+    //                        if(Iinc[l] && l!=j) {
+    //                            Ndih++
+    //                            dXl=pbcCart(Xatm[l]-Xj, Xbox)
+    //                            dYl=pbcCart(Yatm[l]-Yj, Ybox)
+    //                            if( (dYk*dXi-dXk*dYi)*(dYk*dXl-dXk*dYl) >0.0 ) {
+    //                                Pdih='cisDih'; Ncis++
+    //                            } else { Pdih='trsDih'; Ntrs++ }
+    //                            Fitp += printf(Iinc[i],5)+printf(Iinc[j],5)+printf(Iinc[k],5)+printf(Iinc[l],5)+'    '+Pdih+' ;#'+Ndih+'\n'
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //}}
+
+    //Fitp += "; #Bond: "+Nbnd+"/"+1.5*Natm+"  #Bond(1-3): "+N13+"/"+3*Natm
+    //      + "  #Angle: "+Nang+"/"+3*Natm+"  #Dihedral: "+Ndih+"(#Trs "+Ntrs+" #Cis "+Ncis+")/"+6*Natm
+    //$("itp").value=Fitp
+}
+
+function isInPolygon(checkPoint, polygonPoints) {
+    var counter = 0;
+    var i;
+    var xinters;
+    var p1, p2;
+    var pointCount = polygonPoints.length;
+    p1 = polygonPoints[0];
+
+    for(i=1; i<=pointCount; i++) {
+        p2 = polygonPoints[i % pointCount];
+        if(checkPoint[0] > Math.min(p1[0], p2[0])
+        && checkPoint[0] <= Math.max(p1[0], p2[0])) {
+            if(checkPoint[1] <= Math.max(p1[1], p2[1])) {
+                if(p1[0] != p2[0]) {
+                    xinters=p1[1] +
+                        (checkPoint[0]-p1[0]) * (p2[1]-p1[1])/(p2[0]-p1[0])
+                    if(p1[1] == p2[1] || checkPoint[1] <= xinters) counter++;
+                }
+            }
+        }
+        p1 = p2;
+    }
+    if (counter % 2 == 0) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function printf(){
+    var map = {
+        s: function(str, fmt) { fmt*=1;
+            m=Array(Math.max(Math.abs(fmt)-str.length+1,0)).join(' ');
+            return fmt>0 ? m+str : str+m},
+        f: function(str, fmt) { fmt=fmt.split('.'); str=parseFloat(str).toFixed(fmt[1]);
+            m=Array(Math.max(Math.abs(fmt[0])-str.length+1, 0)).join(' ')
+            return fmt[0]>0 ? m+str : str+m
+        }
+    }
+    var args = Array.prototype.slice.call(arguments).slice();
+    return args.shift().toString().replace(/%(-*\d*\.*\d*)([sf])/g, function(_, fmt, type){
+        if(!args.length) throw new Error('Too few elements')
+        return map[type](args.shift(), fmt);
+    });
+}
+
+// https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+function getRandInt(min, max) { //含最大值，含最小值
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function normRand(mean, std) {
+    var u=0.0, v=0.0, w=0.0, c=0.0;
+    do { //获得两个（-1,1）的独立随机变量
+        u=Math.random()*2-1.0;
+        v=Math.random()*2-1.0;
+        w=u*u+v*v;
+    } while(w==0.0||w>=1.0)
+    c=Math.sqrt((-2*Math.log(w))/w); //这里就是 Box-Muller转换
+    //返回2个标准正态分布的随机数，封装进一个数组返回
+    //当然，因为这个函数运行较快，也可以扔掉一个
+    //return [u*c,v*c];
+    return mean+ u*c *std;
+}
+
+function getIdx(colNum, rowNum, col, row, idx) {
+    if(col==0) col=colNum; if(col>colNum) col=1
+    if(row==0) row=rowNum; if(row>rowNum) row=1
+    return 4*(colNum*(row-1)+col-1)+idx
+}
+function pbcCart(x, box) {
+         if(x> 0.5*box) x -= box
+    else if(x<-0.5*box) x += box
+    return x
+}
+
+</script>
