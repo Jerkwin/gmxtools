@@ -229,8 +229,6 @@ function genCoor() {
 
 	idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1) }
 
-	console.log(atom)
-
 	var Noh=0
 	while(Noh<Math.ceil(Natm*foh) && atom.length>1) {
 		idx=getRandInt(1, atom.length-1)
