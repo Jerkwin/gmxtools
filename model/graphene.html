@@ -9,14 +9,14 @@
 
 <tr><td colspan=2>
 大小(基本单元)：
-长 <input type="box" id="wid" value="8" style="width:30px;"/> &nbsp;&nbsp;&nbsp;&nbsp;
-宽 <input type="box" id="hig" value="0" style="width:30px;"/>(设为0则根据长度自动计算, 生成尽可能正方的构型)<br>
+长 <input type="box" id="wid" value="45" style="width:30px;"/> &nbsp;&nbsp;&nbsp;&nbsp;
+宽 <input type="box" id="hig" value="2" style="width:30px;"/>(设为0则根据长度自动计算, 生成尽可能正方的构型)<br>
 </td></tr>
 
 <tr><td colspan=2>
 原子(基本结构)：
 键长(&#197;) <input type="box" id="rcc" value="1.4" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
-类型 <input type="box" id="atom" value="C C C C" style="width:150px;"/><br/>
+类型 <input type="box" id="atom" value="C O N S" style="width:150px;"/><br/>
 </td></tr>
 
 <tr><td colspan=2>
@@ -31,6 +31,37 @@
 X方向 <input type="box" id="trsX" value="0" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
 Y方向 <input type="box" id="trsY" value="0" style="width:30px;" />&nbsp;&nbsp;&nbsp;&nbsp;
 Z方向(&#197;) <input type="box" id="trsZ" value="0" style="width:30px;"/>
+</td></tr>
+
+<tr><td colspan=2>
+XZ 方向扭曲参数方程(t)：<br>
+
+X方向 <input type="box" id="Fx"  style="width:40%" value='16*pow(sin(t),3)' />
+ 切线 <input type="box" id="dFx" style="width:40%" value='10*sin(2*pi*t)' /><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value='13*cos(t)-5*cos(2*t)-2*cos(3*t)-cos(4*t)' />
+ 切线 <input type="box" id="dFz" style="width:40%" value='10*sin(2*pi*t)' /><br>
+
+<!--
+X方向 <input type="box" id="Fx"  style="width:40%" value='10*sin(2*pi*t)'>
+ 切线 <input type="box" id="dFx" style="width:40%" value='10*cos(2*pi*t)'><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value='10*cos(2*pi*t)'>
+ 切线 <input type="box" id="dFz" style="width:40%" value='-10*sin(2*pi*t)'><br>
+
+X方向 <input type="box" id="Fx"  style="width:40%" value='10*(cos(t)-.5*cos(2*t))' />
+ 切线 <input type="box" id="dFx" style="width:40%" value='10*sin(2*pi*t)' /><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value='10*(sin(t)-.5*sin(2*t))' />
+ 切线 <input type="box" id="dFz" style="width:40%" value='10*sin(2*pi*t)' /><br>
+
+
+X方向 <input type="box" id="Fx"  style="width:40%" value='10*t*sin(2*pi*t)' />
+ 切线 <input type="box" id="dFx" style="width:40%" value='10*sin(2*pi*t)' /><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value='10*t*cos(2*pi*t)' />
+ 切线 <input type="box" id="dFz" style="width:40%" value='10*sin(2*pi*t)' /><br>
+
+-->
+
+
+
 </td></tr>
 
 <tr><td colspan=2>
@@ -85,9 +116,33 @@ Z方向 <input type="box" id="ranZ" value="0" style="width:30px;"/>
         <textarea id="itp" style="width:820px; height:500px; resize: none"></textarea>
     </td>
 </tr>*/
+var d2r=Math.atan2(1,1)/45, r2d=1/d2r
 var $=function(id){return document.getElementById(id)};
+function trim(s){return s.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'')}
+
+var Ft, dFt, RotMat=[[0,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]]
+
+//var dFt = new Function('t', 'r', 'r[0]=10*Math.cos(2*Math.PI*t); r[1]=0; r[2]=-10*Math.sin(2*Math.PI*t)')
+
+function mathFunction(str) {
+	var fun="pow sqrt exp log abs ceil floor min max round random sin cos tan asin acos atan atan2 toSource valueOf"
+	fun=fun.split(/\s+/)
+	for(var i=0, n=fun.length; i<n; i++)
+		str=str.replace('pi', 'Math.PI').replace(new RegExp(fun[i]+'\\(','g'), 'Math.'+fun[i]+'(')
+	return str
+}
 
 function genCoor() {
+
+	Ft = new Function('t', 'r',
+	'r[0]='+mathFunction(trim($('Fx').value))+';'
+	+'r[1]=0;'
+	+'r[2]='+mathFunction(trim($('Fz').value))+';')
+
+	dFt = new Function('t', 'r',
+	'r[0]='+mathFunction(trim($('dFx').value))+';'
+	+'r[1]=0;'
+	+'r[2]='+mathFunction(trim($('dFz').value))+';')
 
     var i, j, k, X0, Y0,
         M=parseInt($("wid").value), N=parseInt($("hig").value),
@@ -200,6 +255,30 @@ function genCoor() {
 	for(i=0; i<=Nbond; i++) {
 		bond[1][i]=bond1[i]
 		bond[2][i]=bond2[i]
+	}
+
+	Xmin=Math.min(...Xatm.slice(1))
+	Xmax=Math.max(...Xatm.slice(1))
+
+	var eps=1E-3, tmax, s=0, r=[], V=[]
+
+	for(tmax=0; s<=Xmax; tmax+=.5) s += sarc(tmax, tmax+0.5, eps)
+
+	for(i=1; i<=Natm; i++) {
+		t=tarc(Xatm[i], 0, 0, tmax, eps)
+		Ft(t, r)
+		Xatm[i]=r[0]
+		Zatm[i]=r[2]
+
+		//V=[ 0, Xatm[i], Yatm[i], Zatm[i] ]
+
+		//dFt(t, r)
+		//AxiRotMat(150*t, r[0], r[1], r[2])
+		//RotVect(RotMat, V, V[1], .5*Ybox, V[3])
+
+		//Xatm[i]=V[1]
+		//Yatm[i]=V[2]
+		//Zatm[i]=V[3]
 	}
 
 	var Nmod=0, isAbove=0, atom=[]
@@ -464,6 +543,61 @@ function isInPolygon(checkPoint, polygonPoints) {
     } else {
         return true;
     }
+}
+
+function sarc(t1, t2, eps) {
+	var i, t, dt, r0=[], r1=[], Lpre=0, Lnxt=0, ds=1E99, N=2
+	while(ds>eps) {
+		Lpre=Lnxt; Lnxt=0
+		N *= 2; dt=(t2-t1)/N
+		for(i=0; i<N; i++) {
+			t=t1+i*dt
+			Ft(t, r0)
+			Ft(t+dt, r1)
+			r1[0] -= r0[0]
+			r1[1] -= r0[1]
+			r1[2] -= r0[2]
+			Lnxt += Math.sqrt( r1[0]*r1[0]+r1[1]*r1[1]+r1[2]*r1[2] )
+		}
+		ds=Lnxt-Lpre
+	}
+	return Lnxt
+}
+
+function tarc(s, t0, t1, t2, eps) {
+	var t, dt, st, s1, s2
+
+	s1 = sarc(t0, t1, eps)
+	s2 = sarc(t1, t2, eps)
+	s -= s1
+
+	t=t1+s*(t2-t1)/s2
+	st=sarc(t1, t, eps)
+	while(Math.abs(st-s)>eps) {
+		if(st<s) { t1=t; s -= st; s2 -= st }
+		else     { t2=t;          s2=st }
+
+		t=t1+s*(t2-t1)/s2
+		st=sarc(t1, t, eps)
+	}
+	return t
+}
+
+function RotVect(RotMat, V, x0, y0, z0) {
+	Vx = V[1]-x0; Vy = V[2]-y0; Vz = V[3]-z0
+	V[1]= RotMat[1][1]*Vx + RotMat[1][2]*Vy + RotMat[1][3]*Vz + x0
+	V[2]= RotMat[2][1]*Vx + RotMat[2][2]*Vy + RotMat[2][3]*Vz + y0
+	V[3]= RotMat[3][1]*Vx + RotMat[3][2]*Vy + RotMat[3][3]*Vz + z0
+}
+
+function AxiRotMat(tht, x, y, z) {
+	var r=x*x+y*y+z*z; if(r>0 && r!=1) { r=1/Math.sqrt(r); x*=r; y*=r; z*=r }
+
+	tht *= d2r
+	r=Math.sin(tht/2); w=Math.cos(tht/2); x*=r; y*=r; z*=r
+	RotMat[1][1]= 1-2*(y*y+z*z); RotMat[1][2]=   2*(x*y-w*z); RotMat[1][3]=   2*(x*z+w*y);
+	RotMat[2][1]=   2*(x*y+w*z); RotMat[2][2]= 1-2*(x*x+z*z); RotMat[2][3]=   2*(y*z-w*x);
+	RotMat[3][1]=   2*(x*z-w*y); RotMat[3][2]=   2*(y*z+w*x); RotMat[3][3]= 1-2*(x*x+y*y);
 }
 
 function printf(){
