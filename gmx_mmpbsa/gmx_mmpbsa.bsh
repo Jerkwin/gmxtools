@@ -1,16 +1,62 @@
-echo "
+echo -e "\
 >>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
->> 2019-09-19: push to gmxtool
->> 2019-11-03: fix bug for time stamp
->> 2019-11-06: apbs FILE.apbs &> FILE.out
+>>>>>>>>>>     2020-05-27 10:25:27     <<<<<<<<<\n
+>>   Usage: gmx_mmpbsa -f   *.xtc     -s   *.tpr      -n   *.ndx
+                       -com COMPLEX   -pro PROTEIN   {-lig <LIGAND|none>}\n
+>> Default: gmx_mmpbsa -f  traj.xtc   -s topol.tpr    -n index.ndx
+                       -com Complex   -pro Protein    -lig Ligand
+>> Option:
+     f: trajectory file
+     s: topology file
+     n: index file
+   com: index group name of complex
+   pro: index group name of protein
+   lig: index group name of ligand, can be ignored using none
+   change other settings in the script directly
+>> Log:
+   TODO:       CAS
+   TODO:       parallel APBS, focus
+   2020-05-27: fix bug for sdie
+   2020-05-26: fix bug for RES name
+   2020-04-03: use C6, C12 directly
+   2020-01-08: support protein only
+   2019-12-24: fix bug for small time step
+   2019-12-10: fix bug for OPLS force field
+   2019-11-17: fix bug for c6, c12 of old version tpr
+   2019-11-06: apbs FILE.apbs &> FILE.out
                on ubuntu 18.04 may not work, then delete &
->> 2019-11-17: fix bug for c6, c12 of old version tpr
->> 2019-12-10: fix bug for OPLS force field
->> 2019-12-24: fix bug for small time step
->> Todo:       parallel APBS, focus
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-"
+   2019-11-03: fix bug for time stamp
+   2019-09-19: push to gmxtool
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
+
+trj=traj.xtc		# 轨迹文件 trajectory file
+tpr=topol.tpr		# tpr文件  tpr file
+ndx=index.ndx		# 索引文件 index file
+
+com=Complex			# 复合物索引组 index group name of complex
+pro=Protein			# 蛋白索引组   index group name of protein
+lig=Ligand			# 配体索引组   index group name of ligand
+
+opt=($*); N=${#opt[@]}
+for((i=0; i<N; i++)); do
+	arg=${opt[$i]}; j=$((i+1)); val=${opt[$j]}
+	[[ $arg =~ -f   ]] && { trj=$val; }
+	[[ $arg =~ -s   ]] && { tpr=$val; }
+	[[ $arg =~ -n   ]] && { ndx=$val; }
+	[[ $arg =~ -com ]] && { com=$val; }
+	[[ $arg =~ -pro ]] && { pro=$val; }
+	[[ $arg =~ -lig ]] && { lig=$val; }
+done
+
+withLig=1; [[ $lig =~ none ]] && { withLig=0; com=$pro; lig=$pro; }
+
+[[ ! -f "$trj" ]] && { echo -e "!!! ERROR !!! trajectory File NOT Exist !\n"; exit; }
+[[ ! -f "$tpr" ]] && { echo -e "!!! ERROR !!! topology   File NOT Exist !\n"; exit; }
+[[ ! -f "$ndx" ]] && { echo -e "!!! ERROR !!! index      File NOT Exist !\n"; exit; }
+str=$(grep $com "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! $com NOT in $ndx !\n"; exit; }
+str=$(grep $pro "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! $pro NOT in $ndx !\n"; exit; }
+str=$(grep $lig "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! $lig NOT in $ndx !\n"; exit; }
 
 step=1	# 从第几步开始运行 step number to run
 		# 1. 预处理轨迹: 复合物完整化, 团簇化, 居中叠合, 然后生成pdb文件
@@ -25,27 +71,21 @@ step=1	# 从第几步开始运行 step number to run
 # 0. setting up environmets and parameters
 ################################################################################
 
-gmx='/path/to/GMX/bin/gmx_mpi'			# gmx
+gmx='gmx'								# /path/to/GMX/bin/gmx_mpi
 dump="$gmx dump"						# gmx dump
-trjconv="$gmx trjconv -skip 1000"		# gmx trjconv
+trjconv="$gmx trjconv -skip 1000"		# gmx trjconv, may use -b -e -dt -skip
+
 #apbs='/path/APBS/bin/apbs'				# APBS(Linux)
 apbs='c:/apbs1.5/bin/apbs.exe'			# APBS(Windows), USE "/", NOT "\"
 export MCSH_HOME=/dev/null				# APBS io.mc
-
-trj=1EBZ.xtc		# 轨迹文件 trajectory file
-tpr=1EBZ.tpr		# tpr文件  tpr file
-ndx=1EBZ.ndx		# 索引文件 index file
-
-com=System			# 复合物索引组 index group name of complex
-pro=Protein			# 蛋白索引组   index group name of protein
-lig=BEC				# 配体索引组   index group name of ligand
 
 pid=pid				# 输出文件($$可免重复) prefix of the output files($$)
 scr=_$pid.scr		# 屏幕输出文件 file to save the message from the screen
 qrv=_$pid.qrv		# 电荷/半径/VDW参数文件 to save charge/radius/vdw parmeters
 
-ff=AMBER			# 力场类型 force field(AMBER, OPLS, CHARMM)
 radType=1			# 原子半径类型 radius of atoms (0:ff; 1:mBondi; 2:Bondi)
+radLJ0=1.2			# 用于LJ参数原子的默认半径(A, 主要为H) radius when LJ=0 (H)
+
 meshType=0			# 网格大小 mesh (0:global  1:local)
 gridType=1			# 格点大小 grid (0:GMXPBSA 1:psize)
 
@@ -59,7 +99,7 @@ df=.5				# 细密格点间距(A) The desired fine mesh spacing (A)
 PBEset='
   temp  300         # 温度
   pdie  2           # 溶质介电常数
-  sdie  80          # 溶剂介电常数, 真空1, 水78.54
+  sdie  78.54          # 溶剂介电常数, 真空1, 水78.54
 
   lpbe              # PB方程求解方法, lpbe(线性), npbe(非线性), smbpe(大小修正)
   bcfl  mdh         # 粗略格点PB方程的边界条件, zero, sdh/mdh(single/multiple Debye-Huckel), focus, map
@@ -113,26 +153,30 @@ if [[ $step -le 1 ]]; then
 ################################################################################
 # 1. 预处理轨迹: 复合物完整化, 团簇化, 居中叠合, 然后生成pdb文件
 # 1. pre-processe trajectory, whole, cluster, center, fit, then generate pdb file
-#    feel free to use -b -e -dt -skip
 ################################################################################
-trjwho=$pid~who; trjcls=$pid~cls
-echo $com            | ${trjconv/-*/} -f $trj    -s $tpr -n $ndx -o $trjwho.xtc &>$scr -pbc whole
-echo -e "$com\n$com" | ${trjconv/-*/} -f $trjwho -s $tpr -n $ndx -o $trjcls.xtc &>$scr -pbc cluster
-echo -e "$com\n$com\n$com" | $trjconv -f $trjcls -s $tpr -n $ndx -o _$pid.pdb  &>>$scr -center -fit rot+trans
-rm -f $trjwho.xtc $trjcls.xtc
+trjwho=$pid~who; trjcnt=$pid~cnt; trjcls=$pid~cls
+echo $com            | $trjconv  -s $tpr -n $ndx -f $trj    -o $trjwho.xtc &> $scr -pbc whole
+echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o _$pid.pdb   &>>$scr -pbc res -center
+
+# usful for single protein and ligand
+#echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $trjcnt.xtc &>>$scr -pbc res -center
+#echo -e "$com\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcnt -o $trjcls.xtc &>>$scr -pbc cluster
+#echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcls -o _$pid.pdb   &>>$scr -fit rot+trans
 
 fi; if [[ $step -le 2 ]]; then
 ################################################################################
 # 2. 获取每个原子的电荷, 半径, LJ参数, 然后生成qrv文件
 # 2. abstract atomic parameters, charge, radius, C6/C12, then generate qrv file
 #    feel free to change radius with radType
-#    radType=0: radius from C6/C12, or 1.2 if either C6 or C12 is zero
+#    radType=0: radius from C6/C12, or radLJ0 if either C6 or C12 is zero
 #    radType=1: mBondi
 #    radType=2: Bondi
 ################################################################################
 $dump -quiet -s $tpr 2>>$scr \
-| awk >$qrv -v ndx=$ndx -v pro=$pro -v lig=$lig -v radType=$radType '
+| awk >$qrv -v ndx=$ndx -v pro=$pro -v lig=$lig \
+			-v radType=$radType -v radLJ0=$radLJ0 '
 	BEGIN { RS="["
+		print pro, lig
 		while(getline < ndx) { gsub(/\s/,"", $1)
 			if($1==pro)    for(i=3; i<=NF; i++) ndxPro[$i+0]++
 			if($1==lig)    for(i=3; i<=NF; i++) ndxLig[$i+0]++
@@ -140,27 +184,33 @@ $dump -quiet -s $tpr 2>>$scr \
 			if($1==lig"]") for(i=2; i<=NF; i++) ndxLig[$i+0]++
 		}
 		RS="\r?\n"
+		nres=0
 	}
 
 	/#molblock/  { Ntyp=$3 }
 	/moltype.+=/ { Imol=$3; getline; Nmol[Imol]=$3 }
 	/ffparams:/ {
 		getline Atyp; sub(/.+=/, "", Atyp); Atyp += 0
+		print Atyp
 		getline
-		for(i=0; i<Atyp*Atyp; i++) {
-			getline
-			idx=int(i/Atyp)
-			if(idx==i%Atyp) {
-				sigma[idx]=0; epsilon[idx]=0
-				Rad[idx]=1.2 # 默认原子半径(A), 用于无半径参数的原子(主要为H)
-				C6 =$0; sub(".*c6=",  "", C6);  sub(",.*", "", C6);
-				C12=$0; sub(".*c12=", "", C12); sub(",.*", "", C12);
-				if(C6*C12!=0) {
-					sigma[idx]=10*(C12/C6)^(1./6) # 转换单位为A
-					epsilon[idx]=C6^2/(4*C12)
-					Rad[idx]=.5*sigma[idx]        # sigma为直径
+		for(i=0; i<Atyp; i++) {
+			printf "%6d", i
+			for(j=0; j<Atyp; j++) {
+				getline
+				C6 =$0; sub(".*c6 *= *",  "", C6);  sub(",.*", "", C6);
+				C12=$0; sub(".*c12 *= *", "", C12); sub(",.*", "", C12);
+				printf " %s %s", C6, C12
+				if(j==i) {
+					sigma[i]=0; epsilon[i]=0
+					Rad[i]=radLJ0
+					if(C6*C12!=0) {
+						sigma[i]=10*(C12/C6)^(1./6) # 转换单位为A
+						epsilon[i]=C6^2/(4*C12)
+						Rad[i]=.5*sigma[i]          # sigma为直径
+					}
 				}
 			}
+			print ""
 		}
 	}
 
@@ -168,12 +218,13 @@ $dump -quiet -s $tpr 2>>$scr \
 		getline txt; sub(/.*=/,"",txt); Name[Imol]=txt
 		getline; getline txt;       gsub(/[^0-9]/,"",txt); Natm[Imol]=txt+0
 		for(i=0; i<Natm[Imol]; i++) {
-			getline; txt=$0; idx=$3; resID[Imol, i]=$(NF-2)+1
-			sub(/.+q=/, "", txt); sub(/,.+/,  "", txt); Qatm[Imol, i]=txt
+			getline; txt=$0; idx=$3; resID[Imol, i]=$(NF-2)+1+nres
 			sub(",", "", idx);    idx += 0;
+			Catm[Imol, i]=idx
 			Ratm[Imol, i]=Rad[idx]
 			Satm[Imol, i]=sigma[idx]
 			Eatm[Imol, i]=epsilon[idx]
+			sub(/.+q=/, "", txt); sub(/,.+/,  "", txt); Qatm[Imol, i]=txt
 		}
 		getline
 		for(i=0; i<Natm[Imol]; i++) {
@@ -184,7 +235,7 @@ $dump -quiet -s $tpr 2>>$scr \
 	}
 
 	/residue\[/ { nres++
-		sub(/.*=\"/,"",$0); sub(/\".*/,"",$0);
+		sub(/.*="/,"",$0); sub(/".*/,"",$0);
 		resName[nres]=sprintf("%05d%s", nres, $0)
 	}
 
@@ -198,8 +249,8 @@ $dump -quiet -s $tpr 2>>$scr \
 						Nidx++
 						if(radType==0) radi=Ratm[i, j]
 						if(radType >0) radi=getRadi(Tatm[i, j], radType)
-						printf "%6d %9.5f %9.6f %9.6f %9.6f %6d %s %s %-6s  ",  \
-						Nidx, Qatm[i,j], radi, Satm[i,j], Eatm[i,j], \
+						printf "%6d %9.5f %9.6f %6d %9.6f %9.6f %6d %s %s %-6s  ",  \
+						Nidx, Qatm[i,j], radi, Catm[i,j], Satm[i,j], Eatm[i,j], \
 						Ntot, n+1"."Name[i]"-"j+1, \
 						resName[resID[i,j]], Tatm[i, j]
 						if(Ntot in ndxPro) print "Pro"
@@ -249,11 +300,18 @@ dt=$(awk '/t=/{n++;sub(/.*t=/,"");sub(/step=.*/,"");t[n]=$0;if(n==2){print t[n]-
 awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 	-v ff=$ff     -v PBEset="$PBEset" -v PBAset="$PBAset" \
 	-v meshType=$meshType -v gridType=$gridType -v gmem=$gmem  \
-	-v fadd=$fadd -v cfac=$cfac -v df=$df -v dt="$dt" -v RS="\r?\n" '
+	-v fadd=$fadd -v cfac=$cfac -v df=$df -v dt="$dt"          \
+	-v withLig=$withLig -v RS="\r?\n" '
 	BEGIN {
+		getline < qrv
+		getline Atyp < qrv
+		for(i=0; i<Atyp; i++) {
+			getline < qrv
+			for(j=0; j<Atyp; j++) { C6[i, j]=$(2+2*j); C12[i,j]=$(3+2*j) }
+		}
 		while(getline < qrv) {
-			Qatm[$1]=$2; Ratm[$1]=$3;
-			Satm[$1]=$4; Eatm[$1]=$5
+			Qatm[$1]=$2; Ratm[$1]=$3; Catm[$1]=$4
+			Satm[$1]=$5; Eatm[$1]=$6
 			if($NF=="Pro") { Npro++; if(Npro==1) Ipro=$1
 				ndxPro[$1]++; resPro[Npro]="P~"$(NF-2)
 			}
@@ -264,7 +322,7 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 		close(qrv)
 		Ncom=Npro+Nlig
 
-		PBEset0=PBEset; sub(/sdie +[0-9]+/, "sdie  1", PBEset0)
+		PBEset0=PBEset; sub(/sdie +[0-9]*\.*[0-9]*/, "sdie  1", PBEset0)
 
 		txt=PBEset; sub(/.*pdie +/, "", txt);
 		sub(/\n.*/, "", txt); split(txt, arr)
@@ -315,18 +373,21 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 		txt=sprintf("%-6s%5d %-4s %3s %s%4d    %8.3f %8.3f %8.3f %12.6f %12.6f", \
 			ATOM, INDX, NAME, RES, CHN, NUM, X, Y, Z, Qatm[INDX], r)
 
-		print txt > Fout"_com.pqr"
 		if(INDX in ndxPro) {
 			print txt > Fout"_pro.pqr"
 			minXpro[Nfrm]=min(minXpro[Nfrm], X-r); maxXpro[Nfrm]=max(maxXpro[Nfrm], X+r)
 			minYpro[Nfrm]=min(minYpro[Nfrm], Y-r); maxYpro[Nfrm]=max(maxYpro[Nfrm], Y+r)
 			minZpro[Nfrm]=min(minZpro[Nfrm], Z-r); maxZpro[Nfrm]=max(maxZpro[Nfrm], Z+r)
-		} else
-		if(INDX in ndxLig) {
-			print txt > Fout"_lig.pqr"
-			minXlig[Nfrm]=min(minXlig[Nfrm], X-r); maxXlig[Nfrm]=max(maxXlig[Nfrm], X+r)
-			minYlig[Nfrm]=min(minYlig[Nfrm], Y-r); maxYlig[Nfrm]=max(maxYlig[Nfrm], Y+r)
-			minZlig[Nfrm]=min(minZlig[Nfrm], Z-r); maxZlig[Nfrm]=max(maxZlig[Nfrm], Z+r)
+		}
+
+		if(withLig) {
+			print txt > Fout"_com.pqr"
+			if(INDX in ndxLig) {
+				print txt > Fout"_lig.pqr"
+				minXlig[Nfrm]=min(minXlig[Nfrm], X-r); maxXlig[Nfrm]=max(maxXlig[Nfrm], X+r)
+				minYlig[Nfrm]=min(minYlig[Nfrm], Y-r); maxYlig[Nfrm]=max(maxYlig[Nfrm], Y+r)
+				minZlig[Nfrm]=min(minZlig[Nfrm], Z-r); maxZlig[Nfrm]=max(maxZlig[Nfrm], Z+r)
+			}
 		}
 
 		minXcom[Nfrm]=min(minXpro[Nfrm], minXlig[Nfrm]); maxXcom[Nfrm]=max(maxXpro[Nfrm], maxXlig[Nfrm])
@@ -342,6 +403,7 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 
 	END{
 		kJcou=1389.35457520287
+		Rcut=1E10              # large enough
 
 		for(i=1; i<=Npro; i++) dE[resPro[i]]=0
 		for(i=1; i<=Nlig; i++) dE[resLig[i]]=0
@@ -352,13 +414,15 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 			ii=Tres[i]; sub(/~0+/, "~", ii)
 			txt = txt""sprintf("%12s", ii)
 		}
-		print txt > pid"~resMM.dat"
+		if(withLig) {
+			print txt > pid"~resMM.dat"
+			print txt > pid"~resMM_COU.dat"
+			print txt > pid"~resMM_VDW.dat"
+			print txt > pid"~res_MMPBSA.dat"
+		}
 		print txt > pid"~resPBSA.dat"
-		print txt > pid"~resMM_COU.dat"
-		print txt > pid"~resMM_VDW.dat"
 		print txt > pid"~resPBSA_PB.dat"
 		print txt > pid"~resPBSA_SA.dat"
-		print txt > pid"~res_MMPBSA.dat"
 
 		print "   #Frame      Binding    MM        PB        SA     "\
 			 "|   COU       VDW     |       PBcom        PBpro        PBlig  "\
@@ -368,8 +432,8 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 			Fout=Fname[fr]
 			print "running for Frame "fr": "Fout
 
-			# MM
-			txt=Fout"_com.pqr"; close(txt)
+			txt=Fout"_pro.pqr"; if(withLig) txt=Fout"_com.pqr";
+			close(txt)
 			n=0;
 			while(getline < txt) { n++;
 				type[n]=$3; res[n]=$4; resID[n]=$6;
@@ -377,47 +441,58 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 			}
 			close(txt)
 
-			for(i=1; i<=Npro; i++) { dEcou[resPro[i]]=0; dEvdw[resPro[i]]=0 }
-			for(i=1; i<=Nlig; i++) { dEcou[resLig[i]]=0; dEvdw[resLig[i]]=0 }
-			for(i=1; i<=Npro; i++) {
-				ii=i+Ipro-1
-				qi=Qatm[ii]; si=Satm[ii]; ei=Eatm[ii]
-				xi=x[ii]; yi=y[ii]; zi=z[ii]
-				for(j=1; j<=Nlig; j++) {
-					jj=j+Ilig-1
-					r=sqrt( (xi-x[jj])^2+(yi-y[jj])^2+(zi-z[jj])^2 )
-					if(ff=="OPLS") t=sqrt(si*Satm[jj]); else t=.5*(si+Satm[jj])
-					t=(t/r)^6
-					Ecou = qi*Qatm[jj]/r
-					Evdw = 4*sqrt(ei*Eatm[jj])*t*(t-1)
-					dEcou[resPro[i]] += Ecou; dEcou[resLig[j]] += Ecou
-					dEvdw[resPro[i]] += Evdw; dEvdw[resLig[j]] += Evdw
+			# MM
+			if(withLig) {
+				for(i=1; i<=Npro; i++) { dEcou[resPro[i]]=0; dEvdw[resPro[i]]=0 }
+				for(i=1; i<=Nlig; i++) { dEcou[resLig[i]]=0; dEvdw[resLig[i]]=0 }
+				for(i=1; i<=Npro; i++) {
+					ii=i+Ipro-1
+					qi=Qatm[ii]; ci=Catm[ii]; si=Satm[ii]; ei=Eatm[ii]
+					xi=x[ii]; yi=y[ii]; zi=z[ii]
+					for(j=1; j<=Nlig; j++) {
+						jj=j+Ilig-1; cj=Catm[jj]
+						r=sqrt( (xi-x[jj])^2+(yi-y[jj])^2+(zi-z[jj])^2 )
+						if(r<Rcut) {
+							t=1/(.1*r)^6
+							Ecou = qi*Qatm[jj]/r
+							Evdw = (C12[ci,cj]*t-C6[ci,cj])*t
+							dEcou[resPro[i]] += Ecou; dEcou[resLig[j]] += Ecou
+							dEvdw[resPro[i]] += Evdw; dEvdw[resLig[j]] += Evdw
+						}
+					}
+				}
+
+				Ecou=0; Evdw=0
+				for(i in dEcou) {
+					dEcou[i] *= kJcou/(2*pdie); Ecou += dEcou[i];
+					dEvdw[i] /= 2;              Evdw += dEvdw[i]
 				}
 			}
 
-			Ecou=0; Evdw=0
-			for(i in dEcou) {
-				dEcou[i] *= kJcou/(2*pdie); Ecou += dEcou[i];
-				dEvdw[i] /= 2;              Evdw += dEvdw[i]
-			}
-
 			# PBSA
-			print "read\n" \
+			if(withLig) print "read\n" \
 				"  mol pqr "Fout"_com.pqr\n" \
 				"  mol pqr "Fout"_pro.pqr\n" \
 				"  mol pqr "Fout"_lig.pqr\n" \
 				"end\n\n" > Fout".apbs"
+			else        print "read\n" \
+				"  mol pqr "Fout"_pro.pqr\n" \
+				"end\n\n" > Fout".apbs"
 
 			if(meshType==0) { # GMXPBSA
-				print \
-				dimAPBS(Fout"_com", 1, minX, maxX, minY, maxY, minZ, maxZ), \
-				dimAPBS(Fout"_pro", 2, minX, maxX, minY, maxY, minZ, maxZ), \
-				dimAPBS(Fout"_lig", 3, minX, maxX, minY, maxY, minZ, maxZ)  > Fout".apbs"
+				if(withLig) print \
+					dimAPBS(Fout"_com", 1, minX, maxX, minY, maxY, minZ, maxZ), \
+					dimAPBS(Fout"_pro", 2, minX, maxX, minY, maxY, minZ, maxZ), \
+					dimAPBS(Fout"_lig", 3, minX, maxX, minY, maxY, minZ, maxZ)  > Fout".apbs"
+				else        print \
+					dimAPBS(Fout"_pro", 1, minX, maxX, minY, maxY, minZ, maxZ)  > Fout".apbs"
 			} else if(meshType==1) { # g_mmpbsa
-				print \
-				dimAPBS(Fout"_com", 1, minXcom[fr], maxXcom[fr], minYcom[fr], maxYcom[fr], minZcom[fr], maxZcom[fr]), \
-				dimAPBS(Fout"_pro", 2, minXpro[fr], maxXpro[fr], minYpro[fr], maxYpro[fr], minZpro[fr], maxZpro[fr]), \
-				dimAPBS(Fout"_lig", 3, minXlig[fr], maxXlig[fr], minYlig[fr], maxYlig[fr], minZlig[fr], maxZlig[fr])  > Fout".apbs"
+				if(withLig) print \
+					dimAPBS(Fout"_com", 1, minXcom[fr], maxXcom[fr], minYcom[fr], maxYcom[fr], minZcom[fr], maxZcom[fr]), \
+					dimAPBS(Fout"_pro", 2, minXpro[fr], maxXpro[fr], minYpro[fr], maxYpro[fr], minZpro[fr], maxZpro[fr]), \
+					dimAPBS(Fout"_lig", 3, minXlig[fr], maxXlig[fr], minYlig[fr], maxYlig[fr], minZlig[fr], maxZlig[fr])  > Fout".apbs"
+				else       print \
+					dimAPBS(Fout"_pro", 1, minXpro[fr], maxXpro[fr], minYpro[fr], maxYpro[fr], minZpro[fr], maxZpro[fr])  > Fout".apbs"
 			}
 
 			cmd=apbs" "Fout".apbs > "Fout".out 2>&1";
@@ -465,23 +540,26 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 				SAres[resLig[i]] += Esas[1, Ilig+i-1]-Esas[3, i]
 			}
 
+			preK=-1; if(withLig) preK=1
 			printf "%-12s %9.3f %9.3f %9.3f %9.3f | %9.3f %9.3f | %12.3f %12.3f %12.3f | %9.3f %9.3f %9.3f\n", \
-				Fout, Ecou+Evdw+PBcom-PBpro-PBlig+SAcom-SApro-SAlig, \
-				Ecou+Evdw,  PBcom-PBpro-PBlig, SAcom-SApro-SAlig, \
+				Fout,       preK*(Ecou+Evdw+PBcom-PBpro-PBlig+SAcom-SApro-SAlig), \
+				Ecou+Evdw,  preK*(PBcom-PBpro-PBlig), preK*(SAcom-SApro-SAlig), \
 				Ecou, Evdw, PBcom, PBpro, PBlig, SAcom, SApro, SAlig >> pid"~MMPBSA.dat"
 
 			fmt="%s%12.3f%s"
 			for(i=1; i<=Nres; i++) {
 				ii="";  if(i==1) ii=sprintf("%-12s", Fout)
 				txt=""; if(i==Nres) txt="\n"
-				printf fmt, ii, dEcou[Tres[i]], txt                > pid"~resMM_COU.dat"
-				printf fmt, ii, dEvdw[Tres[i]], txt                > pid"~resMM_VDW.dat"
-				printf fmt, ii, PBres[Tres[i]], txt                > pid"~resPBSA_PB.dat"
-				printf fmt, ii, SAres[Tres[i]], txt                > pid"~resPBSA_SA.dat"
-				printf fmt, ii, dEcou[Tres[i]]+dEvdw[Tres[i]], txt > pid"~resMM.dat"
-				printf fmt, ii, PBres[Tres[i]]+SAres[Tres[i]], txt > pid"~resPBSA.dat"
-				printf fmt, ii, dEcou[Tres[i]]+dEvdw[Tres[i]] \
-										+PBres[Tres[i]]+SAres[Tres[i]], txt > pid"~res_MMPBSA.dat"
+				if(withLig) {
+					printf fmt, ii, dEcou[Tres[i]], txt                > pid"~resMM_COU.dat"
+					printf fmt, ii, dEvdw[Tres[i]], txt                > pid"~resMM_VDW.dat"
+					printf fmt, ii, dEcou[Tres[i]]+dEvdw[Tres[i]], txt > pid"~resMM.dat"
+					printf fmt, ii, dEcou[Tres[i]]+dEvdw[Tres[i]] \
+								   +PBres[Tres[i]]+SAres[Tres[i]], txt > pid"~res_MMPBSA.dat"
+				}
+				printf fmt, ii, preK*(PBres[Tres[i]]), txt                > pid"~resPBSA_PB.dat"
+				printf fmt, ii, preK*(SAres[Tres[i]]), txt                > pid"~resPBSA_SA.dat"
+				printf fmt, ii, preK*(PBres[Tres[i]]+SAres[Tres[i]]), txt > pid"~resPBSA.dat"
 			}
 
 			fmt="%s%6.1f%6.1f\n"
@@ -489,12 +567,14 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 				ii=Ipro+i-1
 				txt=sprintf("%-6s%5d %-4s %3s A%4d    %8.3f%8.3f%8.3f", \
 					"ATOM", ii, type[ii], res[ii], resID[ii], x[ii], y[ii], z[ii])
-				printf fmt, txt, dEcou[resPro[i]], dEvdw[resPro[i]] > Fout"~COU+VDW.pdb"
-				printf fmt, txt, PBres[resPro[i]], SAres[resPro[i]] > Fout"~PB+SA.pdb"
-				printf fmt, txt, dEcou[resPro[i]]+dEvdw[resPro[i]], \
+				if(withLig) {
+					printf fmt, txt, dEcou[resPro[i]], dEvdw[resPro[i]] > Fout"~COU+VDW.pdb"
+					printf fmt, txt, dEcou[resPro[i]]+dEvdw[resPro[i]], \
 								 PBres[resPro[i]]+SAres[resPro[i]]  > Fout"~res_MM+PBSA.pdb"
+				}
+				printf fmt, txt, preK*PBres[resPro[i]], preK*SAres[resPro[i]] > Fout"~PB+SA.pdb"
 				printf fmt, txt, 0, dEcou[resPro[i]]+dEvdw[resPro[i]]  \
-								+PBres[resPro[i]]+SAres[resPro[i]]  > Fout"~res_MMPBSA.pdb"
+								+preK*(PBres[resPro[i]]+SAres[resPro[i]])  > Fout"~res_MMPBSA.pdb"
 			}
 			for(i=1; i<=Nlig; i++) {
 				ii=Ilig+i-1
@@ -587,4 +667,5 @@ fi
 # 4. 删除临时文件
 # 4. remove intermediate files
 ################################################################################
+#rm -f $trjwho.xtc $trjcnt.xtc $trjcls.xtc
 #rm -f io.mc _$pid.pdb $scr $qrv \#_$pid*\#

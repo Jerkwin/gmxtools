@@ -9,59 +9,64 @@
 
 <tr><td colspan=2>
 大小(基本单元)：
-长 <input type="box" id="wid" value="45" style="width:30px;"/> &nbsp;&nbsp;&nbsp;&nbsp;
+长 <input type="box" id="wid" value="5" style="width:30px;"/> &nbsp;&nbsp;&nbsp;&nbsp;
 宽 <input type="box" id="hig" value="2" style="width:30px;"/>(设为0则根据长度自动计算, 生成尽可能正方的构型)<br>
 </td></tr>
 
 <tr><td colspan=2>
 原子(基本结构)：
 键长(&#197;) <input type="box" id="rcc" value="1.4" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
-类型 <input type="box" id="atom" value="C O N S" style="width:150px;"/><br/>
+类型 <input type="box" id="atom" value="C C C C" style="width:150px;"/><br/>
+</td></tr>
+
+<!--
+力场_武汉区_李继存/武汉 1、建议石墨烯边缘用-COOH修饰，而环氧基和羟基的位置都出现在石墨烯的中间，根据文献，环氧基和羟基不会出现在石墨烯边缘。
+2、能否增加一个功能，用户上传石墨烯文件，程序能够给它添加含氧官能团？我现在做了些石墨烯模型，也有些有弯曲的石墨烯，分子很大，手动加含氧官能团很困难，要加很多个，而目前没有任何工具能自动加含氧官能团。
+3、能否增加一个拖拽石墨烯，使其弯曲的功能；或者用可视化界面、通过输入几个参数的办法，控制其弯曲弧度，您的工具有利用Z 方向波动周期数进行弯曲的功能，不过有时候弯曲弧度大了，分子的化学键就断了；有时候需要按照其他曲线的弧度进行弯曲，假如用户能自定义弯曲情况，会是一个很棒的软件。
+-->
+
+<tr><td colspan=2>
+氧化修饰(原子覆盖度%)：　　　　<input type='checkbox' id='noPBC'> 取消周期性<br>
+内部　　-O-
+<input type="box" id="fO" value="0" style="width:30px;"/>
+<input type='checkbox' id='upO'>随机上下&nbsp;&nbsp;
+-OH
+<input type="box" id="fOH" value="0" style="width:30px;"/>
+<input type='checkbox' id='rotOH'>随机取向
+<input type='checkbox' id='upOH'>随机上下&nbsp;&nbsp;
+-COOH
+<input type="box" id="fCOOH" value="0" style="width:30px;"/>
+<input type='checkbox' id='rotCOOH'>随机取向
+<input type='checkbox' id='upCOOH'>随机上下<br>
+边缘　　=O&nbsp;
+<input type="box" id="fBO" value="0" style="width:30px;"/>　　　　　　&nbsp;
+-OH
+<input type="box" id="fBOH" value="0" style="width:30px;"/>
+<input type='checkbox' id='rotBOH'>随机旋转　　　　&nbsp;&nbsp;&nbsp;&nbsp;
+-COOH
+<input type="box" id="fBCOOH" value="0" style="width:30px;"/>
+<input type='checkbox' id='rotBCOOH'>随机旋转
 </td></tr>
 
 <tr><td colspan=2>
-氧化修饰(原子覆盖度%)：
--O- <input type="box" id="fo" value="0" style="width:30px;"/>&nbsp;&nbsp;
--OH <input type="box" id="foh" value="0" style="width:30px;"/> <input type='checkbox' id='ranOH'>随机取向&nbsp;&nbsp;
--COOH <input type="box" id="fcooh" value="0" style="width:30px;"/> <input type='checkbox' id='ranCOOH'>随机取向
-</td></tr>
-
-<tr><td colspan=2>
-整体平移(基本键长倍数)：
+整体平移(键长倍数)：&nbsp;
 X方向 <input type="box" id="trsX" value="0" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
 Y方向 <input type="box" id="trsY" value="0" style="width:30px;" />&nbsp;&nbsp;&nbsp;&nbsp;
 Z方向(&#197;) <input type="box" id="trsZ" value="0" style="width:30px;"/>
 </td></tr>
 
 <tr><td colspan=2>
-XZ 方向扭曲参数方程(t)：<br>
+坐标随机涨落振幅(&#197;)：
+X方向 <input type="box" id="ranX" value="0" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
+Y方向 <input type="box" id="ranY" value="0" style="width:30px;" />&nbsp;&nbsp;&nbsp;&nbsp;
+Z方向 &nbsp;&nbsp;&nbsp;<input type="box" id="ranZ" value="0" style="width:30px;"/>
+</td></tr>
 
-X方向 <input type="box" id="Fx"  style="width:40%" value='16*pow(sin(t),3)' />
- 切线 <input type="box" id="dFx" style="width:40%" value='10*sin(2*pi*t)' /><br>
-Z方向 <input type="box" id="Fz"  style="width:40%" value='13*cos(t)-5*cos(2*t)-2*cos(3*t)-cos(4*t)' />
- 切线 <input type="box" id="dFz" style="width:40%" value='10*sin(2*pi*t)' /><br>
-
-<!--
-X方向 <input type="box" id="Fx"  style="width:40%" value='10*sin(2*pi*t)'>
- 切线 <input type="box" id="dFx" style="width:40%" value='10*cos(2*pi*t)'><br>
-Z方向 <input type="box" id="Fz"  style="width:40%" value='10*cos(2*pi*t)'>
- 切线 <input type="box" id="dFz" style="width:40%" value='-10*sin(2*pi*t)'><br>
-
-X方向 <input type="box" id="Fx"  style="width:40%" value='10*(cos(t)-.5*cos(2*t))' />
- 切线 <input type="box" id="dFx" style="width:40%" value='10*sin(2*pi*t)' /><br>
-Z方向 <input type="box" id="Fz"  style="width:40%" value='10*(sin(t)-.5*sin(2*t))' />
- 切线 <input type="box" id="dFz" style="width:40%" value='10*sin(2*pi*t)' /><br>
-
-
-X方向 <input type="box" id="Fx"  style="width:40%" value='10*t*sin(2*pi*t)' />
- 切线 <input type="box" id="dFx" style="width:40%" value='10*sin(2*pi*t)' /><br>
-Z方向 <input type="box" id="Fz"  style="width:40%" value='10*t*cos(2*pi*t)' />
- 切线 <input type="box" id="dFz" style="width:40%" value='10*sin(2*pi*t)' /><br>
-
--->
-
-
-
+<tr><td colspan=2>
+Z 方向波动周期数：&nbsp;&nbsp;&nbsp;
+X方向 <input type="box" id="cycX" value="1" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
+Y方向 <input type="box" id="cycY" value="1" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
+振幅(&#197;) &nbsp;<input type="box" id="cycZ" value="0" style="width:30px;"/>
 </td></tr>
 
 <tr><td colspan=2>
@@ -75,17 +80,36 @@ Z方向 <input type="box" id="Fz"  style="width:40%" value='10*t*cos(2*pi*t)' />
 </td></tr>
 
 <tr><td colspan=2>
-Z 方向波动周期数：&nbsp;&nbsp;&nbsp;
-X方向 <input type="box" id="cycX" value="1" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
-Y方向 <input type="box" id="cycY" value="1" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
-波动振幅(&#197;) <input type="box" id="cycZ" value="0" style="width:30px;"/>
-</td></tr>
+XZ 方向卷曲参数方程(t, pi, tau, tmax, xbox)：&nbsp;扭曲 <input type="box" id="vF"  style="width:40%" value=''><br>
 
-<tr><td colspan=2>
-坐标随机涨落振幅(&#197;)：
-X方向 <input type="box" id="ranX" value="0" style="width:30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
-Y方向 <input type="box" id="ranY" value="0" style="width:30px;" />&nbsp;&nbsp;&nbsp;&nbsp;
-Z方向 <input type="box" id="ranZ" value="0" style="width:30px;"/>
+X方向 <input type="box" id="Fx"  style="width:40%" value=''>
+ 切线 <input type="box" id="dFx" style="width:40%" value=''><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value=''>
+ 切线 <input type="box" id="dFz" style="width:40%" value=''><br>
+
+<!--
+X方向 <input type="box" id="Fx"  style="width:40%" value='xbox/tau*cos(t)'>
+ 切线 <input type="box" id="dFx" style="width:40%" value='-sin(t)'><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value='xbox/tau*sin(t)'>
+ 切线 <input type="box" id="dFz" style="width:40%" value='cos(t)'><br>
+
+X方向 <input type="box" id="Fx"  style="width:40%" value='16*pow(sin(t),3)' />
+ 切线 <input type="box" id="dFx" style="width:40%" value='10*sin(2*pi*t)' /><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value='13*cos(t)-5*cos(2*t)-2*cos(3*t)-cos(4*t)' />
+ 切线 <input type="box" id="dFz" style="width:40%" value='10*sin(2*pi*t)' /><br>
+
+X方向 <input type="box" id="Fx"  style="width:40%" value='10*(cos(t)-.5*cos(2*t))' />
+ 切线 <input type="box" id="dFx" style="width:40%" value='10*sin(2*pi*t)' /><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value='10*(sin(t)-.5*sin(2*t))' />
+ 切线 <input type="box" id="dFz" style="width:40%" value='10*sin(2*pi*t)' /><br>
+
+X方向 <input type="box" id="Fx"  style="width:40%" value='10*t*sin(2*pi*t)' />
+ 切线 <input type="box" id="dFx" style="width:40%" value='10*sin(2*pi*t)' /><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value='10*t*cos(2*pi*t)' />
+ 切线 <input type="box" id="dFz" style="width:40%" value='10*sin(2*pi*t)' /><br>
+
+-->
+
 </td></tr>
 
 <tr><td colspan=2>
@@ -120,45 +144,65 @@ var d2r=Math.atan2(1,1)/45, r2d=1/d2r
 var $=function(id){return document.getElementById(id)};
 function trim(s){return s.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'')}
 
-var Ft, dFt, RotMat=[[0,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]]
-
-//var dFt = new Function('t', 'r', 'r[0]=10*Math.cos(2*Math.PI*t); r[1]=0; r[2]=-10*Math.sin(2*Math.PI*t)')
+var Ft, dFt, vFt, isFt=false, isdFt=false,
+	RotMat=[[0,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]]
 
 function mathFunction(str) {
 	var fun="pow sqrt exp log abs ceil floor min max round random sin cos tan asin acos atan atan2 toSource valueOf"
 	fun=fun.split(/\s+/)
 	for(var i=0, n=fun.length; i<n; i++)
-		str=str.replace('pi', 'Math.PI').replace(new RegExp(fun[i]+'\\(','g'), 'Math.'+fun[i]+'(')
-	return str
+		str=str.replace(new RegExp(fun[i]+'\\(','g'), 'Math.'+fun[i]+'(')
+	return str.replace(/pi/ig, 'Math.PI').replace(/tau/ig, '(2*Math.PI)').replace(/xbox/ig, parseInt($("wid").value)*Math.sqrt(3)*parseFloat($("rcc").value))
 }
 
 function genCoor() {
 
-	Ft = new Function('t', 'r',
-	'r[0]='+mathFunction(trim($('Fx').value))+';'
-	+'r[1]=0;'
-	+'r[2]='+mathFunction(trim($('Fz').value))+';')
+	if(trim($('Fx').value).length>0 && trim($('Fz').value).length>0) {
+		isFt=true
+		Ft = new Function('t', 'r',
+		'r[0]='+mathFunction(trim($('Fx').value))+';'
+		+'r[1]=0;'
+		+'r[2]='+mathFunction(trim($('Fz').value))+';')
+	}
 
-	dFt = new Function('t', 'r',
-	'r[0]='+mathFunction(trim($('dFx').value))+';'
-	+'r[1]=0;'
-	+'r[2]='+mathFunction(trim($('dFz').value))+';')
+	if(trim($('vF').value).length>0
+	&& trim($('dFx').value).length>0
+	&& trim($('dFz').value).length>0) {
+		isdFt=true
+		dFt = new Function('t', 'r',
+		'r[0]='+mathFunction(trim($('dFx').value))+';'
+		+'r[1]=0;'
+		+'r[2]='+mathFunction(trim($('dFz').value))+';')
+	}
 
-    var i, j, k, X0, Y0,
-        M=parseInt($("wid").value), N=parseInt($("hig").value),
-        a=parseFloat($("rcc").value), Rcnt=parseFloat($("rcnt").value),
-        fo=parseFloat($("fo").value)/100.,  Zo=1.2,
-        foh=parseFloat($("foh").value)/100., Rco=1.5, Roh=0.96, Acoh=108*Math.PI/180.,
-        fcooh=parseFloat($("fcooh").value)/100., Rcc=1.56, Rco2=1.2, Rcoh=1.33,
-        Acco2=124*Math.PI/180., Accoh=112*Math.PI/180.,
-        Xcyc=parseFloat($("cycX").value), Xran=parseFloat($("ranX").value),
-        Ycyc=parseFloat($("cycY").value), Yran=parseFloat($("ranY").value),
-        Zcyc=parseFloat($("cycZ").value), Zran=parseFloat($("ranZ").value),
-        Xtrs=parseFloat($("trsX").value), Ytrs=parseFloat($("trsY").value),
-        Ztrs=parseFloat($("trsZ").value),
-        atomList=$('atom').value, Nedge=parseInt($("holeType").value),
-        Icnt=3, Tcnt,
-        cnt=document.getElementsByName("hole")
+	var i, j, k, X0, Y0,
+		M=parseInt($("wid").value), N=parseInt($("hig").value),
+		a=parseFloat($("rcc").value), Rcnt=parseFloat($("rcnt").value),
+		isPBC=!$('noPBC').checked,
+
+		fO=parseFloat($("fO").value)/100., zO=1.2,
+		upO=$('upO').checked,
+		fOH=parseFloat($("fOH").value)/100.,
+		upOH =$('upOH').checked,
+		rotOH=$('rotOH').checked,
+		fCOOH=parseFloat($("fCOOH").value)/100.,
+		upCOOH =$('upCOOH').checked,
+		rotCOOH=$('rotCOOH').checked,
+
+		fBO=parseFloat($("fBO").value)/100.,
+		fBOH=parseFloat($("fBOH").value)/100.,
+		rotBOH=$('rotBOH').checked,
+		fBCOOH=parseFloat($("fBCOOH").value)/100.,
+		rotBCOOH=$('rotBCOOH').checked,
+
+		Xcyc=parseFloat($("cycX").value), Xran=parseFloat($("ranX").value),
+		Ycyc=parseFloat($("cycY").value), Yran=parseFloat($("ranY").value),
+		Zcyc=parseFloat($("cycZ").value), Zran=parseFloat($("ranZ").value),
+		Xtrs=parseFloat($("trsX").value), Ytrs=parseFloat($("trsY").value),
+		Ztrs=parseFloat($("trsZ").value),
+		atomList=$('atom').value, Nedge=parseInt($("holeType").value),
+		Icnt=3, Tcnt,
+		cnt=document.getElementsByName("hole")
 
     if(cnt[0].checked) { Icnt=1; Tcnt=cnt[0].value }
     if(cnt[1].checked) { Icnt=2; Tcnt=cnt[1].value }
@@ -227,78 +271,157 @@ function genCoor() {
         }
     }
 
-	var Nbond=0, bond1=[], bond2=[]
-	bond1[0]=0; bond2[0]=0
+	var Nadj, Nbond=-1, bond1=[], bond2=[], adj=[], norm=[]
 	for(i=1; i<=Natm; i++) {
-		j=i%4
+		adj[i]=[]; norm[i]=[]
+		j=i%4; Nadj=0
 		if(j==1) {
-			Nbond++; bond1[Nbond]=i; bond2[Nbond]=i+1
-			idx=getIdx(M, N, col[i]-1, row[i],   2); if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
-			idx=getIdx(M, N, col[i],   row[i]-1, 4); if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+			Nadj++; adj[i][Nadj]=i+1;
+			norm[i][1]=i+1; norm[i][2]=i+2
+
+			Nbond++; bond1[Nbond]=i; bond2[Nbond]=i+1;
+
+			idx=getIdx(M, N, col[i]-1, row[i],   2);
+			if(idx>0) { Nadj++; adj[i][Nadj]=idx; }
+			if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+
+			idx=getIdx(M, N, col[i],   row[i]-1, 4);
+			if(idx>0) { Nadj++; adj[i][Nadj]=idx; }
+			if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
 		} else if(j==2) {
-			//Nbond++; bond1[Nbond]=i; bond2[Nbond]=i-1
-			Nbond++; bond1[Nbond]=i; bond2[Nbond]=i+1
-			idx=getIdx(M, N, col[i]+1, row[i], 1); if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+			adj[i][1]=i+1;  adj[i][2]=i-1
+			norm[i][1]=i+1; norm[i][2]=i-1
+
+			Nbond++; bond1[Nbond]=i; bond2[Nbond]=i+1;
+
+			idx=getIdx(M, N, col[i]+1, row[i], 1);
+			if(idx>0) { adj[i][3]=idx; }
+			if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+
+			idx=getIdx(M, N, col[i]+1, row[i], 1);
+			if(idx>0) { adj[i][3]=idx; }
+			if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
 		} else if(j==3) {
-			Nbond++; bond1[Nbond]=i; bond2[Nbond]=i+1
-			//Nbond++; bond1[Nbond]=i; bond2[Nbond]=i-1
-			idx=getIdx(M, N, col[i]+1, row[i], 4); if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+			adj[i][1]=i+1;  adj[i][2]=i-1
+			norm[i][1]=i+1; norm[i][2]=i-1
+
+			Nbond++; bond1[Nbond]=i; bond2[Nbond]=i+1;
+
+			idx=getIdx(M, N, col[i]+1, row[i], 4);
+			if(idx>0) { adj[i][3]=idx; }
+			if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+
+			idx=getIdx(M, N, col[i]+1, row[i], 4);
+			if(idx>0) { adj[i][3]=idx; }
+			if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
 		} else if(j==0) {
-			//Nbond++; bond1[Nbond]=i; bond2[Nbond]=i-1
-			idx=getIdx(M, N, col[i]-1, row[i],   3); if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
-			idx=getIdx(M, N, col[i],   row[i]+1, 1); if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+			adj[i][1]=i-1; norm[i][1]=i-2; norm[i][2]=i-1;
+
+			idx=getIdx(M, N, col[i]-1, row[i],   3);
+			if(idx>0) { adj[i][2]=idx; }
+			if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
+
+			idx=getIdx(M, N, col[i],   row[i]+1, 1);
+			if(idx>0) { adj[i][2]=idx; }
+			if(idx>i) { Nbond++; bond1[Nbond]=i; bond2[Nbond]=idx }
 		}
 	}
+	Nbond++
+
+	var Nbound=0, isBound=[], Ninter
+	for(i=1; i<=Natm; i++) {
+		isBound[i]=false
+		if(!isPBC
+		&& (   col[i]==1 && i%4<=1 || col[i]==M && i%4>1
+			|| row[i]==1 && i%4==1 || row[i]==N && i%4==0) ) {
+				Nbound++
+				isBound[i]=true
+		}
+	}
+	Ninter=Natm-Nbound
 
 	var bond=[]
 	bond[1]=[]; bond[2]=[]
-	for(i=0; i<=Nbond; i++) {
+	for(i=0; i<Nbond; i++) {
 		bond[1][i]=bond1[i]
 		bond[2][i]=bond2[i]
 	}
 
-	Xmin=Math.min(...Xatm.slice(1))
-	Xmax=Math.max(...Xatm.slice(1))
+	if(isFt) {
+		var eps=1E-3, tmax, s=0, r=[], V=[]
+		for(tmax=0; s<=Xbox; tmax+=.5) s += sarc(tmax, tmax+0.5, eps)
+		tmax=tarc(Xbox, 0, 0, tmax, eps)
 
-	var eps=1E-3, tmax, s=0, r=[], V=[]
+		if(isdFt) vFt = new Function('t', 'tht',
+			'return '+mathFunction(trim($('vF').value)).replace('tmax', tmax) )
 
-	for(tmax=0; s<=Xmax; tmax+=.5) s += sarc(tmax, tmax+0.5, eps)
+		for(i=1; i<=Natm; i++) {
+			t=tarc(Xatm[i], 0, 0, tmax, eps)
+			Ft(t, r)
+			Xatm[i]=r[0]
+			Zatm[i]=r[2]
 
-	for(i=1; i<=Natm; i++) {
-		t=tarc(Xatm[i], 0, 0, tmax, eps)
-		Ft(t, r)
-		Xatm[i]=r[0]
-		Zatm[i]=r[2]
-
-		//V=[ 0, Xatm[i], Yatm[i], Zatm[i] ]
-
-		//dFt(t, r)
-		//AxiRotMat(150*t, r[0], r[1], r[2])
-		//RotVect(RotMat, V, V[1], .5*Ybox, V[3])
-
-		//Xatm[i]=V[1]
-		//Yatm[i]=V[2]
-		//Zatm[i]=V[3]
+			if(isdFt) {
+				V=[ 0, Xatm[i], Yatm[i], Zatm[i] ]
+				dFt(t, r)
+				AxiRotMat(vFt(t), r[0], r[1], r[2])
+				RotVect(RotMat, V, V[1], .5*Ybox, V[3])
+				Xatm[i]=V[1]
+				Yatm[i]=V[2]
+				Zatm[i]=V[3]
+			}
+		}
 	}
 
-	var Nmod=0, isAbove=0, atom=[]
+	var atom=[]
+	atom[0]=-1
+	for(i=1; i<=Natm; i++) {
+		atom[i]=i
+		if(isBound[i]) {
+			atom[i]=-1
+			idx=bond1.indexOf(i);
+			while(idx!=-1) {
+				bond1.splice(idx,1);
+				bond2.splice(idx,1);
+				idx=bond1.indexOf(i)
+			}
+			idx=bond2.indexOf(i);
+			while(idx!=-1) {
+				bond1.splice(idx,1);
+				bond2.splice(idx,1);
+				idx=bond2.indexOf(i)
+			}
+		}
+	}
 
-	for(i=0; i<=Natm; i++) atom[i]=i
+	var Nmod=0, isUp=0, No=0, nijk=[]
 
-	var No=0
-	while(No<Math.ceil(Natm*fo) && bond1.length>1) {
-		idx=getRandInt(1, bond1.length-1)
+	while(No<Math.ceil(Ninter*fO) && bond1.length>0) {
+		idx=getRandInt(0, bond1.length-1)
 		i=bond1[idx]; j=bond2[idx]
 
 		No++
 		Nmod++
 		atom[i]=-1; atom[j]=-1
-		isAbove=(Math.random()<0.5) ? 1 : -1
+		isUp=(upO && Math.random()<0.5) ? -1 : 1
 		Satm[Natm+Nmod]='O'
 
-		Xatm[Natm+Nmod]=Xatm[i]+.5*pbcCart(Xatm[j]-Xatm[i], Xbox)
-		Yatm[Natm+Nmod]=Yatm[i]+.5*pbcCart(Yatm[j]-Yatm[i], Ybox)
-		Zatm[Natm+Nmod]=Zatm[i]+ Zo*isAbove
+		Zatm[Natm+Nmod]=.5*(Zatm[i]+Zatm[j])
+		if(isPBC) {
+			Xatm[Natm+Nmod]=Xatm[i]+.5*pbcCart(Xatm[j]-Xatm[i], Xbox)
+			Yatm[Natm+Nmod]=Yatm[i]+.5*pbcCart(Yatm[j]-Yatm[i], Ybox)
+		} else {
+			Xatm[Natm+Nmod]=.5*(Xatm[i]+Xatm[j])
+			Yatm[Natm+Nmod]=.5*(Yatm[i]+Yatm[j])
+		}
+
+		ang(Xatm[norm[i][1]], Yatm[norm[i][1]], Zatm[norm[i][1]],
+			Xatm[i], Yatm[i], Zatm[i],
+			Xatm[norm[i][2]], Yatm[norm[i][2]], Zatm[norm[i][2]], nijk)
+
+		Xatm[Natm+Nmod] += zO*isUp*nijk[1]
+		Yatm[Natm+Nmod] += zO*isUp*nijk[2]
+		Zatm[Natm+Nmod] += zO*isUp*nijk[3]
 
 	   idx=bond1.indexOf(i); while(idx!=-1) { bond1.splice(idx,1); bond2.splice(idx,1); idx=bond1.indexOf(i)}
 	   idx=bond1.indexOf(j); while(idx!=-1) { bond1.splice(idx,1); bond2.splice(idx,1); idx=bond1.indexOf(j)}
@@ -308,13 +431,26 @@ function genCoor() {
 
 	idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1) }
 
-	var Noh=0
-	while(Noh<Math.ceil(Natm*foh) && atom.length>1) {
-		idx=getRandInt(1, atom.length-1)
-		i=atom[idx]
-        atom[idx]=-1
+	var OH=''
+	+'\nC  0.000  -0.000   0.0000'
+	+'\nO  0.000   0.000   1.4580'
+	+'\nH  0.916  -0.000   1.7598'
+	OH=trim(OH).split('\n')
+	var Soh=[], Xoh=[], Yoh=[], Zoh=[]
+	for(i=0; i<OH.length; i++) {
+		Soh[i]=OH[i].split(/\s+/)[0]
+		Xoh[i]=parseFloat(OH[i].split(/\s+/)[1])
+		Yoh[i]=parseFloat(OH[i].split(/\s+/)[2])
+		Zoh[i]=parseFloat(OH[i].split(/\s+/)[3])
+	}
 
-        for(j=1; j<=Nbond; j++) {
+	var Noh=0
+	while(Noh<Math.ceil(Ninter*fOH) && atom.length>0) {
+		idx=getRandInt(0, atom.length-1)
+		i=atom[idx]
+		atom[idx]=-1
+
+		for(j=0; j<Nbond; j++) {
 			if(bond[1][j]==i) {
 				idx=atom.indexOf(bond[2][j]); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(bond[2][j])}
 			}
@@ -324,32 +460,60 @@ function genCoor() {
 		}
 
 		Noh++
-		isAbove=(Math.random()<0.5) ? 1:-1
-		Nmod++
-		Satm[Natm+Nmod]='O'
-		Xatm[Natm+Nmod]=Xatm[i]
-		Yatm[Natm+Nmod]=Yatm[i]
-		Zatm[Natm+Nmod]=Zatm[i]+Rco*isAbove
+		isUp=(upOH && Math.random()<0.5) ? -1:1
 
-		Nmod++
-		t=30; if(i%2) t=90
-		if($('ranOH').checked) t += getRandInt(0, 2)*120
-		t *= Math.PI/180
-		Satm[Natm+Nmod]='H'
-		Xatm[Natm+Nmod]=Xatm[i]+Roh*Math.cos(Acoh-Math.PI/2)*Math.cos(t)
-		Yatm[Natm+Nmod]=Yatm[i]+Roh*Math.cos(Acoh-Math.PI/2)*Math.sin(t)
-		Zatm[Natm+Nmod]=Zatm[i]+(Rco+Roh*Math.sin(Acoh-Math.PI/2))*isAbove
+		ang(Xatm[norm[i][1]], Yatm[norm[i][1]], Zatm[norm[i][1]],
+			Xatm[i], Yatm[i], Zatm[i],
+			Xatm[norm[i][2]], Yatm[norm[i][2]], Zatm[norm[i][2]], nijk)
+		AxiRotMat(180, nijk[1], nijk[2], nijk[3]+1)
+
+		for(j=1; j<=2; j++) {
+			Nmod++
+			V=[ 0, Xatm[i]+isUp*Xoh[j], Yatm[i]+isUp*Yoh[j], Zatm[i]+isUp*Zoh[j] ]
+			RotVect(RotMat, V, Xatm[i], Yatm[i], Zatm[i])
+			Satm[Natm+Nmod]=Soh[j]
+			Xatm[Natm+Nmod]=V[1]
+			Yatm[Natm+Nmod]=V[2]
+			Zatm[Natm+Nmod]=V[3]
+		}
+
+		t=-30; if(i%2) t=-90
+		if(rotOH) t += getRandInt(0, 3)*120
+
+		AxiRotMat(t, nijk[1], nijk[2], nijk[3])
+		V=[ 0, Xatm[Natm+Nmod], Yatm[Natm+Nmod], Zatm[Natm+Nmod] ]
+		RotVect(RotMat, V, Xatm[i], Yatm[i], Zatm[i])
+		Xatm[Natm+Nmod]=V[1]
+		Yatm[Natm+Nmod]=V[2]
+		Zatm[Natm+Nmod]=V[3]
+
 		idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1)}
 	}
 
 	idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1)}
+
+	var COOH=''
+	+'\nC     0.000   0.000  0.0000'
+	+'\nC     0.000  -0.000  1.5608'
+	+'\nO     0.992  -0.000  2.2318'
+	+'\nO    -1.228  -0.061  2.0680'
+	+'\nH    -1.192  -0.119  3.0366'
+	COOH=trim(COOH).split('\n')
+	var Scooh=[], Xcooh=[], Ycooh=[], Zcooh=[]
+	for(i=0; i<COOH.length; i++) {
+		Scooh[i]=COOH[i].split(/\s+/)[0]
+		Xcooh[i]=parseFloat(COOH[i].split(/\s+/)[1])
+		Ycooh[i]=parseFloat(COOH[i].split(/\s+/)[2])
+		Zcooh[i]=parseFloat(COOH[i].split(/\s+/)[3])
+	}
+
 	var Ncooh=0
-	while(Ncooh<Math.ceil(Natm*fcooh) && atom.length>1) {
-		idx=getRandInt(1, atom.length-1)
+	while(Ncooh<Math.ceil(Ninter*fCOOH) && atom.length>0) {
+		idx=getRandInt(0, atom.length-1)
 		i=atom[idx]
 		atom[idx]=-1
 
-        for(j=1; j<=Nbond; j++) {
+        for(j=0; j<Nbond; j++) {
 			if(bond[1][j]==i) {
 				idx=atom.indexOf(bond[2][j]); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(bond[2][j])}
 			}
@@ -359,36 +523,165 @@ function genCoor() {
         }
 
 		Ncooh++
-		isAbove=(Math.random()<0.5) ? 1:-1
+		isUp=(upCOOH && Math.random()<0.5) ? -1:1
 
-		Nmod++
-		Satm[Natm+Nmod]='C'
-		Xatm[Natm+Nmod]=Xatm[i]
-		Yatm[Natm+Nmod]=Yatm[i]
-		Zatm[Natm+Nmod]=Zatm[i]+Rcc*isAbove
+		ang(Xatm[norm[i][1]], Yatm[norm[i][1]], Zatm[norm[i][1]],
+			Xatm[i], Yatm[i], Zatm[i],
+			Xatm[norm[i][2]], Yatm[norm[i][2]], Zatm[norm[i][2]], nijk)
+		AxiRotMat(180, nijk[1], nijk[2], nijk[3]+1)
 
-		Nmod++
+		for(j=1; j<=4; j++) {
+			Nmod++
+
+			V=[ 0, Xatm[i]+isUp*Xcooh[j], Yatm[i]+isUp*Ycooh[j], Zatm[i]+isUp*Zcooh[j] ]
+			RotVect(RotMat, V, Xatm[i], Yatm[i], Zatm[i])
+
+			Satm[Natm+Nmod]=Scooh[j]
+			Xatm[Natm+Nmod]=V[1]
+			Yatm[Natm+Nmod]=V[2]
+			Zatm[Natm+Nmod]=V[3]
+		}
+
 		t=-5; if(i%2) t=-65
-        if($('ranCOOH').checked) t += getRandInt(0, 2)*120
-        t *= Math.PI/180
-		Satm[Natm+Nmod]='O'
-		Xatm[Natm+Nmod]=Xatm[i]+Rco2*Math.cos(Acco2-Math.PI/2)*Math.cos(t)
-		Yatm[Natm+Nmod]=Yatm[i]+Rco2*Math.cos(Acco2-Math.PI/2)*Math.sin(t)
-		Zatm[Natm+Nmod]=Zatm[i]+(Rcc+Rco2*Math.sin(Acco2-Math.PI/2))*isAbove
+		if(rotCOOH) t += getRandInt(0, 3)*120
 
-		Nmod++
-		Satm[Natm+Nmod]='O'
-		Xatm[Natm+Nmod]=Xatm[i]+Rcoh*Math.cos(Accoh-Math.PI/2)*Math.cos(t+Math.PI)
-		Yatm[Natm+Nmod]=Yatm[i]+Rcoh*Math.cos(Accoh-Math.PI/2)*Math.sin(t+Math.PI)
-		Zatm[Natm+Nmod]=Zatm[i]+(Rcc+Rcoh*Math.sin(Accoh-Math.PI/2))*isAbove
+		AxiRotMat(t, nijk[1], nijk[2], nijk[3])
+		for(j=0; j<4; j++) {
+			V=[ 0, Xatm[Natm+Nmod-j], Yatm[Natm+Nmod-j], Zatm[Natm+Nmod-j] ]
+			RotVect(RotMat, V, Xatm[i], Yatm[i], Zatm[i])
+			Xatm[Natm+Nmod-j]=V[1]
+			Yatm[Natm+Nmod-j]=V[2]
+			Zatm[Natm+Nmod-j]=V[3]
+		}
 
-		Nmod++
-		Satm[Natm+Nmod]='H'
-		Xatm[Natm+Nmod]=Xatm[i]+Rcoh*Math.cos(Accoh-Math.PI/2)*Math.cos(t+Math.PI)
-		Yatm[Natm+Nmod]=Yatm[i]+Rcoh*Math.cos(Accoh-Math.PI/2)*Math.sin(t+Math.PI)
-		Zatm[Natm+Nmod]=Zatm[i]+(Rcc+Rcoh*Math.sin(Accoh-Math.PI/2)+Roh)*isAbove
 		idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1)}
 	}
+
+	atom=[]
+	for(i=0; i<=Natm; i++) {
+		atom[i]=i
+		if(!isBound[i]) atom[i]=-1
+	}
+	idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1)}
+
+	var Nbo=0
+	while(Nbo<Math.ceil(Nbound*fBO) && atom.length>0) {
+		idx=getRandInt(0, atom.length-1)
+		i=atom[idx]
+		atom[idx]=-1
+
+		V=[Xatm[adj[i][1]]-Xatm[i],
+		   Yatm[adj[i][1]]-Yatm[i],
+		   Zatm[adj[i][1]]-Zatm[i] ]
+		if(adj[i].length>2) {
+			V[0] += Xatm[adj[i][2]]-Xatm[i]
+			V[1] += Yatm[adj[i][2]]-Yatm[i]
+			V[2] += Zatm[adj[i][2]]-Zatm[i]
+		}
+		r=1/Math.sqrt(V[0]*V[0]+V[1]*V[1]+V[2]*V[2])
+
+		Nbo++
+		Nmod++
+		Satm[Natm+Nmod]='O'
+		Xatm[Natm+Nmod]=Xatm[i]-1.2*V[0]*r
+		Yatm[Natm+Nmod]=Yatm[i]-1.2*V[1]*r
+		Zatm[Natm+Nmod]=Zatm[i]-1.2*V[2]*r
+		idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1)}
+	}
+
+	var Nboh=0
+	while(Nboh<Math.ceil(Ninter*fBOH) && atom.length>0) {
+		idx=getRandInt(0, atom.length-1)
+		i=atom[idx]
+		atom[idx]=-1
+
+		nijk=[ 0,
+			Xatm[adj[i][1]]-Xatm[i],
+			Yatm[adj[i][1]]-Yatm[i],
+			Zatm[adj[i][1]]-Zatm[i] ]
+		if(adj[i].length>2) {
+			nijk[1] += Xatm[adj[i][2]]-Xatm[i]
+			nijk[2] += Yatm[adj[i][2]]-Yatm[i]
+			nijk[3] += Zatm[adj[i][2]]-Zatm[i]
+		}
+		r=-1/Math.sqrt( nijk[1]*nijk[1]+nijk[2]*nijk[2]+nijk[3]*nijk[3] )
+		nijk[1] *= r
+		nijk[2] *= r
+		nijk[3] *= r
+
+		AxiRotMat(180, nijk[1], nijk[2], nijk[3]+1)
+
+		Nboh++
+		for(j=1; j<=2; j++) {
+			Nmod++
+			V=[ 0, Xatm[i]+Xoh[j], Yatm[i]+Yoh[j], Zatm[i]+Zoh[j] ]
+			RotVect(RotMat, V, Xatm[i], Yatm[i], Zatm[i])
+			Satm[Natm+Nmod]=Soh[j]
+			Xatm[Natm+Nmod]=V[1]
+			Yatm[Natm+Nmod]=V[2]
+			Zatm[Natm+Nmod]=V[3]
+		}
+
+		if(rotBOH) {
+			t = getRandInt(0, 360)
+			AxiRotMat(t, nijk[1], nijk[2], nijk[3])
+			V=[ 0, Xatm[Natm+Nmod], Yatm[Natm+Nmod], Zatm[Natm+Nmod] ]
+			RotVect(RotMat, V, Xatm[i], Yatm[i], Zatm[i])
+			Xatm[Natm+Nmod]=V[1]
+			Yatm[Natm+Nmod]=V[2]
+			Zatm[Natm+Nmod]=V[3]
+		}
+
+		idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1)}
+	}
+
+	var Nbcooh=0
+	while(Nbcooh<Math.ceil(Ninter*fBCOOH) && atom.length>0) {
+		idx=getRandInt(0, atom.length-1)
+		i=atom[idx]
+		atom[idx]=-1
+
+		nijk=[ 0,
+			Xatm[adj[i][1]]-Xatm[i],
+			Yatm[adj[i][1]]-Yatm[i],
+			Zatm[adj[i][1]]-Zatm[i] ]
+		if(adj[i].length>2) {
+			nijk[1] += Xatm[adj[i][2]]-Xatm[i]
+			nijk[2] += Yatm[adj[i][2]]-Yatm[i]
+			nijk[3] += Zatm[adj[i][2]]-Zatm[i]
+		}
+		r=-1/Math.sqrt( nijk[1]*nijk[1]+nijk[2]*nijk[2]+nijk[3]*nijk[3] )
+		nijk[1] *= r
+		nijk[2] *= r
+		nijk[3] *= r
+
+		AxiRotMat(180, nijk[1], nijk[2], nijk[3]+1)
+
+		Nbcooh++
+		for(j=1; j<=4; j++) {
+			Nmod++
+			V=[ 0, Xatm[i]+Xcooh[j], Yatm[i]+Ycooh[j], Zatm[i]+Zcooh[j] ]
+			RotVect(RotMat, V, Xatm[i], Yatm[i], Zatm[i])
+			Satm[Natm+Nmod]=Scooh[j]
+			Xatm[Natm+Nmod]=V[1]
+			Yatm[Natm+Nmod]=V[2]
+			Zatm[Natm+Nmod]=V[3]
+		}
+
+		if(rotBCOOH) {
+			t = getRandInt(0, 360)
+			AxiRotMat(t, nijk[1], nijk[2], nijk[3])
+			for(j=0; j<4; j++) {
+				V=[ 0, Xatm[Natm+Nmod-j], Yatm[Natm+Nmod-j], Zatm[Natm+Nmod-j] ]
+				RotVect(RotMat, V, Xatm[i], Yatm[i], Zatm[i])
+				Xatm[Natm+Nmod-j]=V[1]
+				Yatm[Natm+Nmod-j]=V[2]
+				Zatm[Natm+Nmod-j]=V[3]
+			}
+		}
+		idx=atom.indexOf(-1); while(idx!=-1) { atom.splice(idx,1); idx=atom.indexOf(-1)}
+	}
+
     var Fmol="MOL: "+M+" "+N+" Rcc="+printf('%5.3f',a)+" Rhole="+printf('%5.3f',Rcnt)+" Center: "+Tcnt+printf('%12.6f',Xcnt)+printf('%12.6f',Ycnt)+"\n"+(Ninc+Nmod)+"\n"
         Fcif='data_GRA\n'+Ninc+Nmod+'\n_symmetry_space_group_name_\' \''
         +'\n_cell_length_a '+Xbox+'\n_cell_length_b '+Ybox+'\n_cell_length_c '+10*a
@@ -564,27 +857,44 @@ function sarc(t1, t2, eps) {
 	return Lnxt
 }
 
-function tarc(s, t0, t1, t2, eps) {
-	var t, dt, st, s1, s2
+function tarc(st, t0, t1, t2, eps) {
+	var t, s, ds
 
-	s1 = sarc(t0, t1, eps)
-	s2 = sarc(t1, t2, eps)
-	s -= s1
+	ds  = sarc(t1, t2, eps)
+	st -= sarc(t0, t1, eps)
 
-	t=t1+s*(t2-t1)/s2
-	st=sarc(t1, t, eps)
+	t=t1+st*(t2-t1)/ds
+	s=sarc(t1, t, eps)
 	while(Math.abs(st-s)>eps) {
-		if(st<s) { t1=t; s -= st; s2 -= st }
-		else     { t2=t;          s2=st }
+		if(s<st) { t1=t; st -= s; ds -= s }
+		else     { t2=t;          ds =  s }
 
-		t=t1+s*(t2-t1)/s2
-		st=sarc(t1, t, eps)
+		t=t1+st*(t2-t1)/ds
+		s=sarc(t1, t, eps)
 	}
 	return t
 }
 
+function dot(A, B) { return A[1]*B[1]+A[2]*B[2]+A[3]*B[3] }
+function cross(A, B, AxB) {
+	AxB[1] = A[2]*B[3]-A[3]*B[2]
+	AxB[2] = A[3]*B[1]-A[1]*B[3]
+	AxB[3] = A[1]*B[2]-A[2]*B[1]
+}
+
+function ang(xi,yi,zi, xj,yj,zj, xk,yk,zk, nijk) {
+	var Vi=[], Vk=[]
+	Vi[1] = xi-xj; Vk[1] = xk-xj
+	Vi[2] = yi-yj; Vk[2] = yk-yj
+	Vi[3] = zi-zj; Vk[3] = zk-zj
+	cross(Vi, Vk, nijk)
+	var r=nijk[1]*nijk[1]+nijk[2]*nijk[2]+nijk[3]*nijk[3]
+	if(r>0 && r!=1) { r=1/Math.sqrt(r); nijk[1]*=r; nijk[2]*=r; nijk[3]*=r }
+	return Math.acos(dot(Vi, Vk)/Math.sqrt(dot(Vi, Vi)*dot(Vk, Vk)))*r2d
+}
+
 function RotVect(RotMat, V, x0, y0, z0) {
-	Vx = V[1]-x0; Vy = V[2]-y0; Vz = V[3]-z0
+	var Vx = V[1]-x0, Vy = V[2]-y0, Vz = V[3]-z0
 	V[1]= RotMat[1][1]*Vx + RotMat[1][2]*Vy + RotMat[1][3]*Vz + x0
 	V[2]= RotMat[2][1]*Vx + RotMat[2][2]*Vy + RotMat[2][3]*Vz + y0
 	V[3]= RotMat[3][1]*Vx + RotMat[3][2]*Vy + RotMat[3][3]*Vz + z0
@@ -638,10 +948,14 @@ function normRand(mean, std) {
     return mean+ u*c *std;
 }
 
-function getIdx(colNum, rowNum, col, row, idx) {
-    if(col==0) col=colNum; if(col>colNum) col=1
-    if(row==0) row=rowNum; if(row>rowNum) row=1
-    return 4*(colNum*(row-1)+col-1)+idx
+function getIdx(colNum, rowNum, col, row, idx, isPBC) {
+	if(isPBC) {
+		if(col==0) col=colNum; if(col>colNum) col=1
+		if(row==0) row=rowNum; if(row>rowNum) row=1
+	} else {
+		if(col<1 || col>colNum || row<1 || row>rowNum) return 0
+	}
+	return 4*(colNum*(row-1)+col-1)+idx
 }
 function pbcCart(x, box) {
          if(x> 0.5*box) x -= box
