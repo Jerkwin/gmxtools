@@ -337,7 +337,7 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 		minY= MAXPOS; maxY=-MAXPOS;
 		minZ= MAXPOS; maxZ=-MAXPOS
 
-		fmt=sprintf(".9f",dt/1E3)
+		fmt=sprintf("%.9f",dt/1E3)
 		sub(/0*$/,"",fmt);sub(/.*\./,"",fmt)
 		fmt="~%."length(fmt)"fns"
 	}
