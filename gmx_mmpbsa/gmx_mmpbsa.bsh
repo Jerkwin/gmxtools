@@ -17,6 +17,7 @@ echo -e "\
 >> Log:
    TODO:       CAS
    TODO:       parallel APBS, focus
+   2020-06-01: fix bug of -skip
    2020-05-27: fix bug for sdie
    2020-05-26: fix bug for RES name
    2020-04-03: use C6, C12 directly
@@ -73,7 +74,7 @@ step=1	# 从第几步开始运行 step number to run
 
 gmx='gmx'								# /path/to/GMX/bin/gmx_mpi
 dump="$gmx dump"						# gmx dump
-trjconv="$gmx trjconv -skip 1000"		# gmx trjconv, may use -b -e -dt -skip
+trjconv="$gmx trjconv -dt 1000"			# gmx trjconv, use -b -e -dt, NOT -skip
 
 #apbs='/path/APBS/bin/apbs'				# APBS(Linux)
 apbs='c:/apbs1.5/bin/apbs.exe'			# APBS(Windows), USE "/", NOT "\"
