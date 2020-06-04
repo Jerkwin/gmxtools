@@ -363,7 +363,7 @@ function genCoor() {
 			if(isdFt) {
 				V=[ 0, Xatm[i], Yatm[i], Zatm[i] ]
 				dFt(t, r)
-				AxiRotMat(vFt(t), r[0], r[1], r[2])
+				AxiRotMat(vFt(t)/d2r, r[0], r[1], r[2])
 				RotVect(RotMat, V, V[1], .5*Ybox, V[3])
 				Xatm[i]=V[1]
 				Yatm[i]=V[2]
@@ -902,7 +902,7 @@ function RotVect(RotMat, V, x0, y0, z0) {
 function AxiRotMat(tht, x, y, z) {
 	var r=x*x+y*y+z*z; if(r>0 && r!=1) { r=1/Math.sqrt(r); x*=r; y*=r; z*=r }
 
-	//tht *= d2r
+	tht *= d2r
 	r=Math.sin(tht/2); w=Math.cos(tht/2); x*=r; y*=r; z*=r
 	RotMat[1][1]= 1-2*(y*y+z*z); RotMat[1][2]=   2*(x*y-w*z); RotMat[1][3]=   2*(x*z+w*y);
 	RotMat[2][1]=   2*(x*y+w*z); RotMat[2][2]= 1-2*(x*x+z*z); RotMat[2][3]=   2*(y*z-w*x);
