@@ -34,6 +34,8 @@
 <td><a href="http://jerkwin.github.io/2014/05/09/%E7%9F%B3%E5%A2%A8%E7%83%AF-%E5%BB%BA%E6%A8%A1-%E5%87%A0%E4%BD%95%E6%80%A7%E8%B4%A8%E5%8F%8A%E5%8A%9B%E5%9C%BA%E6%A8%A1%E6%8B%9F/">石墨烯：建模, 几何性质及力场模拟</a><br>
 <a href="https://jerkwin.github.io/2014/12/24/%E7%9F%B3%E5%A2%A8%E7%83%AF%E5%9C%A8%E7%BA%BF%E5%88%9B%E5%BB%BA%E5%B7%A5%E5%85%B7/">石墨烯在线创建工具</a><br>
 <a href="https://jerkwin.github.io/GMX/GMXtut-8/">创建周期性体系的拓扑文件：以石墨烯为例</a><br>
+<a href="https://jerkwin.github.io/2020/04/05/%E6%B0%A7%E5%8C%96%E7%9F%B3%E5%A2%A8%E7%83%AF%E7%9A%84%E7%BB%93%E6%9E%84%E4%B8%8E%E5%BB%BA%E6%A8%A1/">氧化石墨烯的结构与建模</a><br>
+<a href="https://jerkwin.github.io/2020/06/03/%E7%9F%B3%E5%A2%A8%E7%83%AF%E5%B9%B3%E9%9D%A2%E7%9A%84%E5%8D%B7%E6%9B%B2%E4%B8%8E%E6%89%AD%E6%9B%B2/">石墨烯平面的卷曲与扭曲</a><br>
 </td>
 <td><a href="./model/graphene.html">graphene</a></td>
 <td>N/A</td>
