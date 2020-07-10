@@ -61,7 +61,8 @@
 <tr>
 <td>xpm2all</td>
 <td><a href="https://jerkwin.github.io/2018/05/09/xpm%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86%E8%84%9A%E6%9C%AC/">xpm文件处理脚本</a><br>
-<a href="https://jerkwin.github.io/2020/02/29/%E5%88%86%E5%AD%90%E6%A8%A1%E6%8B%9F%E5%91%A8%E5%88%8A-%E7%AC%AC_8_%E6%9C%9F/">xpm2all: xpm文件转换工具</a>
+<a href="https://jerkwin.github.io/2020/02/29/%E5%88%86%E5%AD%90%E6%A8%A1%E6%8B%9F%E5%91%A8%E5%88%8A-%E7%AC%AC_8_%E6%9C%9F/">xpm2all: xpm文件转换工具</a><br>
+<a href="http://jerkwin.github.io/2020/07/10/%E4%BD%BF%E7%94%A8xpm2all%E8%84%9A%E6%9C%AC%E8%AE%A1%E7%AE%97%E8%9B%8B%E7%99%BD%E4%BA%8C%E7%BA%A7%E7%BB%93%E6%9E%84%E6%BC%94%E5%8C%96%E5%8F%8A%E5%90%AB%E9%87%8F/">使用xpm2all脚本计算蛋白二级结构演化及含量</a>
 </td>
 <td><a href="./xpm2all/xpm2all.bsh">xpm2all.bsh</a><br>
 <a href="./xpm2all/xpm2all.bat">xpm2rgb.bat</a>
