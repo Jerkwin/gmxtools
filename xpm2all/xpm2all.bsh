@@ -40,7 +40,7 @@ function xpm2gpl {
 #	S = "Bend"     bend (the only non-hydrogen-bond based assignment)
 #	~ = "Coil"     C, loops/coil (residues which are not in any of the above conformations)
 
-	awk -v ssmode=$ssmode ' BEGIN{
+	awk -v file=$file -v minRes=$minRes -v maxRes=$maxRes -v ssmode=$ssmode ' BEGIN{
 		fx=.5; if(ssmode=="box") fx=1;
 		color="pdb"
 		c["A-Helix"] ="#ED6161"
@@ -65,6 +65,7 @@ function xpm2gpl {
 	/\/\* y-axis/ && iy { y0=$3; dy=$4-y0; iy=0 }
 
 	END { Pi=4*atan2(1,1)
+		if(ny<maxRes) maxRes=ny
 		nx=length(zv[1])/ncode
 		fun["A-Helix"] ="AHelix"
 		fun["3-Helix"] ="Helix3"
@@ -102,26 +103,62 @@ function xpm2gpl {
 			Tx[i]=Tx[Nt-i]=(t<d || t>1-d) ? 0 : dx*fx*(.5*(.5-t)^2/(.5-d)^2-.5)
 		}
 
+		print "# residue index: "minRes"-"maxRes >file"~count.xvg"
+		print "#      Time(ps)  A-Helix  3-Helix  B-Sheet B-Bridge     Turn     Bend     Coil" >file"~count.xvg"
 		n=0
 		for(i=0; i<nx; i++) {
+			ftype["A-Helix"] =0
+			ftype["3-Helix"] =0
+			ftype["B-Sheet"] =0
+			ftype["B-Bridge"]=0
+			ftype["Turn"]    =0
+			ftype["Bend"]    =0
+			ftype["Coil"]    =0
+
 			x = x0+i*dx
 			for(j=0; j<ny; j++) {
-				y = y0+j*dy
-				txt=substr(zv[ny-1-j], i*ncode+1, ncode)
-				type[j]=v[txt]
+				if(minRes<=j+1 && j+1<=maxRes) {
+					y = y0+j*dy
+					txt=substr(zv[ny-1-j], i*ncode+1, ncode)
+					type[j]=v[txt]
+					ftype[v[txt]]++
+				}
 			}
+
+			printf "%15.6f%9d%9d%9d%9d%9d%9d%9d\n", x,
+					 ftype["A-Helix"] ,
+					 ftype["3-Helix"] ,
+					 ftype["B-Sheet"] ,
+					 ftype["B-Bridge"],
+					 ftype["Turn"]    ,
+					 ftype["Bend"]    ,
+					 ftype["Coil"]      >file"~count.xvg"
+
 			for(j=0; j<ny; j++) {
-				for(jj=j+1; jj<ny && type[jj]==type[j]; jj++) type[jj]=""
-				if(type[j]) print obj(x, y0+j*dy, y0+(jj-1)*dy, type[j], dx*fx)
+				if(minRes<=j+1 && j+1<=maxRes) {
+					for(jj=j+1; jj<ny && type[jj]==type[j]; jj++) type[jj]=""
+					if(type[j]) print obj(x, y0+j*dy, y0+(jj-1)*dy, type[j], dx*fx)
+				}
 			}
 		}
 
 		print ""
+		print "set tmargin at screen 0.95"
+		print "set bmargin at screen 0.2"
+		print "set rmargin at screen 0.85"
+		print "set label \" A-Helix \" at screen 0.85,0.9 left textcolor rgb \""c["A-Helix"]"\""
+		print "set label \" 3-Helix \" at screen 0.85,0.8 left textcolor rgb \""c["3-Helix"]"\""
+		print "set label \" B-Sheet \" at screen 0.85,0.7 left textcolor rgb \""c["B-Sheet"]"\""
+		print "set label \" B-Bridge\" at screen 0.85,0.6 left textcolor rgb \""c["B-Bridge"]"\""
+		print "set label \" Turn    \" at screen 0.85,0.5 left textcolor rgb \""c["Turn"]"\""
+		print "set label \" Bend    \" at screen 0.85,0.4 left textcolor rgb \""c["Bend"]"\""
+		print "set label \" Coil    \" at screen 0.85,0.3 left textcolor rgb \""c["Coil"]"\""
+		print ""
 		print "set tics out nomirror;\nset xl\"time(ps)\"; set yl\"#res\";"
-		print "plot ["x0-dx/2":"x0+(nx-1)*dx+dx/2"] ["y0":"y0+(ny-1)*dy"] -1 notit"
+		print "plot ["x0-dx/2":"x0+(nx-1)*dx+dx/2"] ["y0+(minRes-1)*dy":"y0+(maxRes-1)*dy"] -1 notit"
 	}
 
-	function obj(x, y1, y2, type, dx, i,j,k) {
+	function obj(x, y1, y2, type, dx, pos, i,j,k) {
 
 		if(ssmode=="box") {
 			n++
@@ -129,7 +166,7 @@ function xpm2gpl {
 			y1 -= dy/2; y2 += dy/2
 			return "set obj "n" poly from " \
 			x1","y1" to "x1","y2" to " \
-			x2","y2" to "x2","y1" to " x1","y1"; eval "fun[type]"("n")"
+			x2","y2" to "x2","y1" to "x1","y1"; eval "fun[type]"("n")"
 		}
 
 		if(type=="A-Helix" || type=="3-Helix") {
@@ -452,8 +489,8 @@ function xpm2rgb {
 usage="\
 >>>>>>>>>>>>>>>>     xpm2all    <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
->>>>>>>>>>     2020-03-05 21:20:30     <<<<<<<<<
-Usage:   xpm2all <File> [-xyz|-mat|-rgb <cm>|-gpl <ssmode>]
+>>>>>>>>>>     2020-07-08 15:07:38     <<<<<<<<<
+Usage:   xpm2all <File> [-xyz|-mat|-rgb <cm>|-gpl <minRes> <maxRes> <ssmode>]
 Default: xpm2all <File>  -xyz
 option:  -xyz: xyz datafile
          -mat: matrix datafile
@@ -476,20 +513,32 @@ option:  -xyz: xyz datafile
                         15:  tmap
                         16:  ltmap
                         17:  cividis
-         -gpl: gnuplot object file for 2nd structure with
-               draw method ssmode
-                           box:   plain box
-                           fancy: fancy helix and beta sheet"
+         -gpl: gnuplot object file and number for 2nd structure
+               minRes: initial index of residue
+               maxRes: final   index of residue
+               ssmode: draw method
+                       box:   plain box
+                       fancy: fancy helix and beta sheet"
 
 [[ $# -lt 1 ]] && { echo "$usage"; exit; }
 
 opt=($@); N=${#opt[@]};
-job=xyzmat; dat=xyz; cm=1; ssmode="fancy"
+job=xyzmat; dat=xyz; cm=1;
+minRes=1; maxRes=1E9; ssmode="fancy";
+
 for((i=0; i<N; i++)); do
-	arg=${opt[$i]}; j=$((i+1))
+	arg=${opt[$i]};
 	[[ $arg =~ (-xyz)|(-mat) ]] && { dat=${arg/-/}; opt[$i]=""; }
-	[[ $arg =~ -rgb ]] && { job=${arg/-/}; opt[$i]=""; cm=${opt[$j]}; opt[$j]=""; }
-	[[ $arg =~ -gpl ]] && { job=${arg/-/}; opt[$i]=""; ssmode=${opt[$j]}; opt[$j]=""; }
+	[[ $arg =~ -rgb ]] && {
+		job=${arg/-/}; opt[$i]="";
+		j=$((i+1)); [[ $j -lt $N ]] && { cm=${opt[$j]}; opt[$j]=""; }
+	}
+	[[ $arg =~ -gpl ]] && {
+		job=${arg/-/}; opt[$i]="";
+		j=$((i+1)); [[ $j -lt $N ]] && { minRes=${opt[$j]}; opt[$j]=""; }
+		j=$((i+2)); [[ $j -lt $N ]] && { maxRes=${opt[$j]}; opt[$j]=""; }
+		j=$((i+3)); [[ $j -lt $N ]] && { ssmode=${opt[$j]}; opt[$j]=""; }
+	}
 done
 
 file=${opt[@]%.xpm}
