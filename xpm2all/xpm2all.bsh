@@ -25,7 +25,7 @@ function xpm2xyzmat {
 				if(index(dat, "mat")) printf "%12.6f", v[txt]
 				if(index(dat, "xyz")) printf "%12.6f %12.6f %12.6f\n", x, y, v[txt]
 			}
-			if(index(dat, "mat")) print ""
+			print ""
 		}
 	} ' $file.xpm > $file~.$dat
 }
