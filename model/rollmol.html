@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="https://jerkwin.github.io/jscss/pmd.min.css">
+<script src="https://jerkwin.github.io/jscss/ChemDoodleWeb.js"></script>
+<script src="math.min.js"></script>
+
+<div class="wrap">
+
+<table>
+
+<tr><td colspan=2>
+晶胞中所有原子的坐标(xyz, 单位 Å)<br/><textarea id="cell" style="width:100%; height:100px;">
+34
+all atoms in the cell
+ Al    0.63645695    4.33559444    3.40117915
+ Al    3.24255149    8.82805435    3.40117915
+ Al    3.18397556    2.86092352    3.37849123
+ Al    0.61632013    7.35339240    3.37849123
+ Si    4.97759885    3.02108548    0.63135253
+ Si    2.40994343    7.51355436    0.63135253
+ Si    2.45423342    1.47865537    0.64272486
+ Si   -0.11342200    5.97112426    0.64272486
+ O    -0.34968872    3.10313550    2.23373068
+ O     2.25640582    7.59559541    2.23373068
+ O     0.03050828    5.88160895    2.24298889
+ O     2.59816562    1.38914027    2.24298179
+ O     5.20092501    4.49196614   -0.04907201
+ O     2.63326959    8.98443503   -0.04907201
+ O     1.01987812    2.05756950    0.12139239
+ O     3.62597791    6.55004737    0.12139239
+ O     1.05196540    6.88891011   -0.04526231
+ O     3.61962082    2.39644122   -0.04526231
+ O    -0.35271610    8.62960992    2.30146099
+ O     2.21493933    4.13714103    2.30146099
+ O     3.78723971    1.36225006    4.30183535
+ O     1.21958625    5.85472814    4.30182826
+ O    -0.96785824    4.10949508    4.29902597
+ O     1.63823634    8.60196396    4.29902597
+ O    -0.95645507    7.56425262    4.34150727
+ O     1.61120553    3.07178373    4.34150727
+ H     0.13707735    9.47413684    2.30862634
+ H     2.70473276    4.98166795    2.30862634
+ H     4.06714986    1.38934309    5.23321034
+ H     1.49949443    5.88181198    5.23321034
+ H    -1.18003324    4.35510829    5.21791480
+ H     1.42606134    8.84757718    5.21791480
+ H     1.43671795    2.68176536    5.21628308
+ H    -1.13093751    7.17422526    5.21628308
+</textarea><br>
+晶胞参数(a b c α β γ, 单位 Å °)： <input type="box" id="box" style="width:50%" value='5.17375   8.98502   7.35224      91.68430   105.12793   89.75488'><br>
+超晶胞扩展：
+a方向 <input type="box" id="Na" value="20" style="width:50px;"/> &nbsp;&nbsp;&nbsp;&nbsp;
+b方向 <input type="box" id="Nb" value="1" style="width:50px;"/> &nbsp;&nbsp;&nbsp;&nbsp;
+c方向 <input type="box" id="Nc" value="1" style="width:50px;"/>
+</td></tr>
+
+<tr><td colspan=2>
+卷曲参数方程(t, pi, tau=2pi, xbox, ybox, zbox)<br>
+&nbsp;&nbsp;X方向 <input type="box" id="Fx"  style="width:50%" value='10*t*cos(tau*t)'>
+<input type="radio" name="roll" id="rollx" checked='true'> 卷曲<br>
+
+&nbsp;&nbsp;Y方向 <input type="box" id="Fy"  style="width:50%" value='0'>
+<input type="radio" name="roll" id="rolly"> 卷曲<br>
+
+&nbsp;&nbsp;Z方向 <input type="box" id="Fz"  style="width:50%" value='10*t*sin(tau*t)'>
+<input type="radio" name="roll" id="rollz"> 卷曲<br><br>
+
+扭曲参数方程(t, pi, tau=2pi, xbox, ybox, zbox, tbox)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="box" id="vF"  style="width:50%" value=''>
+
+<!--
+
+X方向 <input type="box" id="Fx"  style="width:40%" value=''>
+ 切线 <input type="box" id="dFx" style="width:40%" value=''><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value=''>
+ 切线 <input type="box" id="dFz" style="width:40%" value=''><br>
+
+X方向 <input type="box" id="Fx"  style="width:40%" value='16*pow(sin(t),3)' />
+ 切线 <input type="box" id="dFx" style="width:40%" value='10*sin(2*pi*t)' /><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value='13*cos(t)-5*cos(2*t)-2*cos(3*t)-cos(4*t)' />
+ 切线 <input type="box" id="dFz" style="width:40%" value='10*sin(2*pi*t)' /><br>
+
+X方向 <input type="box" id="Fx"  style="width:40%" value='10*(cos(t)-.5*cos(2*t))' />
+ 切线 <input type="box" id="dFx" style="width:40%" value='10*sin(2*pi*t)' /><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value='10*(sin(t)-.5*sin(2*t))' />
+ 切线 <input type="box" id="dFz" style="width:40%" value='10*sin(2*pi*t)' /><br>
+
+X方向 <input type="box" id="Fx"  style="width:40%" value='10*t*sin(2*pi*t)' />
+ 切线 <input type="box" id="dFx" style="width:40%" value='10*sin(2*pi*t)' /><br>
+Z方向 <input type="box" id="Fz"  style="width:40%" value='10*t*cos(2*pi*t)' />
+ 切线 <input type="box" id="dFz" style="width:40%" value='10*sin(2*pi*t)' /><br>
+
+-->
+
+</td></tr>
+
+<tr><td colspan=2>
+<input type="button" value="创建" onClick="genCoor()" style="font-size:1em;font-weight:bold;color:red;width:100%; height:30px" />
+</td></tr>
+
+<tr>
+    <td>
+        坐标文件(xyz)<br/><textarea id="groCoor" style="width:400px; height:500px; resize: none"></textarea>
+    </td>
+    <td>
+        <figure><figurecaption>结构</figurecaption><br/>
+        <script>
+            ChemDoodle.default_backgroundColor = 'black';var Mol1=new ChemDoodle.TransformCanvas3D('Mol-1', 400,500);Mol1.specs.atoms_displayLabels_3D=false;Mol1.specs.compass_display=true;Mol1.specs.atoms_resolution_3D = 15;Mol1.specs.bonds_resolution_3D = 15;Mol1.specs.shapes_color = '#fff';Mol1.specs.projectionPerspective_3D = false;Mol1.specs.set3DRepresentation('Ball and Stick');Mol1.specs.crystals_unitCellLineWidth = 1.5;Mol1.handle = null;Mol1.timeout = 15;Mol1.startAnimation = ChemDoodle._AnimatorCanvas.prototype.startAnimation;Mol1.stopAnimation = ChemDoodle._AnimatorCanvas.prototype.stopAnimation;Mol1.isRunning = ChemDoodle._AnimatorCanvas.prototype.isRunning;Mol1.dblclick = ChemDoodle.RotatorCanvas.prototype.dblclick;Mol1.nextFrame = function(delta){var matrix = [];ChemDoodle.lib.mat4.identity(matrix);var change = delta*Math.PI/15000;ChemDoodle.lib.mat4.rotate(matrix, change, [ 1, 0, 0 ]);ChemDoodle.lib.mat4.rotate(matrix, change, [ 0, 1, 0 ]);ChemDoodle.lib.mat4.rotate(matrix, change, [ 0, 0, 1 ]);ChemDoodle.lib.mat4.multiply(this.rotationMatrix, matrix)};var Fcif='';var cell=ChemDoodle.readCIF(Fcif, 1,1,1);Mol1.loadContent([cell.molecule], [cell.unitCell]);Mol1.startAnimation();var $=function(id){return document.getElementById(id)};function setSupercell1(){var cell=ChemDoodle.readCIF(Fcif, $("Mol1x").value, $("Mol1y").value, $("Mol1z").value);Mol1.loadContent([cell.molecule], [cell.unitCell]);Mol1.repaint()}function setModel1(model){Mol1.specs.set3DRepresentation(model);Mol1.setupScene();Mol1.repaint()}function setProj1(yesPers){Mol1.specs.projectionPerspective_3D = yesPers;Mol1.setupScene();Mol1.repaint()}
+        </script></figure>
+    </td>
+</tr>
+<tr><td colspan="2">
+视图: <input type="radio" name="group2" onclick="setProj1(true)">投影<input type="radio" name="group2" onclick="setProj1(false)" checked="">正交<br>模型: <input type="radio" name="model" onclick="setModel1(&#39;Ball and Stick&#39;)" checked="">球棍<input type="radio" name="model" onclick="setModel1(&#39;van der Waals Spheres&#39;)">范德华球<input type="radio" name="model" onclick="setModel1(&#39;Stick&#39;)">棍状<input type="radio" name="model" onclick="setModel1(&#39;Wireframe&#39;)">线框<input type="radio" name="model" onclick="setModel1(&#39;Line&#39;)">线型&nbsp;&nbsp; <input type='checkbox' onclick='Mol1.specs.atoms_displayLabels_3D=this.checked;Mol1.repaint()'>名称<br>超晶胞: X <input type="text" style="width:20px;" id="Mol1x" value="1">&nbsp;&nbsp;Y <input type="text" style="width:20px;" id="Mol1y" value="1">&nbsp;&nbsp;Z <input type="text" style="width:20px;" id="Mol1z" value="1">&nbsp;&nbsp;<input type="button" value="创建" onclick="setSupercell1()"><br>左键: 转动&nbsp;&nbsp; 滚轮: 缩放&nbsp;&nbsp; 双击: 开关自动旋转&nbsp;&nbsp; Alt+左键: 移动
+</td></tr>
+</table>
+</div>
+
+<script>
+
+function trim(a){return a.replace(/^(\s|\u00A0)+/,"").replace(/(\s|\u00A0)+$/,"")}function mathFunction(a){var b,c,d="pow sqrt exp log abs ceil floor min max round random sin cos tan asin acos atan atan2 toSource valueOf";for(d=d.split(/\s+/),b=0,c=d.length;c>b;b++)a=a.replace(new RegExp(d[b]+"\\(","g"),"Math."+d[b]+"(");return a=a.replace(/pi/gi,"(Math.PI)").replace(/tau/gi,"(2*Math.PI)"),a=a.replace(/xbox/gi,printf("(%.6f)",Xbox)).replace(/ybox/gi,printf("(%.6f)",Ybox)).replace(/zbox/gi,printf("(%.6f)",Zbox))}function genCoor(){var a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,_,ab,bb,cb,db,eb;for(trim($("Fx").value).length>0&&trim($("Fy").value).length>0&&trim($("Fz").value).length>0&&(isFt=!0),e=[],f=[],g=[],h=[],i=[],j=trim($("cell").value).split(/\r*\n/),k=parseInt(j[0]),a=1;k>=a;a++)e=trim(j[a+1]).split(/\s+/),f[a]=e[0],g[a]=parseFloat(e[1]),h[a]=parseFloat(e[2]),i[a]=parseFloat(e[3]);for(e=trim($("box").value).split(/\s+/),l=parseFloat(e[0]),m=parseFloat(e[1]),n=parseFloat(e[2]),o=parseFloat(e[3])*d2r,p=parseFloat(e[4])*d2r,q=parseFloat(e[5])*d2r,r=parseInt($("Na").value),s=parseInt($("Nb").value),u=parseInt($("Nc").value),v=l,w=0,x=0,y=m*Math.cos(q),z=m*Math.sin(q),A=0,B=n*Math.cos(p),C=n*(Math.cos(o)-Math.cos(p)*Math.cos(q))/Math.sin(q),D=Math.sqrt(n*n-B*B-C*C),H=[[v,y,B],[w,z,C],[x,A,D]],I=invMat(H),J=I[0][0],K=I[0][1],L=I[0][2],vx=I[1][0],vy=I[1][1],vz=I[1][2],wx=I[2][0],wy=I[2][1],wz=I[2][2],M=0,N=[],O=[],P=[],Q=[],R=1e9,S=-1e9,T=R,U=S,V=R,W=S,a=0;r>a;a++)for(b=0;s>b;b++)for(c=0;u>c;c++)for(d=1;k>=d;d++)M++,N[M]=f[d],O[M]=g[d]+a*v+b*y+c*B,P[M]=h[d]+a*w+b*z+c*C,Q[M]=i[d]+a*x+b*A+c*D,R=Math.min(R,O[M]),T=Math.min(T,P[M]),V=Math.min(V,Q[M]),S=Math.max(S,O[M]),U=Math.max(U,P[M]),W=Math.max(W,Q[M]);if(0>R)for(S-=R,a=1;M>=a;a++)O[a]-=R;if(0>T)for(U-=T,a=1;M>=a;a++)P[a]-=T;if(0>V)for(W-=V,a=1;M>=a;a++)Q[a]-=V;if(Xbox=S,Ybox=U,Zbox=W,isFt){for(Ft=new Function("t","r","r[0]="+mathFunction(trim($("Fx").value))+";"+"r[1]="+mathFunction(trim($("Fy").value))+";"+"r[2]="+mathFunction(trim($("Fz").value))+";"),$("rollx").checked&&(X=S),$("rolly").checked&&(X=U),$("rollz").checked&&(X=W),Z=.001,_=0,ab=[],Y=0;X>=_;Y+=.5)_+=sarc(Y,Y+.5,Z);for(Y=tarc(X,0,0,Y,Z),dFt=new Function("t","r","r[0]="+mathFunction(math.derivative(trim($("Fx").value),"t").toString())+";"+"r[1]="+mathFunction(math.derivative(trim($("Fy").value),"t").toString())+";"+"r[2]="+mathFunction(math.derivative(trim($("Fz").value),"t").toString())+";"),bb=2,$("rollx").checked&&"0"==trim($("Fy").value)&&(bb=2),$("rollx").checked&&"0"==trim($("Fz").value)&&(bb=1),$("rolly").checked&&"0"==trim($("Fx").value)&&(bb=12),$("rolly").checked&&"0"==trim($("Fz").value)&&(bb=10),$("rollz").checked&&"0"==trim($("Fx").value)&&(bb=21),$("rollz").checked&&"0"==trim($("Fy").value)&&(bb=20),a=1;M>=a;a++)Xtmp=O[a],Ytmp=P[a],Ztmp=Q[a],db=10>bb?Xtmp:20>bb?Ytmp:Ztmp,t=tarc(db,0,0,Y,Z),Ft(t,ab),O[a]=ab[0],P[a]=ab[1],Q[a]=ab[2],dFt(t,ab),cb=ab[0]*ab[0]+ab[1]*ab[1]+ab[2]*ab[2],cb>0&&(cb=1/Math.sqrt(cb),ab[0]*=cb,ab[1]*=cb,ab[2]*=cb),1==bb?(O[a]+=Ytmp*-ab[1],P[a]+=Ytmp*ab[0],Q[a]=Ztmp):2==bb?(O[a]+=Ztmp*-ab[2],Q[a]+=Ztmp*ab[0],P[a]=Ytmp):10==bb?(P[a]+=Xtmp*-ab[0],O[a]+=Xtmp*ab[1],Q[a]=Ztmp):12==bb?(P[a]+=Ztmp*-ab[2],Q[a]+=Ztmp*ab[1],O[a]=Xtmp):21==bb?(Q[a]+=Ytmp*-ab[1],P[a]+=Ytmp*ab[2],O[a]=Xtmp):20==bb&&(Q[a]+=Xtmp*-ab[0],O[a]+=Xtmp*ab[2],P[a]=Ytmp)}for(eb=printf("%f\nabc: %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f\n",M,v,w,x,y,z,A,B,C,D),Fcif="data_MOL\n"+M+"\n_symmetry_space_group_name_' '"+"\n_cell_length_a "+r*l+"\n_cell_length_b "+s*m+"\n_cell_length_c "+u*n+"\n_cell_angle_alpha "+o*r2d+"\n_cell_angle_beta "+p*r2d+"\n_cell_angle_gamma "+q*r2d+"\nloop_\n_atom_site_label\n_atom_site_type_symbol\n_atom_site_fract_x\n_atom_site_fract_y\n_atom_site_fract_z\n",a=1;M>=a;a++)E=J*O[a]+K*P[a]+L*Q[a],F=vx*O[a]+vy*P[a]+vz*Q[a],G=wx*O[a]+wy*P[a]+wz*Q[a],Fcif+=printf("MOL %s %8.3f %8.3f %8.3f\n",N[a],E/r,F/s,G/u),eb+=printf("    %3s %12.6f %12.6f %12.6f\n",N[a],O[a],P[a],Q[a]);for($("groCoor").value=eb,cell=ChemDoodle.readCIF(Fcif,1,1,1),a=0;a<cell.molecule.atoms.length-1;a++)cell.molecule.atoms[a].altLabel=a+1;Mol1.loadContent([cell.molecule],[cell.unitCell]),Mol1.startAnimation()}function sarc(a,b,c){for(var d,e,f,g=[],h=[],i=0,j=0,k=1e99,l=2;k>c;){for(i=j,j=0,l*=2,f=(b-a)/l,d=0;l>d;d++)e=a+d*f,Ft(e,g),Ft(e+f,h),h[0]-=g[0],h[1]-=g[1],h[2]-=g[2],j+=Math.sqrt(h[0]*h[0]+h[1]*h[1]+h[2]*h[2]);k=j-i}return j}function tarc(a,b,c,d,e){var f,g,h;for(h=sarc(c,d,e),a-=sarc(b,c,e),f=c+a*(d-c)/h,g=sarc(c,f,e);Math.abs(a-g)>e;)a>g?(c=f,a-=g,h-=g):(d=f,h=g),f=c+a*(d-c)/h,g=sarc(c,f,e);return f}function dot(a,b){return a[1]*b[1]+a[2]*b[2]+a[3]*b[3]}function cross(a,b,c){c[1]=a[2]*b[3]-a[3]*b[2],c[2]=a[3]*b[1]-a[1]*b[3],c[3]=a[1]*b[2]-a[2]*b[1]}function invMat(a){var b,c=0,d=c,e=d+1,f=e+1,g=a[d][d]*(a[e][e]*a[f][f]-a[e][f]*a[f][e])-a[d][e]*(a[e][d]*a[f][f]-a[e][f]*a[f][d])+a[d][f]*(a[e][d]*a[f][e]-a[e][e]*a[f][d]);return 0!=g&&(g=1/g),0==c&&(b=[[0,0,0],[0,0,0],[0,0,0]]),1==c&&(b=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]),b[d][d]=(a[e][e]*a[f][f]-a[e][f]*a[f][e])*g,b[e][d]=-(a[e][d]*a[f][f]-a[e][f]*a[f][d])*g,b[f][d]=(a[e][d]*a[f][e]-a[e][e]*a[f][d])*g,b[d][e]=-(a[d][e]*a[f][f]-a[d][f]*a[f][e])*g,b[e][e]=(a[d][d]*a[f][f]-a[d][f]*a[f][d])*g,b[f][e]=-(a[d][d]*a[f][e]-a[d][e]*a[f][d])*g,b[d][f]=(a[d][e]*a[e][f]-a[d][f]*a[e][e])*g,b[e][f]=-(a[d][d]*a[e][f]-a[d][f]*a[e][d])*g,b[f][f]=(a[d][d]*a[e][e]-a[d][e]*a[e][d])*g,b}function ang(a,b,c,d,e,f,g,h,i,j){var k,l=[],m=[];return l[1]=a-d,m[1]=g-d,l[2]=b-e,m[2]=h-e,l[3]=c-f,m[3]=i-f,cross(l,m,j),k=j[1]*j[1]+j[2]*j[2]+j[3]*j[3],k>0&&1!=k&&(k=1/Math.sqrt(k),j[1]*=k,j[2]*=k,j[3]*=k),Math.acos(dot(l,m)/Math.sqrt(dot(l,l)*dot(m,m)))*r2d}function RotVect(a,b,c,d,e){var f=b[1]-c,g=b[2]-d,h=b[3]-e;b[1]=a[1][1]*f+a[1][2]*g+a[1][3]*h+c,b[2]=a[2][1]*f+a[2][2]*g+a[2][3]*h+d,b[3]=a[3][1]*f+a[3][2]*g+a[3][3]*h+e}function AxiRotMat(a,b,c,d){var e=b*b+c*c+d*d;e>0&&1!=e&&(e=1/Math.sqrt(e),b*=e,c*=e,d*=e),a*=d2r,e=Math.sin(a/2),w=Math.cos(a/2),b*=e,c*=e,d*=e,RotMat[1][1]=1-2*(c*c+d*d),RotMat[1][2]=2*(b*c-w*d),RotMat[1][3]=2*(b*d+w*c),RotMat[2][1]=2*(b*c+w*d),RotMat[2][2]=1-2*(b*b+d*d),RotMat[2][3]=2*(c*d-w*b),RotMat[3][1]=2*(b*d-w*c),RotMat[3][2]=2*(c*d+w*b),RotMat[3][3]=1-2*(b*b+c*c)}function printf(){var a={s:function(a,b){return b*=1,m=Array(Math.max(Math.abs(b)-a.length+1,0)).join(" "),b>0?m+a:a+m},f:function(a,b){return b=b.split("."),a=parseFloat(a).toFixed(b[1]),m=Array(Math.max(Math.abs(b[0])-a.length+1,0)).join(" "),b[0]>0?m+a:a+m}},b=Array.prototype.slice.call(arguments).slice();return b.shift().toString().replace(/%(-*\d*\.*\d*)([sf])/g,function(c,d,e){if(!b.length)throw new Error("Too few elements");return a[e](b.shift(),d)})}function pbcCart(a,b){return a>.5*b?a-=b:-.5*b>a&&(a+=b),a}var Xbox,Ybox,Zbox,Ft,dFt,vFt,d2r=Math.atan2(1,1)/45,r2d=1/d2r,$=function(a){return document.getElementById(a)},isFt=!1,isvFt=!1,RotMat=[[0,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]];
+</script>
