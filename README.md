@@ -78,6 +78,11 @@
 <td><a href="./gmx_mmpbsa/1ebz.zip">1ebz.zip</a></td>
 </tr>
 
+<td>gmx_ir</td>
+<td><a href="https://jerkwin.github.io/2017/08/20/%E4%BD%BF%E7%94%A8GROMACS%E8%AE%A1%E7%AE%97%E7%BA%A2%E5%A4%96%E5%85%89%E8%B0%B1/">使用GROMACS计算红外光谱</a></td>
+<td><a href="./gmx_ir/gmx_ir.bsh">gmx_ir.bsh</a></td>
+<td>N/A</td>
+
 </tr>
 
 </table>
