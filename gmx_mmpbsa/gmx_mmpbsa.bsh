@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
->>>>>>>>>>     2020-05-27 10:25:27     <<<<<<<<<\n
+>>>>>>>>>>     2020-11-15 10:11:59     <<<<<<<<<\n
 >>   Usage: gmx_mmpbsa -f   *.xtc     -s   *.tpr      -n   *.ndx
                        -com COMPLEX   -pro PROTEIN   {-lig <LIGAND|none>}\n
 >> Default: gmx_mmpbsa -f  traj.xtc   -s topol.tpr    -n index.ndx
@@ -17,6 +17,7 @@ echo -e "\
 >> Log:
    TODO:       CAS
    TODO:       parallel APBS, focus
+   2020-11-15: fix bug for resID >=1000, awk gsub /\s/
    2020-06-01: fix bug of -skip
    2020-05-27: fix bug for sdie
    2020-05-26: fix bug for RES name
@@ -100,7 +101,7 @@ df=.5				# 细密格点间距(A) The desired fine mesh spacing (A)
 PBEset='
   temp  300         # 温度
   pdie  2           # 溶质介电常数
-  sdie  78.54          # 溶剂介电常数, 真空1, 水78.54
+  sdie  78.54       # 溶剂介电常数, 真空1, 水78.54
 
   lpbe              # PB方程求解方法, lpbe(线性), npbe(非线性), smbpe(大小修正)
   bcfl  mdh         # 粗略格点PB方程的边界条件, zero, sdh/mdh(single/multiple Debye-Huckel), focus, map
@@ -153,14 +154,16 @@ PBAset='
 if [[ $step -le 1 ]]; then
 ################################################################################
 # 1. 预处理轨迹: 复合物完整化, 团簇化, 居中叠合, 然后生成pdb文件
+#    请检查pdb文件确保构型PBC处理正确
 # 1. pre-processe trajectory, whole, cluster, center, fit, then generate pdb file
 ################################################################################
 trjwho=$pid~who; trjcnt=$pid~cnt; trjcls=$pid~cls
 echo $com            | $trjconv  -s $tpr -n $ndx -f $trj    -o $trjwho.xtc &> $scr -pbc whole
-echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o _$pid.pdb   &>>$scr -pbc res -center
+echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o _$pid.pdb   &>>$scr -pbc mol -center
 
 # usful for single protein and ligand
-#echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $trjcnt.xtc &>>$scr -pbc res -center
+#echo $com            | $trjconv  -s $tpr -n $ndx -f $trj    -o $trjwho.xtc &> $scr -pbc whole
+#echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $trjcnt.xtc &>>$scr -pbc mol -center
 #echo -e "$com\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcnt -o $trjcls.xtc &>>$scr -pbc cluster
 #echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcls -o _$pid.pdb   &>>$scr -fit rot+trans
 
@@ -178,7 +181,8 @@ $dump -quiet -s $tpr 2>>$scr \
 			-v radType=$radType -v radLJ0=$radLJ0 '
 	BEGIN { RS="["
 		print pro, lig
-		while(getline < ndx) { gsub(/\s/,"", $1)
+		while(getline < ndx) {
+			gsub(" ","", $1); gsub("\t","", $1)
 			if($1==pro)    for(i=3; i<=NF; i++) ndxPro[$i+0]++
 			if($1==lig)    for(i=3; i<=NF; i++) ndxLig[$i+0]++
 			if($1==pro"]") for(i=2; i<=NF; i++) ndxPro[$i+0]++
@@ -437,8 +441,9 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 			close(txt)
 			n=0;
 			while(getline < txt) { n++;
-				type[n]=$3; res[n]=$4; resID[n]=$6;
-				x[n]=$7;    y[n]=$8;   z[n]=$9
+				type[n]=$3; res[n]=$4;
+				x[n]=$(NF-4);    y[n]=$(NF-3);   z[n]=$(NF-2)
+				resID[n]=$(NF-5); gsub(/[A-Z]+/, "", resID[n])
 			}
 			close(txt)
 
