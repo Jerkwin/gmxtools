@@ -15,9 +15,11 @@ echo -e "\
    lig: index group name of ligand, can be ignored using none
    change other settings in the script directly
 >> Log:
+   TODO:       Opt before MM-PBSA
    TODO:       CAS
    TODO:       parallel APBS, focus
-   2020-11-15: fix bug for resID >=1000, awk gsub /\s/
+   2020-11-15: fix bug for resID >=1000, for awk 3.x gsub /\s/
+   2020-06-02: fix bug of withLig
    2020-06-01: fix bug of -skip
    2020-05-27: fix bug for sdie
    2020-05-26: fix bug for RES name
@@ -32,6 +34,11 @@ echo -e "\
    2019-09-19: push to gmxtool
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
 
+################################################################################
+# 设置运行环境, 计算参数
+# setting up environmets and parameters
+################################################################################
+
 trj=traj.xtc		# 轨迹文件 trajectory file
 tpr=topol.tpr		# tpr文件  tpr file
 ndx=index.ndx		# 索引文件 index file
@@ -40,26 +47,6 @@ com=Complex			# 复合物索引组 index group name of complex
 pro=Protein			# 蛋白索引组   index group name of protein
 lig=Ligand			# 配体索引组   index group name of ligand
 
-opt=($*); N=${#opt[@]}
-for((i=0; i<N; i++)); do
-	arg=${opt[$i]}; j=$((i+1)); val=${opt[$j]}
-	[[ $arg =~ -f   ]] && { trj=$val; }
-	[[ $arg =~ -s   ]] && { tpr=$val; }
-	[[ $arg =~ -n   ]] && { ndx=$val; }
-	[[ $arg =~ -com ]] && { com=$val; }
-	[[ $arg =~ -pro ]] && { pro=$val; }
-	[[ $arg =~ -lig ]] && { lig=$val; }
-done
-
-withLig=1; [[ $lig =~ none ]] && { withLig=0; com=$pro; lig=$pro; }
-
-[[ ! -f "$trj" ]] && { echo -e "!!! ERROR !!! trajectory File NOT Exist !\n"; exit; }
-[[ ! -f "$tpr" ]] && { echo -e "!!! ERROR !!! topology   File NOT Exist !\n"; exit; }
-[[ ! -f "$ndx" ]] && { echo -e "!!! ERROR !!! index      File NOT Exist !\n"; exit; }
-str=$(grep $com "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! $com NOT in $ndx !\n"; exit; }
-str=$(grep $pro "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! $pro NOT in $ndx !\n"; exit; }
-str=$(grep $lig "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! $lig NOT in $ndx !\n"; exit; }
-
 step=1	# 从第几步开始运行 step number to run
 		# 1. 预处理轨迹: 复合物完整化, 团簇化, 居中叠合, 然后生成pdb文件
 		#    pre-processe trajectory, whole, cluster, center, fit, then generate pdb file
@@ -67,11 +54,6 @@ step=1	# 从第几步开始运行 step number to run
 		#    abstract atomic parameters, charge, radius, C6/C12, then generate qrv file
 		# 3. MM-PBSA计算: pdb->pqr, 输出apbs, 计算MM, APBS
 		#    run MM-PBSA, pdb->pqr, apbs, then calculate MM, PB, SA
-
-################################################################################
-# 0. 设置运行环境, 计算参数
-# 0. setting up environmets and parameters
-################################################################################
 
 gmx='gmx'								# /path/to/GMX/bin/gmx_mpi
 dump="$gmx dump"						# gmx dump
@@ -99,7 +81,7 @@ df=.5				# 细密格点间距(A) The desired fine mesh spacing (A)
 
 # 极性计算设置(Polar)
 PBEset='
-  temp  300         # 温度
+  temp  298.15      # 温度
   pdie  2           # 溶质介电常数
   sdie  78.54       # 溶剂介电常数, 真空1, 水78.54
 
@@ -120,9 +102,9 @@ PBEset='
 
 # 非极性计算设置(Apolar/Non-polar)
 PBAset='
-  temp  300  # 温度
-  srfm  sacc # 构建溶剂相关表面或体积的模型
-  swin  0.3  # 立方样条窗口(A), 用于定义样条表面
+  temp  298.15 # 温度
+  srfm  sacc   # 构建溶剂相关表面或体积的模型
+  swin  0.3    # 立方样条窗口(A), 用于定义样条表面
 
   # SASA
   srad  1.4    # 探测半径(A)
@@ -151,6 +133,47 @@ PBAset='
   calcforce no
   calcenergy total'
 
+################################################################################
+# 检查 gmx, apbs 是否可以运行
+# check gmx, apbs
+################################################################################
+
+str=$($gmx --version | grep -i "GROMACS version")
+[[ -z "$str" ]] && { echo -e "!!! WARNING !!! GROMACS NOT available !\n"; }
+
+str=$($apbs --version | grep -i "Poisson-Boltzmann")
+[[ -z "$str" ]] && { echo -e "!!! WARNING !!!  APBS   NOT available !\n"; }
+
+################################################################################
+# 解析命令行参数
+# parse command line options
+################################################################################
+
+opt=($*); N=${#opt[@]}
+for((i=0; i<N; i++)); do
+	arg=${opt[$i]}; j=$((i+1)); val=${opt[$j]}
+	[[ $arg =~ -f   ]] && { trj=$val; }
+	[[ $arg =~ -s   ]] && { tpr=$val; }
+	[[ $arg =~ -n   ]] && { ndx=$val; }
+	[[ $arg =~ -com ]] && { com=$val; }
+	[[ $arg =~ -pro ]] && { pro=$val; }
+	[[ $arg =~ -lig ]] && { lig=$val; }
+done
+
+withLig=1; [[ $lig =~ none ]] && { withLig=0; com=$pro; lig=$pro; }
+
+################################################################################
+# 检查文件
+# check files
+################################################################################
+
+[[ ! -f "$trj" ]] && { echo -e "!!! ERROR !!! trajectory File NOT Exist !\n"; exit; }
+[[ ! -f "$tpr" ]] && { echo -e "!!! ERROR !!! topology   File NOT Exist !\n"; exit; }
+[[ ! -f "$ndx" ]] && { echo -e "!!! ERROR !!! index      File NOT Exist !\n"; exit; }
+str=$(grep $com "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! $com NOT in $ndx !\n"; exit; }
+str=$(grep $pro "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! $pro NOT in $ndx !\n"; exit; }
+str=$(grep $lig "$ndx"); [[ -z "$str" && $withLig -eq 1 ]] && { echo -e "!!! ERROR !!! $lig NOT in $ndx !\n"; exit; }
+
 if [[ $step -le 1 ]]; then
 ################################################################################
 # 1. 预处理轨迹: 复合物完整化, 团簇化, 居中叠合, 然后生成pdb文件
@@ -177,16 +200,18 @@ fi; if [[ $step -le 2 ]]; then
 #    radType=2: Bondi
 ################################################################################
 $dump -quiet -s $tpr 2>>$scr \
-| awk >$qrv -v ndx=$ndx -v pro=$pro -v lig=$lig \
+| awk >$qrv -v ndx=$ndx -v pro=$pro -v lig=$lig -v withLig=$withLig \
 			-v radType=$radType -v radLJ0=$radLJ0 '
 	BEGIN { RS="["
 		print pro, lig
 		while(getline < ndx) {
 			gsub(" ","", $1); gsub("\t","", $1)
 			if($1==pro)    for(i=3; i<=NF; i++) ndxPro[$i+0]++
-			if($1==lig)    for(i=3; i<=NF; i++) ndxLig[$i+0]++
 			if($1==pro"]") for(i=2; i<=NF; i++) ndxPro[$i+0]++
-			if($1==lig"]") for(i=2; i<=NF; i++) ndxLig[$i+0]++
+			if(withLig) {
+				if($1==lig)    for(i=3; i<=NF; i++) ndxLig[$i+0]++
+				if($1==lig"]") for(i=2; i<=NF; i++) ndxLig[$i+0]++
+			}
 		}
 		RS="\r?\n"
 		nres=0
@@ -220,7 +245,8 @@ $dump -quiet -s $tpr 2>>$scr \
 	}
 
 	/moltype.+\(/ { Imol=$0; gsub(/[^0-9]/,"",Imol)
-		getline txt; sub(/.*=/,"",txt); Name[Imol]=txt
+		getline txt; sub(/.*=/,"",txt); gsub(" ","_",txt)
+		Name[Imol]=txt
 		getline; getline txt;       gsub(/[^0-9]/,"",txt); Natm[Imol]=txt+0
 		for(i=0; i<Natm[Imol]; i++) {
 			getline; txt=$0; idx=$3; resID[Imol, i]=$(NF-2)+1+nres
@@ -241,7 +267,7 @@ $dump -quiet -s $tpr 2>>$scr \
 
 	/residue\[/ { nres++
 		sub(/.*="/,"",$0); sub(/".*/,"",$0);
-		resName[nres]=sprintf("%05d%s", nres, $0)
+		resName[nres]=sprintf("%d%s", nres, $0)
 	}
 
 	END {
@@ -256,7 +282,7 @@ $dump -quiet -s $tpr 2>>$scr \
 						if(radType >0) radi=getRadi(Tatm[i, j], radType)
 						printf "%6d %9.5f %9.6f %6d %9.6f %9.6f %6d %s %s %-6s  ",  \
 						Nidx, Qatm[i,j], radi, Catm[i,j], Satm[i,j], Eatm[i,j], \
-						Ntot, n+1"."Name[i]"-"j+1, \
+						Ntot, Name[i]"-"n+1"."j+1, \
 						resName[resID[i,j]], Tatm[i, j]
 						if(Ntot in ndxPro) print "Pro"
 						if(Ntot in ndxLig) print "Lig"
@@ -660,8 +686,8 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 			"  mol "Imol"\n" \
 			PBAset"\n" \
 			"end\n\n" \
-			"#print elecEnergy "file" - "file"~VAC end\n" \
-			"#print apolEnergy "file"~SAS end\n\n"
+			"print elecEnergy "file" - "file"~VAC end\n" \
+			"print apolEnergy "file"~SAS end\n\n"
 	}
 	function min(x, y) { return x<y ? x : y }
 	function max(x, y) { return x>y ? x : y }
