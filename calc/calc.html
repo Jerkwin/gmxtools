@@ -81,6 +81,19 @@ table tr th {
    border: 2px solid #aaa;
    padding: 1em 2em;
 }
+code {
+	font: bold 1em/1.2 Consolas, "Courier New", Monaco, monospace, SimHei;
+	overflow: auto;
+	background: #F5F2F0;
+	max-width: 100%;
+	color: #DD1144;
+	tab-size:2;
+/*white-space: pre-wrap;*/
+	padding: 0;
+	border: 1.2px solid #E0DFCC;
+	margin: 0 .3em 0 0.3em;
+/*	border-radius: .5em;*/
+}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
@@ -108,9 +121,8 @@ table tr th {
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Rho">密度&nbsp;&nbsp;
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="VDW">VDW参数<br>
 		<span style='font: .6em Consolas;'>
-		<ol><li>所用换算系数来源于CODATA-2018, 具体数值见 <a href='https://physics.nist.gov/cuu/Constants/Table/allascii.txt'>NIST CODATA 2018</a></li>
-		<li>支持下列js函数: ** pow sqrt exp log; abs ceil floor; min max round random; sin cos tan; asin acos atan atan2</li><li>
-		支持下列常量符号:pi; c:真空光速; Na:阿伏加德罗常数; qe:基元电荷; ang:埃; nm; 纳米; h:普朗克常数; hbar:h/2pi; amu:原子质量单位; ha:原子能量单位; bohr:原子长度单位; kb:玻尔兹曼常数; mu0:介磁常数; eps0:介电常数; me:电子质量; mp:质子质量; g:标准重力加速度; G:万有引力常数; atm:标准大气压; P0:标准压力; T0:标准温度; R:摩尔气体常数; c2j:卡焦互换; j2c:焦卡互换; debye:偶极矩单位德拜</li>
+		<ol><li>支持js函数: <code>**</code> <code>pow</code> <code>sqrt</code> <code>exp</code> <code>log</code>; <code>abs</code> <code>ceil</code> <code>floor</code>; <code>min</code> <code>max</code> <code>round</code> <code>random</code>; <code>sin</code> <code>cos</code> <code>tan</code>; <code>asin</code> <code>acos</code> <code>atan</code> <code>atan2</code></li><li>
+		支持常量符号:<code>pi</code>; <code>c</code>:真空光速; <code>Na</code>:阿伏加德罗常数; <code>qe</code>:基元电荷; <code>ang</code>:埃; <code>nm</code>nm: 纳米; <code>h</code>:普朗克常数; <code>hbar</code>:h/2pi; <code>amu</code>:原子质量单位; <code>ha</code>:原子能量单位; <code>bohr</code>:原子长度单位; <code>kb</code>:玻尔兹曼常数; <code>mu0</code>:介磁常数; <code>eps0</code>:介电常数; <code>me</code>:电子质量; <code>mp</code>:质子质量; <code>g</code>:标准重力加速度; <code>G</code>:万有引力常数; <code>atm</code>:标准大气压; <code>P0</code>:标准压力; <code>T0</code>:标准温度; <code>R</code>:摩尔气体常数; <code>c2j</code>:卡焦互换; <code>j2c</code>:焦卡互换; <code>debye</code>:偶极矩单位德拜</li>
 		</ol><strong id='inputValue'></strong> </span>
 		<table id="TabLen" style="display: none;">
 		<tbody><tr><td>
@@ -351,11 +363,15 @@ table tr th {
 		</table>
 
 		<table id="TabVDW">
-		<tr>
-		<td colspan="5">$U_{LJ}(r) = {C_{12} \over r^{12}} - {C_6 \over r^6} ={A \over r^{12}} - {C \over r^6} 
-		=4ε\left[\left( {σ\over r}\right)^{12}-\left({σ\over r}\right)^6\right]
+		<tr align="center">
+		<td colspan="5">
+		<img src="Ulj.png" width="50%"><br>
+		$U_{LJ}(r) = {C_{12} \over r^{12}} - {C_6 \over r^6} ={A \over r^{12}} - {C \over r^6}
+		=4ε\left[\left( {σ\over r}\right)^{12}-\left({σ\over r}\right)^6\right] \\
+		=ε\left[\left( {R_{min}\over r}\right)^{12}-2\left({R_{min}\over r}\right)^6\right]
 		=ε\left[\left( {R_e\over r}\right)^{12}-2\left({R_e\over r}\right)^6\right]
-		=D_0\left[\left( {R_0\over r}\right)^{12}-2\left({R_0\over r}\right)^6\right]$</td>
+		=D_0\left[\left( {R_0\over r}\right)^{12}-2\left({R_0\over r}\right)^6\right]$
+		</td>
 		</tr>
 		<tr>
 		<td>原子 1</td><td>
@@ -367,7 +383,7 @@ table tr th {
 		</td><td>
 			&sigma;=(C<sub>12</sub>/C<sub>6</sub>)<sup>1/6</sup>(硬球半径)<br>
 			&epsilon;=C<sub>6</sub><sup>2</sup>/(4*C<sub>12</sub>)(势阱深度)<br>
-			Re=2<sup>1/6</sup>&sigma;(平衡距离)<br>
+			R<sub>min</sub>=2<sup>1/6</sup>&sigma;(平衡距离)<br>
 			C<sub>6</sub>=4&epsilon;&sigma;<sup>6</sup><br>
 			C<sub>12</sub>=4&epsilon;&sigma;<sup>12</sup><br>
 		</td>
@@ -388,9 +404,9 @@ table tr th {
 			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C6LB" value='2'><br>
 			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C12LB" value='2'><br>
 		</td><td>
-			&sigma;=(&sigma;<sub>1</sub>+&sigma;<sub>2</sub>)/2 (算术平均值)<br>
-			&epsilon;=sqrt(&epsilon;<sub>1</sub>*&epsilon;<sub>2</sub>) (几何平均值)<br>
-			Re=2<sup>1/6</sup>&sigma;<br>
+			&sigma;=(&sigma;<sub>1</sub>+&sigma;<sub>2</sub>)/2 (算术均值)<br>
+			&epsilon;=sqrt(&epsilon;<sub>1</sub>*&epsilon;<sub>2</sub>) (几何均值)<br>
+			R<sub>min</sub>=2<sup>1/6</sup>&sigma;<br>
 			C<sub>6</sub>=4&epsilon;&sigma;<sup>6</sup><br>
 			C<sub>12</sub>=4&epsilon;&sigma;<sup>12</sup><br>
 		</td>
@@ -402,9 +418,9 @@ table tr th {
 			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C6g" value='2'><br>
 			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C12g" value='2'><br>
 		</td><td>
-			&sigma;=sqrt(&sigma;<sub>1</sub>*&sigma;<sub>2</sub>)=(C<sub>12</sub>/C<sub>6</sub>)<sup>1/6</sup> (几何平均值)<br>
-			&epsilon;=sqrt(&epsilon;<sub>1</sub>*&epsilon;<sub>2</sub>)=C<sub>6</sub><sup>2</sup>/(4*C<sub>12</sub>) (几何平均值)<br>
-			Re=2<sup>1/6</sup>&sigma;<br>
+			&sigma;=sqrt(&sigma;<sub>1</sub>*&sigma;<sub>2</sub>)=(C<sub>12</sub>/C<sub>6</sub>)<sup>1/6</sup> (几何均值)<br>
+			&epsilon;=sqrt(&epsilon;<sub>1</sub>*&epsilon;<sub>2</sub>)=C<sub>6</sub><sup>2</sup>/(4*C<sub>12</sub>) (几何均值)<br>
+			R<sub>min</sub>=2<sup>1/6</sup>&sigma;<br>
 			C<sub>6</sub>=4&epsilon;&sigma;<sup>6</sup>=sqrt(C<sub>6</sub><sup>(1)</sup>*C<sub>6</sub><sup>(2)</sup>)<br>
 			C<sub>12</sub>=4&epsilon;&sigma;<sup>12</sup>=sqrt(C<sub>12</sub><sup>(1)</sup>*C<sub>12</sub><sup>(2)</sup>)<br>
 		</td>
@@ -416,9 +432,9 @@ table tr th {
 			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C6a" value='2'><br>
 			<input type="box" name="VDW" onInput="setVDW(this.name,this.id)" id="V_C12a" value='2'><br>
 		</td><td>
-			&sigma;=(&sigma;<sub>1</sub>+&sigma;<sub>2</sub>)/2 (算术平均值)<br>
-			&epsilon;=(&epsilon;<sub>1</sub>+&epsilon;<sub>2</sub>)/2 (算术平均值)<br>
-			Re=2<sup>1/6</sup>&sigma;<br>
+			&sigma;=(&sigma;<sub>1</sub>+&sigma;<sub>2</sub>)/2 (算术均值)<br>
+			&epsilon;=(&epsilon;<sub>1</sub>+&epsilon;<sub>2</sub>)/2 (算术均值)<br>
+			R<sub>min</sub>=2<sup>1/6</sup>&sigma;<br>
 			C<sub>6</sub>=4&epsilon;&sigma;<sup>6</sup><br>
 			C<sub>12</sub>=4&epsilon;&sigma;<sup>12</sup><br>
 		</td>
@@ -1422,7 +1438,6 @@ function showFit() {
 	}
 	updData(datChart, 1, data[1]);
 }
-
 
 function dot(a, b) {
     var ret = 0;
