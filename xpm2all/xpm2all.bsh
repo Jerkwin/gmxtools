@@ -40,7 +40,7 @@ function xpm2gpl {
 #	S = "Bend"     bend (the only non-hydrogen-bond based assignment)
 #	~ = "Coil"     C, loops/coil (residues which are not in any of the above conformations)
 
-	awk -v file=$file -v minRes=$minRes -v maxRes=$maxRes -v ssmode=$ssmode ' BEGIN{
+	awk -v file=$file -v minRes=$minRes -v maxRes=$maxRes -v yminRes=$yminRes -v ssmode=$ssmode ' BEGIN{
 		fx=.5; if(ssmode=="box") fx=1;
 		color="pdb"
 		c["A-Helix"] ="#ED6161"
@@ -62,7 +62,7 @@ function xpm2gpl {
 	}
 
 	/\/\* x-axis/ && ix { x0=$3; dx=$4-x0; ix=0 }
-	/\/\* y-axis/ && iy { y0=$3; dy=$4-y0; iy=0 }
+	/\/\* y-axis/ && iy { y0=$3; dy=$4-y0; iy=0; y0=yminRes }
 
 	END { Pi=4*atan2(1,1)
 		if(ny<maxRes) maxRes=ny
@@ -477,6 +477,47 @@ function xpm2rgb {
 				x<=0.976471 ? cubic(x,     0.546672,    -0.581206,      1.466601,   -1.184898) : \
 				x<=0.992157 ? cubic(x, -6481.511854, 19864.890017, -20291.986582, 6908.908418) : \
 				x<=1.000000 ? cubic(x,    15.165100,   -31.148250,     16.256250,    0.000000) : 0
+		} else if(cm==18) { # inferno
+			r=	x<=0.278431 ? cubic(x,    0.000616,     0.181010,     8.784927,   -16.254186) : \
+				x<=0.835294 ? cubic(x,    0.071163,     0.487649,     3.088135,    -2.832459) : \
+				x<=0.972549 ? cubic(x,  -35.687813,   123.643703,  -138.466305,    51.482349) : \
+				x<=1.000000 ? cubic(x,  118.864658,  -346.470291,   337.712706,  -109.118711) : 0
+			g=	x<=0.160784 ? cubic(x,   -0.000172,     0.233600,     5.737230,   -36.119561) : \
+				x<=0.372549 ? cubic(x,    0.281181,    -3.267615,    13.347637,   -15.212603) : \
+				x<=0.737255 ? cubic(x,    0.074037,     0.082848,    -0.311773,     1.415728) : \
+				x<=0.980392 ? cubic(x,    4.496346,   -17.261553,    22.700021,    -8.926780) : \
+				x<=1.000000 ? cubic(x,  -48.680714,   144.190704,  -140.418049,    45.906423) : 0
+			b=	x<=0.168627 ? cubic(x,    0.012518,     1.598834,     9.459394,   -36.477360) : \
+				x<=0.411765 ? cubic(x,   -0.026832,     3.918837,   -10.497266,     8.501689) : \
+				x<=0.768627 ? cubic(x,    0.028600,     2.810090,    -5.762656,     2.712918) : \
+				x<=0.878431 ? cubic(x,   67.254062,  -239.175364,   281.322381,  -109.217866) : \
+				x<=0.984314 ? cubic(x,   48.249808,  -153.577768,   160.185899,   -54.202907) : \
+				x<=1.000000 ? cubic(x,  -11.485235,    17.975087,    -3.061272,    -2.783656) : 0
+		} else if(cm==19) { # magma
+			r=	x<=0.247059 ? cubic(x,    0.000271,     0.278879,     6.004937,    -8.162905) : \
+				x<=0.615686 ? cubic(x,    0.025335,     0.775511,     1.932576,    -1.465223) : \
+				x<=0.972549 ? cubic(x,   -2.808277,    12.812626,   -14.315520,     5.304693) : \
+				x<=1.000000 ? cubic(x,    2.643449,    -4.614285,     4.339690,    -1.381797) : 0
+			g=	x<=0.184314 ? cubic(x,   -0.000638,     0.266663,     5.739256,   -29.239602) : \
+				x<=0.403922 ? cubic(x,    0.421904,    -4.277433,    15.597475,   -16.366417) : \
+				x<=0.717647 ? cubic(x,   -0.792888,     5.506012,   -11.062251,     8.150197) : \
+				x<=1.000000 ? cubic(x,   -1.225919,     3.001718,    -1.168042,     0.383598) : 0
+			b=	x<=0.180392 ? cubic(x,    0.011535,     1.658287,     5.198221,   -12.392081) : \
+				x<=0.380392 ? cubic(x,   -0.406976,     7.975221,   -23.376430,    23.001029) : \
+				x<=0.654902 ? cubic(x,   -0.110203,     3.653996,    -6.568599,     3.208048) : \
+				x<=0.984314 ? cubic(x,    6.066511,   -20.284227,    22.862804,    -7.900281) : \
+				x<=1.000000 ? cubic(x,  -79.190218,   238.092163,  -238.285225,    80.132784) : 0
+		} else if(cm==20) { # plasma
+			r=	x<=0.149020 ? cubic(x,     0.053555,     2.803442,   -11.132236,    34.980297) : \
+				x<=0.796078 ? cubic(x,     0.061463,     1.996474,    -1.062348,     0.024568) : \
+				x<=1.000000 ? cubic(x,    -0.861495,     4.340974,    -2.518960,    -0.022154) : 0
+			g=	x<=0.235294 ? cubic(x,     0.027025,    -0.084947,    -0.961318,     3.749874) : \
+				x<=0.423529 ? cubic(x,     0.463271,    -5.279437,    18.143049,   -17.011311) : \
+				x<=1.000000 ? cubic(x,    -0.288618,     1.299266,    -0.636914,     0.604317) : 0
+			b=	x<=0.392157 ? cubic(x,     0.530119,     1.080709,    -1.909092,    -1.533977) : \
+				x<=0.878431 ? cubic(x,     0.954945,    -1.020016,     0.097473,     0.022702) : \
+				x<=0.992157 ? cubic(x,    48.742918,  -153.154434,   160.670671,   -56.107107) : \
+				x<=1.000000 ? cubic(x,  -118.047093,   239.287425,  -121.109006,     0.000000) : 0
 		}
 
 		r=min(max(nint(r*255),0), 255)
@@ -489,8 +530,8 @@ function xpm2rgb {
 usage="\
 >>>>>>>>>>>>>>>>     xpm2all    <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
->>>>>>>>>>     2020-07-08 15:07:38     <<<<<<<<<
-Usage:   xpm2all <File> [-xyz|-mat|-rgb <cm>|-gpl <minRes> <maxRes> <ssmode>]
+>>>>>>>>>>     2021-01-25 12:09:05     <<<<<<<<<
+Usage:   xpm2all <File> [-xyz|-mat|-rgb <cm>|-gpl <minRes> <maxRes> <yminRes> <ssmode>]
 Default: xpm2all <File>  -xyz
 option:  -xyz: xyz datafile
          -mat: matrix datafile
@@ -513,18 +554,22 @@ option:  -xyz: xyz datafile
                         15:  tmap
                         16:  ltmap
                         17:  cividis
+                        18:  inferno
+                        19:  magma
+                        20:  plasma
          -gpl: gnuplot object file and number for 2nd structure
-               minRes: initial index of residue
-               maxRes: final   index of residue
-               ssmode: draw method
-                       box:   plain box
-                       fancy: fancy helix and beta sheet"
+               minRes:  initial index of residue
+               maxRes:  final   index of residue
+               yminRes: y value of initial residue
+               ssmode:  draw method
+                        box:   plain box
+                        fancy: fancy helix and beta sheet"
 
 [[ $# -lt 1 ]] && { echo "$usage"; exit; }
 
 opt=($@); N=${#opt[@]};
 job=xyzmat; dat=xyz; cm=1;
-minRes=1; maxRes=1E9; ssmode="fancy";
+minRes=1; maxRes=1E9; yminRes=1; ssmode="fancy";
 
 for((i=0; i<N; i++)); do
 	arg=${opt[$i]};
@@ -535,9 +580,10 @@ for((i=0; i<N; i++)); do
 	}
 	[[ $arg =~ -gpl ]] && {
 		job=${arg/-/}; opt[$i]="";
-		j=$((i+1)); [[ $j -lt $N ]] && { minRes=${opt[$j]}; opt[$j]=""; }
-		j=$((i+2)); [[ $j -lt $N ]] && { maxRes=${opt[$j]}; opt[$j]=""; }
-		j=$((i+3)); [[ $j -lt $N ]] && { ssmode=${opt[$j]}; opt[$j]=""; }
+		j=$((i+1)); [[ $j -lt $N ]] && { minRes=${opt[$j]};  opt[$j]=""; }
+		j=$((i+2)); [[ $j -lt $N ]] && { maxRes=${opt[$j]};  opt[$j]=""; }
+		j=$((i+3)); [[ $j -lt $N ]] && { yminRes=${opt[$j]}; opt[$j]=""; }
+		j=$((i+4)); [[ $j -lt $N ]] && { ssmode=${opt[$j]};  opt[$j]=""; }
 	}
 done
 
