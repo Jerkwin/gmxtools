@@ -30,7 +30,7 @@ echo -e "\
    TODO:       parallel APBS, focus
    TODO:       clean pdb and dat files
 
-   2021-03-14: add -cou, -ts option, see
+   2021-03-14: add -cou, -ts option, see 10.1088/0256-307X/38/1/018701
                change default PB method to npbe
    2021-03-03: fix bug: awk will exit for multiple system call
    2020-11-15: fix bug for resID >=1000, for awk 3.x gsub /\s/
@@ -596,7 +596,7 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 			close(Fout".apbs")
 
 			cmd=apbs" "Fout".apbs &> "Fout".out 2>&1";
-#			cmd | getline err; close(cmd)
+			cmd | getline err; close(cmd)
 
 			txt=Fout".out";
 			while(getline < txt ) {
@@ -653,7 +653,7 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 				Fout, Ebi[fr], EbiDH[fr], Emm[fr], EmmDH[fr], Epb[fr], Esa[fr], \
 				Ecou, EcouDH, Evdw, PBcom, PBpro, PBlig, SAcom, SApro, SAlig >> pid"~MMPBSA.dat"
 
-			printf "    MM-PBSA =  %9.3f(%9.3f) kJ/mol\n", Ebi[fr],  EbiDH[fr]
+			printf "    MM-PBSA(with DH) =  %9.3f(%9.3f) kJ/mol\n", Ebi[fr],  EbiDH[fr]
 
 			fmt="%s%12.3f%s"
 			for(i=1; i<=Nres; i++) {
