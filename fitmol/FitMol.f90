@@ -84,8 +84,10 @@ Program FitMol
 	read(Lxyz, '(A256)') Tips
 	read(Lxyz, '(A256)') txt; backspace(Lxyz)
 	read(txt, *, IOstat=Ierr) Sref(1), Wref(1), Wref(1), Wref(1), Wref(1)
+	
+	print*, ierr
 
-	Wref=0.d0
+	Wref=1.d0
 	do i=1, Natm
 		if(Ierr/=0) read(Lxyz, *) Sref(i), XYZref(1,i), XYZref(2,i), XYZref(3,i)
 		if(Ierr==0) read(Lxyz, *) Sref(i), XYZref(1,i), XYZref(2,i), XYZref(3,i), Wref(i)

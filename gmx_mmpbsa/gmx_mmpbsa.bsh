@@ -1,23 +1,38 @@
 echo -e "\
->>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
->>>>>>>>>>     2020-11-15 10:11:59     <<<<<<<<<\n
->>   Usage: gmx_mmpbsa -f   *.xtc     -s   *.tpr      -n   *.ndx
-                       -com COMPLEX   -pro PROTEIN   {-lig <LIGAND|none>}\n
->> Default: gmx_mmpbsa -f  traj.xtc   -s topol.tpr    -n index.ndx
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2021-03-14 01:07:28     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx        ]
+                       [-com COMPLEX] [-pro PROTEIN] [-lig <LIGAND|none>]
+                       [-cou dh     ] [-ts ie      ]\n
+>> Default: gmx_mmpbsa -f   traj.xtc  -s   topol.tpr  -n   index.ndx
                        -com Complex   -pro Protein    -lig Ligand
+                                       -ts  ie
+--------------------------------------------------------------------------------
 >> Option:
-     f: trajectory file
-     s: topology file
-     n: index file
-   com: index group name of complex
-   pro: index group name of protein
-   lig: index group name of ligand, can be ignored using none
-   change other settings in the script directly
+      -f: trajectory file
+      -s: topology file
+      -n: index file
+    -com: index group name of complex
+    -pro: index group name of protein
+    -lig: index group name of ligand, can be ignored using none
+    -cou: dh: calculate MM(COU) with Debye-Huckel screening method
+     -ts: ie: calculate entropy with interaction entropy method
+   Other: change them in the script directly
+--------------------------------------------------------------------------------
+>> Warning:
+   !!! 1. make sure gmx is available
+   !!! 2. gawk version > 3; macOS awk version > 2018
+   !!! 3. watch _pid.pdb to make sure PBC is correct
+--------------------------------------------------------------------------------
 >> Log:
-   TODO:       Opt before MM-PBSA
    TODO:       CAS
    TODO:       parallel APBS, focus
+   TODO:       clean pdb and dat files
+
+   2021-03-14: add -cou, -ts option, see
+               change default PB method to npbe
+   2021-03-03: fix bug: awk will exit for multiple system call
    2020-11-15: fix bug for resID >=1000, for awk 3.x gsub /\s/
    2020-06-02: fix bug of withLig
    2020-06-01: fix bug of -skip
@@ -49,18 +64,18 @@ lig=Ligand			# 配体索引组   index group name of ligand
 
 step=1	# 从第几步开始运行 step number to run
 		# 1. 预处理轨迹: 复合物完整化, 团簇化, 居中叠合, 然后生成pdb文件
-		#    pre-processe trajectory, whole, cluster, center, fit, then generate pdb file
 		# 2. 获取每个原子的电荷, 半径, LJ参数, 然后生成qrv文件
-		#    abstract atomic parameters, charge, radius, C6/C12, then generate qrv file
 		# 3. MM-PBSA计算: pdb->pqr, 输出apbs, 计算MM, APBS
-		#    run MM-PBSA, pdb->pqr, apbs, then calculate MM, PB, SA
+		# 1. pre-processe trajectory, whole, cluster, center, fit, then generate pdb file
+		# 2. abstract atomic parameters, charge, radius, C6/C12, then generate qrv file
+		# 3. run MM-PBSA, pdb->pqr, apbs, then calculate MM, PB, SA
 
 gmx='gmx'								# /path/to/GMX/bin/gmx_mpi
 dump="$gmx dump"						# gmx dump
 trjconv="$gmx trjconv -dt 1000"			# gmx trjconv, use -b -e -dt, NOT -skip
 
 #apbs='/path/APBS/bin/apbs'				# APBS(Linux)
-apbs='c:/apbs1.5/bin/apbs.exe'			# APBS(Windows), USE "/", NOT "\"
+apbs='E:/APBS1.5/apbs.exe'			# APBS(Windows), USE "/", NOT "\"
 export MCSH_HOME=/dev/null				# APBS io.mc
 
 pid=pid				# 输出文件($$可免重复) prefix of the output files($$)
@@ -85,7 +100,7 @@ PBEset='
   pdie  2           # 溶质介电常数
   sdie  78.54       # 溶剂介电常数, 真空1, 水78.54
 
-  lpbe              # PB方程求解方法, lpbe(线性), npbe(非线性), smbpe(大小修正)
+  npbe              # PB方程求解方法, lpbe(线性), npbe(非线性), smbpe(大小修正)
   bcfl  mdh         # 粗略格点PB方程的边界条件, zero, sdh/mdh(single/multiple Debye-Huckel), focus, map
   srfm  smol        # 构建介质和离子边界的模型, mol(分子表面), smol(平滑分子表面), spl2/4(三次样条/7阶多项式)
   chgm  spl4        # 电荷映射到格点的方法, spl0/2/4, 三线性插值, 立方/四次B样条离散
@@ -94,8 +109,8 @@ PBEset='
   srad  1.4         # 溶剂探测半径
   sdens 10          # 表面密度, 每A^2的格点数, (srad=0)或(srfm=spl2/4)时不使用
 
-  ion  1 0.15 0.95  # 阳离子的电荷, 浓度, 半径
-  ion -1 0.15 1.81  # 阴离子
+  ion charge  1 conc 0.15 radius 0.95  # 阳离子的电荷, 浓度, 半径
+  ion charge -1 conc 0.15 radius 1.81  # 阴离子
 
   calcforce  no
   calcenergy comps'
@@ -135,20 +150,21 @@ PBAset='
 
 ################################################################################
 # 检查 gmx, apbs 是否可以运行
-# check gmx, apbs
+# check gmx, apbs availability
 ################################################################################
 
 str=$($gmx --version | grep -i "GROMACS version")
-[[ -z "$str" ]] && { echo -e "!!! WARNING !!! GROMACS NOT available !\n"; }
+[[ -z "$str" ]] && { echo -e "!!! ERROR !!!  GROMACS NOT available !\n"; exit; }
 
-str=$($apbs --version | grep -i "Poisson-Boltzmann")
-[[ -z "$str" ]] && { echo -e "!!! WARNING !!!  APBS   NOT available !\n"; }
+str=$($apbs --version 2>&1 | grep -i "Poisson-Boltzmann")
+[[ -z "$str" ]] && { echo -e "!!! WARNING !!!  APBS NOT available !\n"; }
 
 ################################################################################
 # 解析命令行参数
 # parse command line options
 ################################################################################
 
+useDH=1;  useTS=1
 opt=($*); N=${#opt[@]}
 for((i=0; i<N; i++)); do
 	arg=${opt[$i]}; j=$((i+1)); val=${opt[$j]}
@@ -158,21 +174,29 @@ for((i=0; i<N; i++)); do
 	[[ $arg =~ -com ]] && { com=$val; }
 	[[ $arg =~ -pro ]] && { pro=$val; }
 	[[ $arg =~ -lig ]] && { lig=$val; }
+	[[ $arg =~ -cou ]] && { useDH=1;  }
+	[[ $arg =~ -ts  ]] && { useTS=1;  }
 done
 
 withLig=1; [[ $lig =~ none ]] && { withLig=0; com=$pro; lig=$pro; }
 
 ################################################################################
-# 检查文件
-# check files
+# 检查所需文件, 索引组
+# check needed files, index group
 ################################################################################
 
 [[ ! -f "$trj" ]] && { echo -e "!!! ERROR !!! trajectory File NOT Exist !\n"; exit; }
 [[ ! -f "$tpr" ]] && { echo -e "!!! ERROR !!! topology   File NOT Exist !\n"; exit; }
 [[ ! -f "$ndx" ]] && { echo -e "!!! ERROR !!! index      File NOT Exist !\n"; exit; }
-str=$(grep $com "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! $com NOT in $ndx !\n"; exit; }
-str=$(grep $pro "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! $pro NOT in $ndx !\n"; exit; }
-str=$(grep $lig "$ndx"); [[ -z "$str" && $withLig -eq 1 ]] && { echo -e "!!! ERROR !!! $lig NOT in $ndx !\n"; exit; }
+str=$(grep "\[ *$com *\]" "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! [ $com ] NOT in $ndx !\n"; exit; }
+str=$(grep "\[ *$pro *\]" "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! [ $pro ] NOT in $ndx !\n"; exit; }
+str=$(grep "\[ *$lig *\]" "$ndx"); [[ -z "$str" && $withLig -eq 1 ]] && { echo -e "!!! ERROR !!! [ $lig ] NOT in $ndx !\n"; exit; }
+
+str=$(grep "\[ *$com *\]" "$ndx" | wc -l); [[ $str -gt 1 ]] && { echo -e "!!! ERROR !!! more than ONE [ $com ] in $ndx !\n"; exit; }
+str=$(grep "\[ *$pro *\]" "$ndx" | wc -l); [[ $str -gt 1 ]] && { echo -e "!!! ERROR !!! more than ONE [ $pro ] in $ndx !\n"; exit; }
+str=$(grep "\[ *$lig *\]" "$ndx" | wc -l); [[ $str -gt 1 && $withLig -eq 1 ]] && { echo -e "!!! ERROR !!! more than ONE [ $lig ] in $ndx !\n"; exit; }
+
+echo -e ">> 0. set up environmets and parameters: OK !\n"
 
 if [[ $step -le 1 ]]; then
 ################################################################################
@@ -180,15 +204,18 @@ if [[ $step -le 1 ]]; then
 #    请检查pdb文件确保构型PBC处理正确
 # 1. pre-processe trajectory, whole, cluster, center, fit, then generate pdb file
 ################################################################################
-trjwho=$pid~who; trjcnt=$pid~cnt; trjcls=$pid~cls
-echo $com            | $trjconv  -s $tpr -n $ndx -f $trj    -o $trjwho.xtc &> $scr -pbc whole
-echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o _$pid.pdb   &>>$scr -pbc mol -center
 
+trjwho=$pid~who; trjcnt=$pid~cnt; trjcls=$pid~cls
+echo $com                | $trjconv  -s $tpr -n $ndx -f $trj    -o $trjwho.xtc &> $scr -pbc whole
+if [[ $withLig -eq 1 ]]; then
 # usful for single protein and ligand
-#echo $com            | $trjconv  -s $tpr -n $ndx -f $trj    -o $trjwho.xtc &> $scr -pbc whole
-#echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $trjcnt.xtc &>>$scr -pbc mol -center
-#echo -e "$com\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcnt -o $trjcls.xtc &>>$scr -pbc cluster
-#echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcls -o _$pid.pdb   &>>$scr -fit rot+trans
+	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $trjcnt.xtc &>>$scr -pbc mol -center
+	echo -e "$com\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcnt -o $trjcls.xtc &>>$scr -pbc cluster
+	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcls -o _$pid.pdb   &>>$scr -fit rot+trans
+else
+	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o _$pid.pdb   &>>$scr -pbc mol -center
+fi
+echo -e ">> 1. pre-processe trajectory: OK !\n"
 
 fi; if [[ $step -le 2 ]]; then
 ################################################################################
@@ -199,6 +226,7 @@ fi; if [[ $step -le 2 ]]; then
 #    radType=1: mBondi
 #    radType=2: Bondi
 ################################################################################
+
 $dump -quiet -s $tpr 2>>$scr \
 | awk >$qrv -v ndx=$ndx -v pro=$pro -v lig=$lig -v withLig=$withLig \
 			-v radType=$radType -v radLJ0=$radLJ0 '
@@ -321,18 +349,22 @@ $dump -quiet -s $tpr 2>>$scr \
 		return radBondi[tag]
 	}
 '
+echo -e ">> 2. generate qrv file: OK !\n"
 
 fi; if [[ $step -le 3 ]]; then
 ################################################################################
 # 3. MM-PBSA计算: pdb->pqr, 输出apbs, 计算MM, APBS
 # 3. run MM-PBSA, pdb->pqr, apbs, then calculate MM, PB, SA
 ################################################################################
+
+echo -e ">> 3. run MM-PBSA calculatons"
 dt=$(awk '/t=/{n++;sub(/.*t=/,"");sub(/step=.*/,"");t[n]=$0;if(n==2){print t[n]-t[1];exit}}' _$pid.pdb)
-awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
-	-v ff=$ff     -v PBEset="$PBEset" -v PBAset="$PBAset" \
-	-v meshType=$meshType -v gridType=$gridType -v gmem=$gmem  \
-	-v fadd=$fadd -v cfac=$cfac -v df=$df -v dt="$dt"          \
-	-v withLig=$withLig -v RS="\r?\n" '
+awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
+	-v apbs="$apbs"       -v useDH=$useDH       -v useTS=$useTS \
+	-v PBEset="$PBEset"   -v PBAset="$PBAset"                   \
+	-v meshType=$meshType -v gridType=$gridType -v gmem=$gmem   \
+	-v fadd=$fadd         -v cfac=$cfac         -v df=$df       \
+	-v withLig=$withLig   -v RS="\r?\n" '
 	BEGIN {
 		getline < qrv
 		getline Atyp < qrv
@@ -353,11 +385,28 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 		close(qrv)
 		Ncom=Npro+Nlig
 
-		PBEset0=PBEset; sub(/sdie +[0-9]*\.*[0-9]*/, "sdie  1", PBEset0)
+		txt=PBEset;
+		gsub(/#[^\n]*\n/, "\n", txt);
+		split(txt, arr, "\n")
+		Nion=0
+		for(i in arr) {
+			split(arr[i], arr2)
+			if(arr2[1]~/temp/) temp=arr2[2]
+			if(arr2[1]~/pdie/) pdie=arr2[2]
+			if(arr2[1]~/sdie/) sdie=arr2[2]
+			if(arr2[1]~/ion/)  { Nion++; Qion[Nion]=arr2[3]; Cion[Nion]=arr2[5] }
+		}
 
-		txt=PBEset; sub(/.*pdie +/, "", txt);
-		sub(/\n.*/, "", txt); split(txt, arr)
-		pdie=arr[1]
+		Iion=0
+		for(i=1; i<=Nion; i++) Iion += Cion[i]*Qion[i]^2
+		eps0=8.854187812800001e-12
+		kb=1.380649e-23
+		Na=6.02214076e+23
+		qe=1.602176634e-19
+		RT2kJ=8.314462618*temp/1E3
+		kap=1E-10/sqrt(eps0*kb*temp*sdie/(Iion*qe^2*Na*1E3))
+
+		PBEset0=PBEset; sub(/sdie +[0-9]*\.*[0-9]*/, "sdie  1", PBEset0)
 
 		txt=PBAset; sub(/.*#gamma +con[a-zA-Z]+/, "", txt);
 		sub(/\n.*/, "", txt); split(txt, arr)
@@ -374,7 +423,13 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 	}
 
 	/REMARK/ {next}
-	/TITLE/ {Fout=FILENAME
+	/TITLE/ {
+		if(Nfrm) {
+			close(Fname[Nfrm]"_com.pqr")
+			close(Fname[Nfrm]"_pro.pqr")
+			if(withLig) close(Fname[Nfrm]"_lig.pqr")
+		}
+		Fout=FILENAME
 		txt=$0; sub(/.*t= */,"",txt); sub(/ .*/,"",txt)
 		txt=sprintf(fmt, txt/1E3);
 		sub(".pdb", txt, Fout)
@@ -433,6 +488,10 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 	}
 
 	END{
+		close(Fname[Nfrm]"_com.pqr")
+		close(Fname[Nfrm]"_pro.pqr")
+		if(withLig) close(Fname[Nfrm]"_lig.pqr")
+
 		kJcou=1389.35457520287
 		Rcut=1E10              # large enough
 
@@ -455,13 +514,18 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 		print txt > pid"~resPBSA_PB.dat"
 		print txt > pid"~resPBSA_SA.dat"
 
-		print "   #Frame      Binding    MM        PB        SA     "\
-			 "|   COU       VDW     |       PBcom        PBpro        PBlig  "\
-			 "|    SAcom     SApro     SAlig" >> pid"~MMPBSA.dat"
+		print "   #Frame      Binding( with DH ) "         \
+			 "|    MM    ( with DH )    PB        SA     " \
+			 "|   COU    ( with DH )     VDW   "            \
+			 "|       PBcom        PBpro        PBlig  "   \
+			 "|    SAcom     SApro     SAlig"    >> pid"~MMPBSA.dat"
+
+		maxstr=0
+		for(fr=1; fr<=Nfrm; fr++) maxstr=max(maxstr, length(Fname[fr]))
 
 		for(fr=1; fr<=Nfrm; fr++) {
 			Fout=Fname[fr]
-			print "running for Frame "fr": "Fout
+			printf "   >> Frame %3d/%d: %-"maxstr"s", fr, Nfrm, Fout
 
 			txt=Fout"_pro.pqr"; if(withLig) txt=Fout"_com.pqr";
 			close(txt)
@@ -475,8 +539,8 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 
 			# MM
 			if(withLig) {
-				for(i=1; i<=Npro; i++) { dEcou[resPro[i]]=0; dEvdw[resPro[i]]=0 }
-				for(i=1; i<=Nlig; i++) { dEcou[resLig[i]]=0; dEvdw[resLig[i]]=0 }
+				for(i=1; i<=Npro; i++) { dEcou[resPro[i]]=0; dEcouDH[resPro[i]]=0; dEvdw[resPro[i]]=0 }
+				for(i=1; i<=Nlig; i++) { dEcou[resLig[i]]=0; dEcouDH[resLig[i]]=0; dEvdw[resLig[i]]=0 }
 				for(i=1; i<=Npro; i++) {
 					ii=i+Ipro-1
 					qi=Qatm[ii]; ci=Catm[ii]; si=Satm[ii]; ei=Eatm[ii]
@@ -486,9 +550,11 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 						r=sqrt( (xi-x[jj])^2+(yi-y[jj])^2+(zi-z[jj])^2 )
 						if(r<Rcut) {
 							t=1/(.1*r)^6
-							Ecou = qi*Qatm[jj]/r
+							Ecou   = qi*Qatm[jj]/r;
+							EcouDH = Ecou*exp(-kap*r)
 							Evdw = (C12[ci,cj]*t-C6[ci,cj])*t
 							dEcou[resPro[i]] += Ecou; dEcou[resLig[j]] += Ecou
+							dEcouDH[resPro[i]] += EcouDH; dEcouDH[resLig[j]] += EcouDH
 							dEvdw[resPro[i]] += Evdw; dEvdw[resLig[j]] += Evdw
 						}
 					}
@@ -497,6 +563,7 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 				Ecou=0; Evdw=0
 				for(i in dEcou) {
 					dEcou[i] *= kJcou/(2*pdie); Ecou += dEcou[i];
+					dEcouDH[i] *= kJcou/(2*pdie); EcouDH += dEcouDH[i];
 					dEvdw[i] /= 2;              Evdw += dEvdw[i]
 				}
 			}
@@ -526,9 +593,10 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 				else       print \
 					dimAPBS(Fout"_pro", 1, minXpro[fr], maxXpro[fr], minYpro[fr], maxYpro[fr], minZpro[fr], maxZpro[fr])  > Fout".apbs"
 			}
+			close(Fout".apbs")
 
-			cmd=apbs" "Fout".apbs > "Fout".out 2>&1";
-			system(cmd); close(cmd)
+			cmd=apbs" "Fout".apbs &> "Fout".out 2>&1";
+#			cmd | getline err; close(cmd)
 
 			txt=Fout".out";
 			while(getline < txt ) {
@@ -573,10 +641,19 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 			}
 
 			preK=-1; if(withLig) preK=1
-			printf "%-12s %9.3f %9.3f %9.3f %9.3f | %9.3f %9.3f | %12.3f %12.3f %12.3f | %9.3f %9.3f %9.3f\n", \
-				Fout,       preK*(Ecou+Evdw+PBcom-PBpro-PBlig+SAcom-SApro-SAlig), \
-				Ecou+Evdw,  preK*(PBcom-PBpro-PBlig), preK*(SAcom-SApro-SAlig), \
-				Ecou, Evdw, PBcom, PBpro, PBlig, SAcom, SApro, SAlig >> pid"~MMPBSA.dat"
+			Eco[fr]=Ecou;      EcoDH[fr]=EcouDH
+			Emm[fr]=Ecou+Evdw; EmmDH[fr]=EcouDH+Evdw
+			Evd[fr]=Evdw
+			Epb[fr]=preK*(PBcom-PBpro-PBlig)
+			Esa[fr]=preK*(SAcom-SApro-SAlig)
+			Ebi[fr]=preK*(Ecou+Evdw+PBcom-PBpro-PBlig+SAcom-SApro-SAlig)
+			EbiDH[fr]=preK*(EcouDH+Evdw+PBcom-PBpro-PBlig+SAcom-SApro-SAlig)
+			printf "%-12s %9.3f(%9.3f) | %9.3f(%9.3f) %9.3f %9.3f " \
+				  "| %9.3f(%9.3f) %9.3f | %12.3f %12.3f %12.3f | %9.3f %9.3f %9.3f\n", \
+				Fout, Ebi[fr], EbiDH[fr], Emm[fr], EmmDH[fr], Epb[fr], Esa[fr], \
+				Ecou, EcouDH, Evdw, PBcom, PBpro, PBlig, SAcom, SApro, SAlig >> pid"~MMPBSA.dat"
+
+			printf "    MM-PBSA =  %9.3f(%9.3f) kJ/mol\n", Ebi[fr],  EbiDH[fr]
 
 			fmt="%s%12.3f%s"
 			for(i=1; i<=Nres; i++) {
@@ -620,6 +697,35 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 								+PBres[resLig[i]]+SAres[resLig[i]]  > Fout"~res_MMPBSA.pdb"
 			}
 		}
+
+		meanEbi=0; meanEmm=0; meanEbiDH=0; meanEmmDH=0;
+		meanEco=0; meanEvd=0; meanEcoDH=0;
+		meanEpb=0; meanEsa=0;
+		for(i=1; i<=Nfrm; i++) {
+			meanEbi += Ebi[i]/Nfrm; meanEbiDH += EbiDH[i]/Nfrm
+			meanEmm += Emm[i]/Nfrm; meanEmmDH += EmmDH[i]/Nfrm
+			meanEco += Eco[i]/Nfrm; meanEcoDH += EcoDH[i]/Nfrm
+			meanEvd += Evd[i]/Nfrm
+			meanEpb += Epb[i]/Nfrm
+			meanEsa += Esa[i]/Nfrm
+		}
+		TdS=0; TdS_dh=0
+		for(i=1; i<=Nfrm; i++) {
+			TdS    += exp((Emm[i]-meanEmm)/RT2kJ)/Nfrm
+			TdS_dh += exp((EmmDH[i]-meanEmmDH)/RT2kJ)/Nfrm
+		}
+		TdS=-RT2kJ*log(TdS)
+		TdS_dh=-RT2kJ*log(TdS_dh)
+
+		printf "----------------------------------" \
+			   "|------------------------------------------" \
+			   "|--------------------------------|\n" \
+			   "%-12s %9.3f(%9.3f) | %9.3f(%9.3f) %9.3f %9.3f | %9.3f(%9.3f) %9.3f |\n"   \
+			   "%-12s %9.3f(%9.3f) |\n----------------------------------|\n" \
+			   "%-12s %9.3f(%9.3f) kJ/mol = %9.3f(%9.3f) kcal/mol\n",
+			"mean", meanEbi, meanEbiDH, meanEmm, meanEmmDH, meanEpb, meanEsa, meanEco, meanEcoDH, meanEvd,
+			"-TdS", -TdS, -TdS_dh, "  dG", meanEbi-TdS, meanEbiDH-TdS_dh, \
+			(meanEbi-TdS)/4.184,  (meanEbiDH-TdS_dh)/4.184  >> pid"~MMPBSA.dat"
 	}
 
 	function dimAPBS(file, Imol, minX, maxX, minY, maxY, minZ, maxZ) {
@@ -693,6 +799,7 @@ awk -v pid=_$pid  -v qrv=$qrv -v apbs="$apbs" \
 	function max(x, y) { return x>y ? x : y }
 	function round(x)  { return int(x+0.5)  }
 ' _$pid.pdb
+echo -e "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"
 fi
 
 ################################################################################
