@@ -65,7 +65,7 @@
 <a href="http://jerkwin.github.io/2020/07/10/%E4%BD%BF%E7%94%A8xpm2all%E8%84%9A%E6%9C%AC%E8%AE%A1%E7%AE%97%E8%9B%8B%E7%99%BD%E4%BA%8C%E7%BA%A7%E7%BB%93%E6%9E%84%E6%BC%94%E5%8C%96%E5%8F%8A%E5%90%AB%E9%87%8F/">使用xpm2all脚本计算蛋白二级结构演化及含量</a>
 </td>
 <td><a href="./xpm2all/xpm2all.bsh">xpm2all.bsh</a><br>
-<a href="./xpm2all/xpm2all.bat">xpm2rgb.bat</a>
+<a href="./xpm2all/xpm2rgb.bat">xpm2rgb.bat</a>
 </td>
 <td><a href="./xpm2all/ss.xpm">ss.xpm</a><br>
 <a href="./xpm2all/gibbs.xpm">gibbs.xpm</a>
@@ -73,16 +73,17 @@
 
 <tr>
 <td>gmx_mmpbsa</td>
-<td><a href="https://jerkwin.github.io/2019/07/31/gmx_mmpbsa%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">gmx_mmpbsa使用说明</a></td>
+<td><a href="https://jerkwin.github.io/2019/07/31/gmx_mmpbsa%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">gmx_mmpbsa使用说明</a><br>
+<a href="https://jerkwin.github.io/2021/03/16/gmx_mmpbsa%E8%84%9A%E6%9C%AC%E6%9B%B4%E6%96%B0-%E5%B1%8F%E8%94%BD%E6%95%88%E5%BA%94%E4%B8%8E%E7%86%B5%E8%B4%A1%E7%8C%AE/">gmx_mmpbsa脚本更新：屏蔽效应与熵贡献</a></td>
 <td><a href="./gmx_mmpbsa/gmx_mmpbsa.bsh">gmx_mmpbsa.bsh</a></td>
 <td><a href="./gmx_mmpbsa/1ebz.zip">1ebz.zip</a></td>
 </tr>
 
+<tr>
 <td>gmx_ir</td>
 <td><a href="https://jerkwin.github.io/2017/08/20/%E4%BD%BF%E7%94%A8GROMACS%E8%AE%A1%E7%AE%97%E7%BA%A2%E5%A4%96%E5%85%89%E8%B0%B1/">使用GROMACS计算红外光谱</a></td>
 <td><a href="./gmx_ir/gmx_ir.bsh">gmx_ir.bsh</a></td>
 <td>N/A</td>
-
 </tr>
 
 </table>
