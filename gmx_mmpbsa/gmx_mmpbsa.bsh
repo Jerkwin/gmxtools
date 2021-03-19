@@ -295,7 +295,7 @@ $dump -quiet -s $tpr 2>>$scr \
 
 	/residue\[/ { nres++
 		sub(/.*="/,"",$0); sub(/".*/,"",$0);
-		resName[nres]=sprintf("%d%s", nres, $0)
+		resName[nres]=sprintf("%05d%s", nres, $0)
 	}
 
 	END {
