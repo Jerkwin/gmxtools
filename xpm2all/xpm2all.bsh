@@ -45,14 +45,15 @@ function xpm2gpl {
 		xyz=0; if(ssmode=="xyz") xyz=1;
 		fx=.5; if(ssmode=="box") fx=1;
 		ny=0; ix=1; iy=1;
-		vss["A-Helix" ]= 7;  c["A-Helix" ,"gmx"]= "#0000FF"
-		vss["3-Helix" ]= 6;  c["3-Helix" ,"gmx"]= "#808080"
-		vss["5-Helix" ]= 5;  c["5-Helix" ,"gmx"]= "#800080"
-		vss["B-Sheet" ]= 4;  c["B-Sheet" ,"gmx"]= "#FF0000"
-		vss["B-Bridge"]= 3;  c["B-Bridge","gmx"]= "#000000"
-		vss["Turn"    ]= 2;  c["Turn"    ,"gmx"]= "#FFFF00"
-		vss["Bend"    ]= 1;  c["Bend"    ,"gmx"]= "#008000"
-		vss["Coil"    ]= 0;  c["Coil"    ,"gmx"]= "#BBBBBB"
+		vss["Chain_Separator"]=0;
+		vss["A-Helix" ]= 8;  c["A-Helix" ,"gmx"]= "#0000FF"
+		vss["3-Helix" ]= 7;  c["3-Helix" ,"gmx"]= "#808080"
+		vss["5-Helix" ]= 6;  c["5-Helix" ,"gmx"]= "#800080"
+		vss["B-Sheet" ]= 5;  c["B-Sheet" ,"gmx"]= "#FF0000"
+		vss["B-Bridge"]= 4;  c["B-Bridge","gmx"]= "#000000"
+		vss["Turn"    ]= 3;  c["Turn"    ,"gmx"]= "#FFFF00"
+		vss["Bend"    ]= 2;  c["Bend"    ,"gmx"]= "#008000"
+		vss["Coil"    ]= 1;  c["Coil"    ,"gmx"]= "#BBBBBB"
 
 		c["A-Helix" ,"pdb"]="#E53535"; c["A-Helix" ,"vmd"]="#E182E1";
 		c["3-Helix" ,"pdb"]="#EC6262"; c["3-Helix" ,"vmd"]="#FFA0FF";
@@ -62,7 +63,6 @@ function xpm2gpl {
 		c["Turn"    ,"pdb"]="#00B266"; c["Turn"    ,"vmd"]="#469696";
 		c["Bend"    ,"pdb"]="#00CC00"; c["Bend"    ,"vmd"]="#00CC00";
 		c["Coil"    ,"pdb"]="#000000"; c["Coil"    ,"vmd"]="#000000";
-
 #		p1: 10.1371/journal.pone.0178333
 #		p2: 10.1371/journal.pcbi.1007487
 		c["A-Helix" ,"p1"]="#00FF00"; c["A-Helix" ,"p2"]="#0171B6"
@@ -73,6 +73,10 @@ function xpm2gpl {
 		c["Turn"    ,"p1"]="#FF8C00"; c["Turn"    ,"p2"]="#C99260"
 		c["Bend"    ,"p1"]="#FF0000"; c["Bend"    ,"p2"]="#F8B0E7"
 		c["Coil"    ,"p1"]="#000000"; c["Coil"    ,"p2"]="#000000"
+
+		c["Chain_Separator","gmx"]="#E6E6E6"
+		c["Chain_Separator","pdb"]="#FFFFFF"; c["Chain_Separator","vmd"]="#FFFFFF"
+		c["Chain_Separator","p1" ]="#FFFFFF"; c["Chain_Separator","p2" ]="#FFFFFF"
 	}
 
 	/^"/ {
@@ -139,7 +143,7 @@ function xpm2gpl {
 		}
 
 		print "# residue index: "minRes"-"maxRes >file"~count.xvg"
-		print "#      Time("xu")  A-Helix  3-Helix  5-Helix  B-Sheet B-Bridge     Turn     Bend     Coil" >file"~count.xvg"
+		print "#      Time("xu")  A-Helix  3-Helix  5-Helix  B-Sheet B-Bridge     Turn     Bend     Coil     Chain_Separator" >file"~count.xvg"
 		n=0
 		for(i=0; i<nx; i++) {
 			ftype["A-Helix"] =0
@@ -150,6 +154,7 @@ function xpm2gpl {
 			ftype["Turn"]    =0
 			ftype["Bend"]    =0
 			ftype["Coil"]    =0
+			ftype["Chain_Separator"]    =0
 
 			x = x0+i*dx
 			for(j=0; j<ny; j++) {
@@ -161,7 +166,7 @@ function xpm2gpl {
 				}
 			}
 
-			printf "%15.6f%9d%9d%9d%9d%9d%9d%9d%9d\n", x,
+			printf "%15.6f%9d%9d%9d%9d%9d%9d%9d%9d%9d\n", x,
 					 ftype["A-Helix"] ,
 					 ftype["3-Helix"] ,
 					 ftype["5-Helix"] ,
@@ -169,7 +174,8 @@ function xpm2gpl {
 					 ftype["B-Bridge"],
 					 ftype["Turn"]    ,
 					 ftype["Bend"]    ,
-					 ftype["Coil"]      >file"~count.xvg"
+					 ftype["Coil"],
+					 ftype["Chain_Separator"] >file"~count.xvg"
 
 			for(j=0; j<ny; j++) {
 				if(minRes<=j+1 && j+1<=maxRes) {
