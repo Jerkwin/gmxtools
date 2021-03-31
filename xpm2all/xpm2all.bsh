@@ -1,5 +1,5 @@
 function xpm2xyzmat {
-	awk -v dat=$dat ' BEGIN{ny=0; ix=1; iy=1}
+	awk -v dat=$dat ' BEGIN{ ny=0; ix=1; iy=1 }
 	/"/ {
 		gsub(/[",\n\r]/, "")
 		n=split($0, arr)
@@ -33,82 +33,118 @@ function xpm2xyzmat {
 function xpm2gpl {
 #	G = "3-Helix"  3-turn helix (3/10 helix). Min length 3 residues.
 #	H = "A-Helix"  4-turn helix (α helix).   Min length 4 residues.
-#	I =            5-turn helix (π helix).   Min length 5 residues.
+#	I = "5-Helix"  5-turn helix (π helix).   Min length 5 residues.
 #	B = "B-Bridge" beta-bridge residue. residue in isolated β-bridge (single pair β-sheet hydrogen bond formation)
 #	E = "B-Sheet"  extended strand (in beta ladder) in parallel and/or anti-parallel β-sheet conformation. Min length 2 residues.
 #	T = "Turn"     H-bonded turn (3, 4 or 5 turn)
 #	S = "Bend"     bend (the only non-hydrogen-bond based assignment)
 #	~ = "Coil"     C, loops/coil (residues which are not in any of the above conformations)
 
-	awk -v file=$file -v minRes=$minRes -v maxRes=$maxRes -v yminRes=$yminRes -v ssmode=$ssmode ' BEGIN{
+	awk -v file=$file -v minRes=$minRes -v maxRes=$maxRes -v yminRes=$yminRes \
+		-v ssmode=$ssmode -v color=$color ' BEGIN{
+		xyz=0; if(ssmode=="xyz") xyz=1;
 		fx=.5; if(ssmode=="box") fx=1;
-		color="pdb"
-		c["A-Helix"] ="#ED6161"
-		c["3-Helix"] ="#EA608B"
-		c["B-Sheet"] ="#FFF000"
-		c["B-Bridge"]="#D4A800"
-		c["Turn"]    ="#00B266"
-		c["Bend"]    ="#00CC00"
-		c["Coil"]    ="#000000"
 		ny=0; ix=1; iy=1;
+		vss["A-Helix" ]= 7;  c["A-Helix" ,"gmx"]= "#0000FF"
+		vss["3-Helix" ]= 6;  c["3-Helix" ,"gmx"]= "#808080"
+		vss["5-Helix" ]= 5;  c["5-Helix" ,"gmx"]= "#800080"
+		vss["B-Sheet" ]= 4;  c["B-Sheet" ,"gmx"]= "#FF0000"
+		vss["B-Bridge"]= 3;  c["B-Bridge","gmx"]= "#000000"
+		vss["Turn"    ]= 2;  c["Turn"    ,"gmx"]= "#FFFF00"
+		vss["Bend"    ]= 1;  c["Bend"    ,"gmx"]= "#008000"
+		vss["Coil"    ]= 0;  c["Coil"    ,"gmx"]= "#BBBBBB"
+
+		c["A-Helix" ,"pdb"]="#E53535"; c["A-Helix" ,"vmd"]="#E182E1";
+		c["3-Helix" ,"pdb"]="#EC6262"; c["3-Helix" ,"vmd"]="#FFA0FF";
+		c["5-Helix" ,"pdb"]="#F28E8E"; c["5-Helix" ,"vmd"]="#E11414";
+		c["B-Sheet" ,"pdb"]="#FFF000"; c["B-Sheet" ,"vmd"]="#FFFF64";
+		c["B-Bridge","pdb"]="#D4A800"; c["B-Bridge","vmd"]="#B4B400";
+		c["Turn"    ,"pdb"]="#00B266"; c["Turn"    ,"vmd"]="#469696";
+		c["Bend"    ,"pdb"]="#00CC00"; c["Bend"    ,"vmd"]="#00CC00";
+		c["Coil"    ,"pdb"]="#000000"; c["Coil"    ,"vmd"]="#000000";
+
+#		p1: 10.1371/journal.pone.0178333
+#		p2: 10.1371/journal.pcbi.1007487
+		c["A-Helix" ,"p1"]="#00FF00"; c["A-Helix" ,"p2"]="#0171B6"
+		c["3-Helix" ,"p1"]="#2E8B57"; c["3-Helix" ,"p2"]="#D16000"
+		c["5-Helix" ,"p1"]="#008000"; c["5-Helix" ,"p2"]="#FCAEE5"
+		c["B-Sheet" ,"p1"]="#0000FF"; c["B-Sheet" ,"p2"]="#019E73"
+		c["B-Bridge","p1"]="#3399FF"; c["B-Bridge","p2"]="#CA9261"
+		c["Turn"    ,"p1"]="#FF8C00"; c["Turn"    ,"p2"]="#C99260"
+		c["Bend"    ,"p1"]="#FF0000"; c["Bend"    ,"p2"]="#F8B0E7"
+		c["Coil"    ,"p1"]="#000000"; c["Coil"    ,"p2"]="#000000"
 	}
 
 	/^"/ {
 		gsub(/[",\n\r]/, "")
 		n=split($0, arr)
-		if(n==1)      { zv[ny++]=$0        } # 数据颜色编码
-		else if(n==4) { ncode=$NF          } # 每种颜色编码字符数
-		else if(n>4)  { v[$1]=$5; if(color=="gmx") c[$5]=$3 } # 编码代表数值
+		if(n==1)      { zv[ny++]=$0} # 数据颜色编码
+		else if(n==4) { ncode=$NF  } # 每种颜色编码字符数
+		else if(n>4)  { v[$1]=$5;  } # 编码代表数值xyz?vss[$5]:$5
 	}
 
+	/x-label:/ { sub(/.*\(/,""); sub(/).*/,""); xu=$0 }
 	/\/\* x-axis/ && ix { x0=$3; dx=$4-x0; ix=0 }
 	/\/\* y-axis/ && iy { y0=$3; dy=$4-y0; iy=0; y0=yminRes }
 
 	END { Pi=4*atan2(1,1)
 		if(ny<maxRes) maxRes=ny
 		nx=length(zv[1])/ncode
-		fun["A-Helix"] ="AHelix"
-		fun["3-Helix"] ="Helix3"
-		fun["B-Sheet"] ="BSheet"
-		fun["B-Bridge"]="BBridge"
-		fun["Turn"]    ="Turn"
-		fun["Bend"]    ="Bend"
-		fun["Coil"]    ="Coil"
-		print "AHelix(n) =sprintf(\"set obj %d fc rgb \\\""c["A-Helix"]"\\\" fs solid border lw 5;\", n)"
-		print "Helix3(n) =sprintf(\"set obj %d fc rgb \\\""c["3-Helix"]"\\\" fs solid border lw 5;\", n)"
-		print "BSheet(n) =sprintf(\"set obj %d fc rgb \\\""c["B-Sheet"]"\\\" fs solid border lw 5;\", n)"
-		print "BBridge(n)=sprintf(\"set obj %d fc rgb \\\""c["B-Bridge"]"\\\" fs solid border lw 5;\", n)"
-		print "Turn(n)   =sprintf(\"set obj %d fc rgb \\\""c["Turn"]"\\\" fs solid border lw 5;\", n)"
-		print "Bend(n)   =sprintf(\"set obj %d fc rgb \\\""c["Bend"]"\\\" fs solid border lw 5;\", n)"
-		print "Coil(n)   =sprintf(\"set obj %d fc rgb \\\""c["Coil"]"\\\" fs solid border lw 5;\", n)"
 
-#		Nh=20; dt=2.5*Pi/Nh; t=.5*Pi-dt;
-#		for(i=0; i<=Nh; i++) {
-#			t += dt
-#			Hx[i]=dx*cos(t)/2.5
-#			Hy[i]=dy*(.5+t/Pi-sin(t))/2
-#		}
+		if(xyz) {
+			print "unset colorbox"
+			printf "set pal defined("
+			for(n=0; n<=7; n++) {
+				for(i in vss) if(vss[i]==n) printf "%s", n" \""c[i, color]"\""
+				if(n<7) printf ","; else print ")"
+			}
+			print "\n$data <<EOD"
+		} else {
+			fun["A-Helix"] ="Ha"
+			fun["3-Helix"] ="H3"
+			fun["5-Helix"] ="H5"
+			fun["B-Sheet"] ="Bs"
+			fun["B-Bridge"]="Bb"
+			fun["Turn"]    ="T"
+			fun["Bend"]    ="B"
+			fun["Coil"]    ="C"
+			print "Ha(n)=sprintf(\"set obj %d fc rgb \\\""c["A-Helix" ,color]"\\\" fs solid border lw 1;\", n)"
+			print "H3(n)=sprintf(\"set obj %d fc rgb \\\""c["3-Helix" ,color]"\\\" fs solid border lw 1;\", n)"
+			print "H5(n)=sprintf(\"set obj %d fc rgb \\\""c["5-Helix" ,color]"\\\" fs solid border lw 1;\", n)"
+			print "Bs(n)=sprintf(\"set obj %d fc rgb \\\""c["B-Sheet" ,color]"\\\" fs solid border lw 1;\", n)"
+			print "Bb(n)=sprintf(\"set obj %d fc rgb \\\""c["B-Bridge",color]"\\\" fs solid border lw 1;\", n)"
+			print "T(n) =sprintf(\"set obj %d fc rgb \\\""c["Turn"    ,color]"\\\" fs solid border lw 1;\", n)"
+			print "B(n) =sprintf(\"set obj %d fc rgb \\\""c["Bend"    ,color]"\\\" fs solid border lw 1;\", n)"
+			print "C(n) =sprintf(\"set obj %d fc rgb \\\""c["Coil"    ,color]"\\\" fs solid border lw 1;\", n)"
+	#		Nh=20; dt=2.5*Pi/Nh; t=.5*Pi-dt;
+	#		for(i=0; i<=Nh; i++) {
+	#			t += dt
+	#			Hx[i]=dx*cos(t)/2.5
+	#			Hy[i]=dy*(.5+t/Pi-sin(t))/2
+	#		}
 
-		Nh=20; dt=1/(Nh/2); t=-dt;
-		for(i=0; i<=Nh/2; i++) {
-			t += dt
-			Hy[i]=Hy[Nh-i]=dy*t
-			Hx[i]=Hx[Nh-i]=dx*fx*.5*sin(t*2*Pi)
-		}
+			Nh=20; dt=1/(Nh/2); t=-dt;
+			for(i=0; i<=Nh/2; i++) {
+				t += dt
+				Hy[i]=Hy[Nh-i]=dy*t
+				Hx[i]=Hx[Nh-i]=dx*fx*.5*sin(t*2*Pi)
+			}
 
-		d=0.1; Nt=20; dt=1/(Nt/2); t=-dt
-		for(i=0; i<=Nt/2; i++) {
-			t += dt;
-			Ty[i]=Ty[Nt-i]=dy*t
-			Tx[i]=Tx[Nt-i]=(t<d || t>1-d) ? 0 : dx*fx*(.5*(.5-t)^2/(.5-d)^2-.5)
+			d=0.1; Nt=20; dt=1/(Nt/2); t=-dt
+			for(i=0; i<=Nt/2; i++) {
+				t += dt;
+				Ty[i]=Ty[Nt-i]=dy*t
+				Tx[i]=Tx[Nt-i]=(t<d || t>1-d) ? 0 : dx*fx*(.5*(.5-t)^2/(.5-d)^2-.5)
+			}
 		}
 
 		print "# residue index: "minRes"-"maxRes >file"~count.xvg"
-		print "#      Time(ps)  A-Helix  3-Helix  B-Sheet B-Bridge     Turn     Bend     Coil" >file"~count.xvg"
+		print "#      Time("xu")  A-Helix  3-Helix  5-Helix  B-Sheet B-Bridge     Turn     Bend     Coil" >file"~count.xvg"
 		n=0
 		for(i=0; i<nx; i++) {
 			ftype["A-Helix"] =0
 			ftype["3-Helix"] =0
+			ftype["5-Helix"] =0
 			ftype["B-Sheet"] =0
 			ftype["B-Bridge"]=0
 			ftype["Turn"]    =0
@@ -125,9 +161,10 @@ function xpm2gpl {
 				}
 			}
 
-			printf "%15.6f%9d%9d%9d%9d%9d%9d%9d\n", x,
+			printf "%15.6f%9d%9d%9d%9d%9d%9d%9d%9d\n", x,
 					 ftype["A-Helix"] ,
 					 ftype["3-Helix"] ,
+					 ftype["5-Helix"] ,
 					 ftype["B-Sheet"] ,
 					 ftype["B-Bridge"],
 					 ftype["Turn"]    ,
@@ -136,26 +173,42 @@ function xpm2gpl {
 
 			for(j=0; j<ny; j++) {
 				if(minRes<=j+1 && j+1<=maxRes) {
-					for(jj=j+1; jj<ny && type[jj]==type[j]; jj++) type[jj]=""
-					if(type[j]) print obj(x, y0+j*dy, y0+(jj-1)*dy, type[j], dx*fx)
+					if(xyz) print x, y0+j*dy, vss[type[j]]
+					else {
+						for(jj=j+1; jj<ny && type[jj]==type[j]; jj++) type[jj]=""
+						if(type[j]) print obj(x, y0+j*dy, y0+(jj-1)*dy, type[j], dx*fx)
+					}
 				}
 			}
 		}
 
+		if(xyz) print "EOD"
 		print ""
-		print "set tmargin at screen 0.95"
-		print "set bmargin at screen 0.2"
-		print "set rmargin at screen 0.85"
-		print "set label \" A-Helix \" at screen 0.85,0.9 left textcolor rgb \""c["A-Helix"]"\""
-		print "set label \" 3-Helix \" at screen 0.85,0.8 left textcolor rgb \""c["3-Helix"]"\""
-		print "set label \" B-Sheet \" at screen 0.85,0.7 left textcolor rgb \""c["B-Sheet"]"\""
-		print "set label \" B-Bridge\" at screen 0.85,0.6 left textcolor rgb \""c["B-Bridge"]"\""
-		print "set label \" Turn    \" at screen 0.85,0.5 left textcolor rgb \""c["Turn"]"\""
-		print "set label \" Bend    \" at screen 0.85,0.4 left textcolor rgb \""c["Bend"]"\""
-		print "set label \" Coil    \" at screen 0.85,0.3 left textcolor rgb \""c["Coil"]"\""
-		print ""
-		print "set tics out nomirror;\nset xl\"time(ps)\"; set yl\"#res\";"
-		print "plot ["x0-dx/2":"x0+(nx-1)*dx+dx/2"] ["y0+(minRes-1)*dy":"y0+(maxRes-1)*dy"] -1 notit"
+		print "#set tmargin at screen 0.95"
+		print "#set bmargin at screen 0.2"
+		print "#set rmargin at screen 0.85"
+		print "#set label \" A-Helix \" at screen 0.85,0.92 left textcolor rgb \""c["A-Helix" ,color]"\""
+		print "#set label \" 3-Helix \" at screen 0.85,0.82 left textcolor rgb \""c["3-Helix" ,color]"\""
+		print "#set label \" 5-Helix \" at screen 0.85,0.72 left textcolor rgb \""c["5-Helix" ,color]"\""
+		print "#set label \" B-Sheet \" at screen 0.85,0.62 left textcolor rgb \""c["B-Sheet" ,color]"\""
+		print "#set label \" B-Bridge\" at screen 0.85,0.52 left textcolor rgb \""c["B-Bridge",color]"\""
+		print "#set label \" Turn    \" at screen 0.85,0.42 left textcolor rgb \""c["Turn"    ,color]"\""
+		print "#set label \" Bend    \" at screen 0.85,0.32 left textcolor rgb \""c["Bend"    ,color]"\""
+		print "#set label \" Coil    \" at screen 0.85,0.22 left textcolor rgb \""c["Coil"    ,color]"\""
+		print "set term pngcairo enhanced truecolor font \"HelveticaNeueLT Pro 85 Hv,85\" fontscale 1 linewidth 20 pointscale 5 size 6000,3033"
+		print "set tics out nomirror;"
+		print "set key out reverse Left spacing 2 samplen 1/2"
+		print "set xl\"Time("xu")\"; set yl\"#res\";"
+		printf "plot ["x0-dx/2":"x0+(nx-1)*dx+dx/2"] ["y0+(minRes-1)*dy":"y0+(maxRes-1)*dy"] "
+		print (xyz)? "$data u 1:2:3 w imag notit, \\" : " -1 notit, \\"
+		print "-1 w p ps 3 pt 5 lc rgb \""c["A-Helix" ,color]"\" t\"H A-Helix \", \\"
+		print "-1 w p ps 3 pt 5 lc rgb \""c["3-Helix" ,color]"\" t\"G 3-Helix \", \\"
+		print "-1 w p ps 3 pt 5 lc rgb \""c["5-Helix" ,color]"\" t\"I 5-Helix \", \\"
+		print "-1 w p ps 3 pt 5 lc rgb \""c["B-Sheet" ,color]"\" t\"E B-Sheet \", \\"
+		print "-1 w p ps 3 pt 5 lc rgb \""c["B-Bridge",color]"\" t\"B B-Bridge\", \\"
+		print "-1 w p ps 3 pt 5 lc rgb \""c["Turn"    ,color]"\" t\"T Turn    \", \\"
+		print "-1 w p ps 3 pt 5 lc rgb \""c["Bend"    ,color]"\" t\"S Bend    \", \\"
+		print "-1 w p ps 3 pt 5 lc rgb \""c["Coil"    ,color]"\" t\"C Coil    \""
 	}
 
 	function obj(x, y1, y2, type, dx, pos, i,j,k) {
@@ -169,7 +222,7 @@ function xpm2gpl {
 			x2","y2" to "x2","y1" to "x1","y1"; eval "fun[type]"("n")"
 		}
 
-		if(type=="A-Helix" || type=="3-Helix") {
+		if(type=="A-Helix" || type=="3-Helix" || type=="5-Helix") {
 			str=""
 			for(i=y1; i<=y2; i+=dy) {
 				n++
@@ -185,7 +238,7 @@ function xpm2gpl {
 			y1 -= dy/2; y2 += dy/2
 			str="set obj "n" poly from "x+Tx[0]","y1+(y2-y1)*Ty[0]
 			for(j=1; j<=Nt; j++) str=str" to "x+Tx[j]","y1+(y2-y1)*Ty[j]
-			return str"; eval Turn("n")"
+			return str"; eval T("n")"
 		}
 
 		if(type=="B-Bridge") {
@@ -195,7 +248,7 @@ function xpm2gpl {
 				x-dx/2","y2-dy/2" to "x","y2     " to " \
 				x     ","y2+dy/2" to "x","y2     " to " \
 				x+dx/2","y2-dy/2" to "x","y2-dy/2" to " \
-				x","y1-dy/2"; eval BBridge("n")"
+				x","y1-dy/2"; eval Bb("n")"
 		}
 
 		if(type=="B-Sheet") {
@@ -206,14 +259,14 @@ function xpm2gpl {
 				x     ","y2+dy/2" to "x     ","y2     " to " \
 				x+dx/2","y2-dy/2" to "x+dx/4","y2-dy/2" to " \
 				x+dx/4","y1-dy/2" to "x-dx/4","y1-dy/2 \
-				"; eval BSheet("n")"
+				"; eval Bs("n")"
 		}
 
 		if(type=="Bend" || type=="Coil") {
 			n++
 			return "set obj "n" poly from " \
 				x","y1-dy/2" to "x","y2+dy/2" to "x","y1-dy/2 \
-				"; eval "type"("n")"
+				"; eval "fun[type]"("n")"
 		}
 	}
 	function abs(x) { return x>0 ? x : -x }
@@ -530,8 +583,8 @@ function xpm2rgb {
 usage="\
 >>>>>>>>>>>>>>>>     xpm2all    <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
->>>>>>>>>>     2021-01-25 12:09:05     <<<<<<<<<
-Usage:   xpm2all <File> [-xyz|-mat|-rgb <cm>|-gpl <minRes> <maxRes> <yminRes> <ssmode>]
+>>>>>>>>>>     2021-03-30 21:46:17     <<<<<<<<<
+Usage:   xpm2all <File> [-xyz|-mat|-rgb <cm>|-gpl <ssmode> <color> <minRes> <maxRes> <yminRes> ]
 Default: xpm2all <File>  -xyz
 option:  -xyz: xyz datafile
          -mat: matrix datafile
@@ -557,19 +610,21 @@ option:  -xyz: xyz datafile
                         18:  inferno
                         19:  magma
                         20:  plasma
-         -gpl: gnuplot object file and number for 2nd structure
+         -gpl: gnuplot file to plot 2nd structure
+               ssmode:  draw method
+                        xyz:   xyz data
+                        box:   plain box
+                        fancy: fancy helix and beta sheet
+               color:   gmx, pdb, p1, p2
                minRes:  initial index of residue
                maxRes:  final   index of residue
-               yminRes: y value of initial residue
-               ssmode:  draw method
-                        box:   plain box
-                        fancy: fancy helix and beta sheet"
+               yminRes: y value of initial residue"
 
 [[ $# -lt 1 ]] && { echo "$usage"; exit; }
 
 opt=($@); N=${#opt[@]};
 job=xyzmat; dat=xyz; cm=1;
-minRes=1; maxRes=1E9; yminRes=1; ssmode="fancy";
+minRes=1; maxRes=1E9; yminRes=1; ssmode="xyz"; color="pdb"
 
 for((i=0; i<N; i++)); do
 	arg=${opt[$i]};
@@ -580,10 +635,11 @@ for((i=0; i<N; i++)); do
 	}
 	[[ $arg =~ -gpl ]] && {
 		job=${arg/-/}; opt[$i]="";
-		j=$((i+1)); [[ $j -lt $N ]] && { minRes=${opt[$j]};  opt[$j]=""; }
-		j=$((i+2)); [[ $j -lt $N ]] && { maxRes=${opt[$j]};  opt[$j]=""; }
-		j=$((i+3)); [[ $j -lt $N ]] && { yminRes=${opt[$j]}; opt[$j]=""; }
-		j=$((i+4)); [[ $j -lt $N ]] && { ssmode=${opt[$j]};  opt[$j]=""; }
+		j=$((i+1)); [[ $j -lt $N ]] && { ssmode=${opt[$j]};  opt[$j]=""; }
+		j=$((i+2)); [[ $j -lt $N ]] && { color=${opt[$j]};   opt[$j]=""; }
+		j=$((i+3)); [[ $j -lt $N ]] && { minRes=${opt[$j]};  opt[$j]=""; }
+		j=$((i+4)); [[ $j -lt $N ]] && { maxRes=${opt[$j]};  opt[$j]=""; }
+		j=$((i+5)); [[ $j -lt $N ]] && { yminRes=${opt[$j]}; opt[$j]=""; }
 	}
 done
 
