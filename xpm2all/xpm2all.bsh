@@ -201,6 +201,8 @@ function xpm2gpl {
 		print "#set label \" Turn    \" at screen 0.85,0.42 left textcolor rgb \""c["Turn"    ,color]"\""
 		print "#set label \" Bend    \" at screen 0.85,0.32 left textcolor rgb \""c["Bend"    ,color]"\""
 		print "#set label \" Coil    \" at screen 0.85,0.22 left textcolor rgb \""c["Coil"    ,color]"\""
+
+		print "set output \"ss.png\""
 		print "set term pngcairo enhanced truecolor font \"HelveticaNeueLT Pro 85 Hv,85\" fontscale 1 linewidth 20 pointscale 5 size 6000,3033"
 		print "set tics out nomirror;"
 		print "set key out reverse Left spacing 2 samplen 1/2"
@@ -589,7 +591,7 @@ function xpm2rgb {
 usage="\
 >>>>>>>>>>>>>>>>     xpm2all    <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
->>>>>>>>>>     2021-03-30 21:46:17     <<<<<<<<<
+>>>>>>>>>>     2021-03-31 22:14:36     <<<<<<<<<
 Usage:   xpm2all <File> [-xyz|-mat|-rgb <cm>|-gpl <ssmode> <color> <minRes> <maxRes> <yminRes> ]
 Default: xpm2all <File>  -xyz
 option:  -xyz: xyz datafile
