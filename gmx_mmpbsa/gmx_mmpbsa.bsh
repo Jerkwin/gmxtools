@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2021-05-16 22:05:13     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2021-05-17 10:34:29     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx        ]
                        [-com COMPLEX] [-pro PROTEIN] [-lig <LIGAND|none>]
                        [-cou dh     ] [-ts ie      ]\n
@@ -30,6 +30,7 @@ echo -e "\
    TODO:       parallel APBS, focus
    TODO:       clean pdb and dat files
 
+   2021-05-17: add systime and fflush, only for gawk
    2021-05-16: revise cmd for all Linux
                see https://github.com/Jerkwin/gmxtool/issues/2
    2021-03-14: add -cou, -ts option, see 10.1088/0256-307X/38/1/018701
@@ -524,6 +525,8 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 		for(fr=1; fr<=Nfrm; fr++) maxstr=max(maxstr, length(Fname[fr]))
 
 		for(fr=1; fr<=Nfrm; fr++) {
+			t_start = systime(); fflush("")
+
 			Fout=Fname[fr]
 			printf "   >> Frame %3d/%d: %-"maxstr"s", fr, Nfrm, Fout
 
@@ -653,7 +656,9 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 				Fout, Ebi[fr], EbiDH[fr], Emm[fr], EmmDH[fr], Epb[fr], Esa[fr], \
 				Ecou, EcouDH, Evdw, PBcom, PBpro, PBlig, SAcom, SApro, SAlig >> pid"~MMPBSA.dat"
 
-			printf "    MM-PBSA(with DH) =  %9.3f(%9.3f) kJ/mol\n", Ebi[fr],  EbiDH[fr]
+			total_time = (Nfrm-fr)*(systime() - t_start)
+			printf "  MM-PBSA(with DH) = %9.3f(%9.3f) kJ/mol    Estimated Time Remaining: ~ %0dh:%02dm:%02ds\n", \
+				Ebi[fr],  EbiDH[fr], int(total_time/3600), int(total_time%3600/60), total_time%60
 
 			fmt="%s%12.3f%s"
 			for(i=1; i<=Nres; i++) {
