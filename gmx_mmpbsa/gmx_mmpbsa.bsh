@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2021-03-14 01:07:28     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2021-05-16 22:05:13     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx        ]
                        [-com COMPLEX] [-pro PROTEIN] [-lig <LIGAND|none>]
                        [-cou dh     ] [-ts ie      ]\n
@@ -30,6 +30,8 @@ echo -e "\
    TODO:       parallel APBS, focus
    TODO:       clean pdb and dat files
 
+   2021-05-16: revise cmd for all Linux
+               see https://github.com/Jerkwin/gmxtool/issues/2
    2021-03-14: add -cou, -ts option, see 10.1088/0256-307X/38/1/018701
                change default PB method to npbe
    2021-03-03: fix bug: awk will exit for multiple system call
@@ -43,8 +45,6 @@ echo -e "\
    2019-12-24: fix bug for small time step
    2019-12-10: fix bug for OPLS force field
    2019-11-17: fix bug for c6, c12 of old version tpr
-   2019-11-06: apbs FILE.apbs &> FILE.out
-               on ubuntu 18.04 may not work, then delete &
    2019-11-03: fix bug for time stamp
    2019-09-19: push to gmxtool
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
@@ -595,7 +595,7 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 			}
 			close(Fout".apbs")
 
-			cmd=apbs" "Fout".apbs &> "Fout".out 2>&1";
+			cmd=apbs" "Fout".apbs > "Fout".out 2>&1";
 			cmd | getline err; close(cmd)
 
 			txt=Fout".out";
