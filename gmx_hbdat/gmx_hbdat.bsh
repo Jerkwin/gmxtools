@@ -1,0 +1,88 @@
+echo -e "\
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_hbdat    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2021-06-19 07:18:56     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>   Usage: gmx_hbdat -s     *.tpr  -n     *.ndx  -m     *.xpm
+>> Default: gmx_hbdat -s topol.tpr  -n hbond.ndx  -m hbmap.xpm
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+
+tpr=topol.tpr
+ndx=hbond.ndx
+xpm=hbmap.xpm
+
+gmx='gmx'        # /path/to/GMX/bin/gmx_mpi
+dump="$gmx dump" # gmx dump
+
+opt=($*); N=${#opt[@]}
+for((i=0; i<N; i++)); do
+	arg=${opt[$i]}; j=$((i+1)); val=${opt[$j]}
+	[[ $arg =~ -s   ]] && { tpr=$val; }
+	[[ $arg =~ -n   ]] && { ndx=$val; }
+	[[ $arg =~ -m   ]] && { xpm=$val; }
+done
+
+$dump -s $tpr -quiet 2>>/dev/null | awk -v ndx=$ndx -v xpm=$xpm '
+	BEGIN {
+		isHB=0; nhb=0
+		while(getline < ndx ) {
+			if(index($0, "hbonds_")) isHB=1
+			if(isHB && !index($1,"[")) {
+				nhb++; don[nhb]=$1; hyd[nhb]=$2; acc[nhb]=$3
+			}
+		}
+		close(ndx)
+
+		isHB=0; nhb=0
+		while(getline < xpm) {
+			if(index($0, "y-axis")) isHB=1
+			if(isHB && index($0, "\"")) {
+				nhb++
+				n=0; gsub(/[,"]/, "")
+				for(i=1; i<=length($0); i++) if(substr($0, i, 1)=="o") n++
+				occ[nhb]=n*100/length($0)
+			}
+		}
+		close(xpm)
+	}
+
+	/#molblock/  { Ntyp=$3 }
+	/moltype.+=/ { Imol=$3; getline; Nmol[Imol]=$3 }
+	/moltype.+\(/ { Imol=$0; gsub(/[^0-9]/,"",Imol)
+		getline txt; sub(/.*=/,"",txt); gsub(" ","_",txt)
+		Name[Imol]=txt
+		getline; getline txt;       gsub(/[^0-9]/,"",txt); Natm[Imol]=txt+0
+		for(i=0; i<Natm[Imol]; i++) {
+			getline; txt=$0; idx=$3; resID[Imol, i]=$(NF-2)+1+nres
+		}
+		getline
+		for(i=0; i<Natm[Imol]; i++) {
+			getline txt
+			sub(/.+=./, "", txt); sub(/..$/, "", txt)
+			Tatm[Imol, i]=txt
+		}
+	}
+
+	/residue\[/ { nres++
+		sub(/.*="/,"",$0); sub(/".*/,"",$0);
+		resName[nres]=$0 #sprintf("%0d%s", nres, $0)
+	}
+
+	END {
+		Ntot=0; maxlen=0
+		for(i=0; i<Ntyp; i++) {
+			for(n=0; n<Nmol[i]; n++) {
+				for(j=0; j<Natm[i]; j++) {
+					Ntot++
+					Label[Ntot]=sprintf("%s", \
+						Ntot"#"Name[i]"_"resName[resID[i,j]]"@"Tatm[i, j])
+					if(length(Label[Ntot])>maxlen) maxlen=length(Label[Ntot])
+				}
+			}
+		}
+
+		fmt="%-"maxlen"s ""%-"maxlen"s ""%-"maxlen"s"
+		printf fmt"%12s\n", "#Donor", "Hydrogen", "Acceptor", "Occupancy%"
+		for(i=1; i<=nhb; i++) printf fmt"%12.1f\n", \
+			Label[don[i]], Label[hyd[i]], Label[acc[i]], occ[nhb-i+1]
+	}
+' > hbdat.dat
