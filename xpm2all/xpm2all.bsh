@@ -1,11 +1,25 @@
 function xpm2xyzmat {
-	awk -v dat=$dat ' BEGIN{ ny=0; ix=1; iy=1 }
-	/"/ {
-		gsub(/[",\n\r]/, "")
-		n=split($0, arr)
-		if(n==1)      { zv[ny++]=$0 } # 数据颜色编码
-		else if(n==4) { ncode=$NF   } # 每种颜色编码字符数
-		else if(n>4)  { v[$1]=$5    } # 编码代表数值
+	awk -v dat=$dat ' BEGIN{ isHB=0; ny=0; ix=1; iy=1 }
+
+	/Hydrogen Bonds/ { isHB=1; next }
+
+	/gromacs_xpm/ {
+		getline; gsub(/"/, "");
+		nlev=$3; ncode=$4 # 每种颜色编码字符数
+		for(i=1; i<=nlev; i++) {
+			getline
+			if(isHB) {
+				v[" "]=0; v["o"]=1
+			} else {
+				gsub(/[",\n\r]/, "")
+				v[$1]=$5   # 编码代表数值
+			}
+		}
+		next
+	}
+
+	/^"/ { sub(/^"/,""); sub(/",$/,"");
+		zv[ny++]=$0  # 数据颜色编码
 	}
 
 	/\/\* x-axis/ && ix { x0=$3; dx=$4-x0; ix=0 }
@@ -591,7 +605,7 @@ function xpm2rgb {
 usage="\
 >>>>>>>>>>>>>>>>     xpm2all    <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
->>>>>>>>>>     2021-03-31 22:14:36     <<<<<<<<<
+>>>>>>>>>>     2021-06-19 08:55:55     <<<<<<<<<
 Usage:   xpm2all <File> [-xyz|-mat|-rgb <cm>|-gpl <ssmode> <color> <minRes> <maxRes> <yminRes> ]
 Default: xpm2all <File>  -xyz
 option:  -xyz: xyz datafile
