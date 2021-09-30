@@ -1,0 +1,409 @@
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="https://jerkwin.github.io/jscss/pmd.min.css">
+
+<style>
+.btn{
+  font: bold 1em/1.2 Consolas, "Courier New",  Monaco;
+  width: 20%;
+  height: 2em;
+  color:#fff;background-color:#EF8C0E
+}
+
+.box{
+  width: 4em;
+  height: 1.em;
+  background-color: #fff;
+}
+
+</style>
+
+<title>Temperature generator for T-REMD simulations</title>
+
+<h1>Temperature generator for T-REMD simulations</h1>
+
+<p>
+<b>Note by Jicun Li 2021-09-29:</b>
+This page contains an online tool to generate temperatures for T-REMD calculations.
+It is based on <a href='http://virtualchemistry.org/remd-temperature-generator/'>
+the php version of the same tool</a> (code was downloaded from
+<a href="https://github.com/dspoel/remd">https://github.com/dspoel/remd</a>).
+I tranlated it to a javascript version,
+because the original tool is not availble sometimes.
+This version does not depend on any webserver, and is expected to work any time,
+In fact, you can save the page to your computer and it will work locally.
+However, I did tested it on Chrome only, so please use it with Chrome first.
+</p>
+<hr noshade>
+
+<p>
+You submit the number of protein atoms and water molecules in your system,
+and an upper and lower limit for the temperature range,
+information about constraints and/or virtual sites
+and a desired exchange probability <code>P<sub>des</sub></code>,
+and the tool will predict a temperature series with correspondig energy differences
+and standard deviations which matches the desired probability <code>P<sub>des</sub></code>.
+You can then use these temperatures in T-REMD simulations.</p>
+
+<p><b>A word of caution is in place here.</b>
+The derivation of the parameters for the prediction was done with the OPLS/AA force field
+and the <a href="http://www.gromacs.org">GROMACS</a> software.
+When using other force fields, software and/or other algorithms (cut-off
+treatment, pressure and temperature scaling etc.) results may deviate,
+although the tests performed in our paper, including using the GROMOS96
+force field, show that these deviations are minor. Nevertheless you
+are encouraged to check your exchange probabilities, and compare them
+to the desired probabilities.</p>
+
+<hr noshade><br>
+
+<table>
+<tr><th colspan='2' style='text-align:center'>Setup for NPT simulations</th></tr>
+
+<tr><td style='text-align:center'>Exchange probability</td>
+<td>Desired&nbsp;&nbsp; <input id="Pdes" value='0.25'><br>
+Tolerance <input id="Tol" value="1e-4"></td>
+</tr>
+
+<tr><td style='text-align:center'>Temperature limit (K)</td>
+<td>Lower&nbsp;&nbsp;&nbsp;&nbsp; <input id="Tlow" value='300'><br>
+Upper&nbsp;&nbsp;&nbsp;&nbsp; <input id="Thigh" value='400'></td>
+</tr>
+
+<tr><td style='text-align:center'>Water</td>
+<td>Number of molecules <input id="Nw" value='216'><br>
+Constraints used&nbsp;&nbsp;&nbsp; <SELECT id="WC">
+<OPTION VALUE="0">Fully Flexible
+<OPTION VALUE="2">Flexible angle
+<OPTION VALUE="3">Rigid
+</SELECT></td>
+</tr>
+
+<tr><td style='text-align:center'>Protein</td>
+<td>Number of atoms&nbsp;&nbsp;&nbsp; <input id="Np" value='100'><br>
+Hydrogens used&nbsp;&nbsp;&nbsp;&nbsp; <SELECT id="Hff">
+<OPTION VALUE="0">All H
+<OPTION VALUE="1">Polar H
+</SELECT><br>
+Virtual sites used <SELECT id="Vs">
+<OPTION VALUE="0">None
+<OPTION VALUE="1">Virtual Hydrogen
+</SELECT><br>
+Constraints used&nbsp;&nbsp; <SELECT id="PC">
+<OPTION VALUE="1">Bonds to hydrogens only
+<OPTION VALUE="0">Fully Flexible
+<OPTION VALUE="2">All bonds
+</SELECT></td>
+</tr>
+
+<tr>
+<td colspan='2' align='center'>
+<input type='button' class='btn' value="Submit" onClick='cal()'>
+<input type='button' class='btn' value="Reload"  onClick='location.reload();'>
+</td></tr>
+</table>
+<br>
+
+<table id='vari'></table>
+
+<br>
+
+<table id='ret'></table>
+
+<p id='Tlist' style="text-align:center"><p>
+<hr noshade>
+
+<p>
+If you use the results from this webserver in simulations which are published in scientific journals, please
+cite:<br> Alexandra Patriksson and David van der Spoel, <i>A
+temperature predictor for parallel tempering simulations</i>
+Phys. Chem. Chem. Phys.,  10 pp. 2073-2077 (2008) <a href="http://dx.doi.org/10.1039/b716554d">http://dx.doi.org/10.1039/b716554d</a>.
+</p>
+
+<p>
+We also recommend the following literature about theory behind replica
+exchange simulations [1,2] and applications of REMD [3,4]. A recent
+review about sampling is in ref. [5].
+
+<ol>
+
+<li>K. Hukushima and K. Nemoto: <i>Exchange Monte Carlo Method and
+Application to Spin Glass Simulations</i> J. Phys. Soc. Jpn. <b>65</b>
+pp. 1604-1608 (1996)</li>
+
+<li>T. Okabe and M. Kawata and Y. Okamoto and M. Mikami:
+<i>Replica-exchange {M}onte {C}arlo method for the isobaric-isothe
+rmal ensemble</i> Chem. Phys. Lett. <b>335</b> pp. 435-439 (2001)</li>
+
+<li>Marvin Seibert, Alexandra Patriksson, Berk Hess and David van der
+Spoel: <i>Reproducible polypeptide folding and structure prediction
+using molecular dynamics simulations</i> J. Mol. Biol. <b>354</b>
+pp. 173-183 (2005)</li>
+
+<li>David van der Spoel and M. Marvin Seibert: <i>Protein Folding
+Kinetics and Thermodynamics from Atomistic Simulations</i>
+Phys. Rev. Lett. <b>96</b> pp. 238102 (2006)</li>
+
+<li>H. X. Lei and Y. Duan: <i>Improved sampling methods for molecular
+simulation</i> Curr. Opin. Struct. Biol. <b>17</b> pp. 187-191
+(2007)</li>
+
+</ol>
+</p>
+<p>
+In case of questions please mail to <b>t-remd</b> at <b>xray.bmc.uu.se</b>.
+</p>
+
+<hr noshade>
+
+<script>
+
+function cal() {
+
+Pdes  = parseFloat($('Pdes').value)
+Tlow  = parseFloat($('Tlow').value)
+Thigh = parseFloat($('Thigh').value)
+Nw    = parseFloat($('Nw').value)
+Np    = parseFloat($('Np').value)
+Tol   = parseFloat($('Tol').value)
+
+PC  = parseFloat($('PC').value)
+WC  = parseFloat($('WC').value)
+Hff = parseFloat($('Hff').value)
+Vs  = parseFloat($('Vs').value)
+
+// Constants. May depend on input in principle (but not yet).
+A0      = -59.2194
+A1      =   0.07594
+B0      = -22.8396
+B1      =   0.01347
+D0      =   1.1677
+D1      =   0.002976
+maxiter = 100
+
+kB       = 0.008314;
+Npp      = 0;
+NC       = 0;
+VC       = 0;
+debug    = 0;
+
+// Check input variables
+if (!isFinite(Pdes) || !isFinite(Tlow) || !isFinite(Thigh) ||
+	!isFinite(Np)   || !isFinite(Nw)   || !isFinite(Tol) ) {
+	alert('!!! ERROR !!! Some of your inputs are not numbers!')
+	return
+}
+if ( (Pdes > 1) || (Pdes < 0) ) {
+	alert('!!! ERROR !!! You have to give a Desired probability between 0 and 1!')
+	return
+}
+if ( Thigh <= Tlow ) {
+	alert('!!! ERROR !!! The lower limit of the temperature range has to be below the upper limit - Check your input!')
+	return
+}
+if ( (Tlow <= 0) || (Thigh <= 0) ) {
+	alert('!!! ERROR !!! You must have temperatures that are &gt; 0!')
+	return
+}
+if (Np==0) {
+	alert('!!! ERROR !!! You can not have zero atoms in protein!')
+	return
+}
+
+	Npp = 0;
+	Nprot = 0;
+	if (Hff == 0) {
+		Nh = Math.round(Np*0.5134);
+		if (Vs == 1) VC = Math.round(1.91*Nh);
+		Nprot = Np;
+	} else {
+		Npp = Math.round(Np/0.65957);
+		Nh  = Math.round(Np*0.22);
+		if (Vs == 1) VC = Math.round(Np+1.91*Nh);
+		Nprot = Npp;
+	}
+
+	if (PC == 1) NC = Nh;
+	else if (PC == 2) NC = Np;
+
+	Ndf      = (9-WC)*Nw + 3*Np-NC-VC;
+	FlexEner = 0.5*kB*(NC+VC+WC*Nw);
+
+	if (Npp > 0) alert('Including all H</td><td>~ Npp')
+
+	txt='<tr><th>Derived variables</th><th>Value</th></tr>'
+	+'<tr><td>Number of hydrogens in protein</td><td>~ ' + Nh  +'</td></tr>'
+	+'<tr><td>Number of constraints         </td><td>~ ' + NC  +'</td></tr>'
+	+'<tr><td>Number of Virtual sites       </td><td>~ ' + VC  +'</td></tr>'
+	+'<tr><td>Number of degrees of freedom  </td><td>~ ' + Ndf +'</td></tr>'
+	+'<tr><td>Energy loss due to constraints</td><td>~ ' + FlexEner+' (kJ/mol-K)</td></tr>'
+
+	$('vari').innerHTML=txt
+
+	var T=[], MM=[], SS=[], P=[], Siigma=[], Muu=[]
+	index = 1;
+	T[index] = Tlow;
+
+	while( T[index] < Thigh ) {
+		piter   = 0;
+		forward = 1;
+		iter    = 0;
+		T1      = T[index];
+		T2      = T1+1; if ( T2 >= Thigh ) T2 = Thigh;
+
+		low     = T1;
+		high    = Thigh;
+		if (debug == 2) console.log(printf("Index %d, T1 = %f, T2 = %f", index, T1, T2))
+
+		while ( Math.abs(Pdes-piter) > Tol && iter < maxiter ) {
+			iter++;
+			mu12 = (T2-T1) * ((A1*Nw)+(B1*Nprot)-FlexEner);
+			MM[index] = mu12;
+
+			CC    = (1/kB) * ( (1/T1)-(1/T2) );
+			Delta = CC*mu12;
+
+			vari = Ndf*(D1*D1*( T1*T1 + T2*T2 ) + 2*D1*D0*(T1+T2) + 2*D0*D0);
+
+			sig12 = Math.sqrt(vari);
+			SS[index] = sig12;
+
+			if (sig12 == 0) { alert("Sigma = 0"); return }
+
+			// I1
+			erfarg1 = mu12/(sig12*Math.SQRT2);
+			I1      = 0.5*(erfc(erfarg1));
+
+			// I2
+			// Old analytical code according to the paper, however
+			// this suffers from numerical issues in extreme cases.
+			// exparg  = CC*(-mu12 + CC*var/2);
+			// erfarg2 = (mu12 - CC*var)/(sig12*sqrt(2));
+			// I2      = 0.5*exp(exparg)*(1.0 + erf(erfarg2));
+			// Use numerical integration instead.
+			I2      = myintegral(mu12, sig12, CC);
+			piter   = (I1 + I2);
+
+			if (debug == 2) {
+				//printf("<p>\n");
+				//printf("DT = %.3f CC = %.4f<br>", T2-T1, CC);
+				//printf("mu12 = %.1f, sig12 = %.1f, Delta = %.1f<br>", mu12, sig12, Delta);
+				//printf("erfarg1 = %.4f, Integral1 = %.4f<br>", erfarg1, I1);
+				//printf("exparg = %.2e, erfarg2 = %.1f<br>", exparg, erfarg2);
+				//printf("myintegral = %.4f, Integral2 = %.4f<br>", myint, I2);
+				//printf("piter = %.3f<br>", piter);
+				//printf("</p>\n");
+			}
+
+			if ( piter > Pdes ) {
+				if ( forward==1 ) T2 = T2 + 1.0;
+				else if ( forward==0 ) {
+					low = T2;
+					T2 = low + ((high-low)/2);
+				}
+				if ( T2 >= Thigh ) T2 = Thigh;
+			} else if ( piter < Pdes ) {
+				if ( forward==1 ) {
+					forward = 0;
+					low = T2 - 1.0;
+				}
+				high = T2;
+				T2 = low + ((high-low)/2);
+			}
+		}
+
+		P[index]      = piter;
+		Siigma[index] = Math.sqrt(Ndf)* (D0 + D1*T1);
+		Muu[index]    = calc_mu(Nw, Nprot, T1, FlexEner);
+
+		index++;
+		T[index] = T2;
+	}
+
+	Siigma[index] = Math.sqrt(Ndf)* (D0 + D1*T[index]);
+	Muu[index] = calc_mu(Nw, Nprot, T[index], FlexEner);
+
+	txt='<tr><th></th><th>Temperature (K)</th><th>&mu; (kJ/mol)</th><th>&sigma; (kJ/mol)</th><th>&mu;<sub>12</sub> (kJ/mol)</th><th>&sigma;<sub>12</sub> (kJ/mol)</th><th>P<sub>12</sub></th></tr>'
+
+	for(k=1; (k<=index); k++) {
+		txt += printf("<tr><td align=center>%d</td><td>%.2f</td>",k,T[k]);
+		if (k == 1)
+			txt += printf("<td>%.0f</td><td>%.2f</td><td></td><td></td><td></td>", Muu[k],Siigma[k]);
+		else {
+			txt += printf("<td>%.0f</td><td>%.2f</td><td>%.1f</td><td>%.2f</td><td>%.4f</td>", Muu[k],Siigma[k],MM[k-1], SS[k-1],P[k-1]);
+		}
+		txt += printf("</tr>\n");
+	}
+
+	$('ret').innerHTML=txt
+
+	txt='space-separated temperature list: <br><code>'
+	for(k=1; (k<=index); k++) {
+		txt += printf(" %.2f ",T[k]);
+	}
+	$('Tlist').innerHTML=txt+'</code>'
+}
+
+function calc_mu(Nw, Np, Temp, FEner) {
+	return (A0+A1*Temp)*Nw + (B0+B1*Temp)*Np - Temp*FEner
+}
+
+function erfc(x) {
+	//constants
+	a1 =  0.254829592;
+	a2 = -0.284496736;
+	a3 =  1.421413741;
+	a4 = -1.453152027;
+	a5 =  1.061405429;
+	p  =  0.3275911;
+
+	// Save the sign of x
+	sign = 1; if (x < 0) sign = -1;
+
+	// Abramowitz, M. and Stegun, I. A. 1972.
+	// Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables. Dover.
+	// Formula 7.1.26
+	x = Math.abs(x);
+	t = 1.0/(1.0 + p*x);
+	y = (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t*Math.exp(-x*x);
+
+	return sign*y;
+}
+
+function myeval(m12, s12, CC, u) {
+	return Math.exp( -CC*u - (u-m12)*(u-m12)/(2*s12*s12) );
+}
+
+function myintegral(m12, s12, CC) {
+	umax = m12+5*s12;
+	du   = umax/100;
+	if (debug > 1) console.log("umax = umax m12 = m12 s12 = s12 CC = CC");
+
+	sum = 0.0;
+	for(u = 0; u<umax; u+=du) sum += myeval(m12, s12, CC, u+du/2)
+
+	return du*sum/(s12*Math.sqrt(2*Math.PI));
+}
+
+var $=function(id){return document.getElementById(id)}
+
+function wstrlen(str) {
+	if(str==null) return 0;
+	if(typeof str != "string") str += "";
+	return str.replace(/[^\x00-\xff]/g,"12").length;
+}
+function printf(){
+	function pad(str, fmt) { var m=Array(99).join(' ').substr(0,Math.abs(fmt)-wstrlen(str)); return fmt>0?m+str:str+m }
+	var map = {
+		s: function(str, fmt) { return pad(str, fmt*1) },
+		d: function(str, fmt) { str=parseFloat(str).toFixed(0); return pad(str, fmt) },
+		f: function(str, fmt) { fmt=fmt.split('.'); str=parseFloat(str).toFixed(fmt[1]); return pad(str, fmt[0]) },
+		e: function(str, fmt) { fmt=fmt.split('.'); str=parseFloat(str).toExponential(fmt[1]); return pad(str.toUpperCase(), fmt[0]) }
+		}
+	var args = Array.prototype.slice.call(arguments).slice(), fmt, type
+	return args.shift().toString().replace(/%(-*\d*\.*\d*)([sdfe])/g, function(_, fmt, type) {
+		if(!args.length) throw new Error('Too few elements')
+		return map[type](args.shift(), fmt);
+	});
+}
+
+</script>
