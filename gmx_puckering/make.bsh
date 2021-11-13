@@ -1,0 +1,6 @@
+rm -f a.exe
+
+g++ -std=c++17 -Wall -Wextra -pedantic -Ofast -O2 -flto -march=native -lm \
+ gmx_puckering.cpp -IF:/gromacs2019.6/src F:/gromacs2019.6/_build/lib/libgromacs.a  F:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/9.2.0/libgomp.a
+
+echo ring1 | ./a.exe -f -n -o -otp -od -or
