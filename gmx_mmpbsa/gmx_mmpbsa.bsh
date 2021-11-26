@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2021-05-17 10:34:29     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2021-11-25 15:35:21     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx        ]
                        [-com COMPLEX] [-pro PROTEIN] [-lig <LIGAND|none>]
                        [-cou dh     ] [-ts ie      ]\n
@@ -21,15 +21,17 @@ echo -e "\
    Other: change them in the script directly
 --------------------------------------------------------------------------------
 >> Warning:
-   !!! 1. make sure gmx is available
+   !!! 1. make sure gmx is available and version is consistent
    !!! 2. gawk version > 3; macOS awk version > 2018
    !!! 3. watch _pid.pdb to make sure PBC is correct
 --------------------------------------------------------------------------------
 >> Log:
    TODO:       CAS
    TODO:       parallel APBS, focus
-   TODO:       clean pdb and dat files
 
+   2021-11-25: keep original PDB residue name
+               output avaraged contibutions
+               clean output files
    2021-05-17: add systime and fflush, only for gawk
    2021-05-16: revise cmd for all Linux
                see https://github.com/Jerkwin/gmxtool/issues/2
@@ -80,7 +82,7 @@ apbs='E:/APBS1.5/apbs.exe'			# APBS(Windows), USE "/", NOT "\"
 export MCSH_HOME=/dev/null				# APBS io.mc
 
 pid=pid				# 输出文件($$可免重复) prefix of the output files($$)
-scr=_$pid.scr		# 屏幕输出文件 file to save the message from the screen
+err=_$pid.err		# 屏幕输出文件 file to save the message from the screen
 qrv=_$pid.qrv		# 电荷/半径/VDW参数文件 to save charge/radius/vdw parmeters
 
 radType=1			# 原子半径类型 radius of atoms (0:ff; 1:mBondi; 2:Bondi)
@@ -179,7 +181,7 @@ for((i=0; i<N; i++)); do
 	[[ $arg =~ -ts  ]] && { useTS=1;  }
 done
 
-withLig=1; [[ $lig =~ none ]] && { withLig=0; com=$pro; lig=$pro; }
+withLig=1; [[ -z "$lig" || $lig =~ none ]] && { withLig=0; com=$pro; lig=$pro; }
 
 ################################################################################
 # 检查所需文件, 索引组
@@ -206,15 +208,17 @@ if [[ $step -le 1 ]]; then
 # 1. pre-processe trajectory, whole, cluster, center, fit, then generate pdb file
 ################################################################################
 
-trjwho=$pid~who; trjcnt=$pid~cnt; trjcls=$pid~cls
-echo $com                | $trjconv  -s $tpr -n $ndx -f $trj    -o $trjwho.xtc &> $scr -pbc whole
+trjwho=_$pid~trj_who.xtc; trjcnt=_$pid~trj_cnt.xtc; trjcls=_$pid~trj_cls.xtc
+echo $com                | $trjconv  -s $tpr -n $ndx -f $trj    -o $trjwho &> $err -pbc whole
+[[ ! -f "$trjwho" ]] && { echo -e "!!! ERROR !!! gmx trjconv Failed ! Check $err to find out why.\n"; exit; }
+
 if [[ $withLig -eq 1 ]]; then
 # usful for single protein and ligand
-	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $trjcnt.xtc &>>$scr -pbc mol -center
-	echo -e "$com\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcnt -o $trjcls.xtc &>>$scr -pbc cluster
-	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcls -o _$pid.pdb   &>>$scr -fit rot+trans
+	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $trjcnt   &>>$err -pbc mol -center
+	echo -e "$com\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcnt -o $trjcls   &>>$err -pbc cluster
+	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcls -o _$pid.pdb &>>$err -fit rot+trans
 else
-	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o _$pid.pdb   &>>$scr -pbc mol -center
+	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o _$pid.pdb &>>$err -pbc mol -center
 fi
 echo -e ">> 1. pre-processe trajectory: OK !\n"
 
@@ -228,7 +232,7 @@ fi; if [[ $step -le 2 ]]; then
 #    radType=2: Bondi
 ################################################################################
 
-$dump -quiet -s $tpr 2>>$scr \
+$dump -quiet -s $tpr 2>>$err \
 | awk >$qrv -v ndx=$ndx -v pro=$pro -v lig=$lig -v withLig=$withLig \
 			-v radType=$radType -v radLJ0=$radLJ0 '
 	BEGIN { RS="["
@@ -295,8 +299,9 @@ $dump -quiet -s $tpr 2>>$scr \
 	}
 
 	/residue\[/ { nres++
+		txt=$0; sub(/.*nr=/,"",txt); sub(/,.*/,"",txt); txt*=1
 		sub(/.*="/,"",$0); sub(/".*/,"",$0);
-		resName[nres]=sprintf("%05d%s", nres, $0)
+		resName[nres]=sprintf("%05d%s", txt, $0)
 	}
 
 	END {
@@ -350,6 +355,9 @@ $dump -quiet -s $tpr 2>>$scr \
 		return radBondi[tag]
 	}
 '
+
+[[ ! -f "$qrv" ]] && { echo -e "!!! ERROR !!! gmx dump Failed ! Check $err to find out why.\n"; exit; }
+
 echo -e ">> 2. generate qrv file: OK !\n"
 
 fi; if [[ $step -le 3 ]]; then
@@ -500,20 +508,21 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 		for(i=1; i<=Nlig; i++) dE[resLig[i]]=0
 		Nres=asorti(dE, Tres)
 
-		txt="   #Frame   "
+		txt="#Frame   "; txtDH=txt
 		for(i=1; i<=Nres; i++) {
 			ii=Tres[i]; sub(/~0+/, "~", ii)
-			txt = txt""sprintf("%12s", ii)
-		}
-		if(withLig) {
-			print txt > pid"~resMM.dat"
-			print txt > pid"~resMM_COU.dat"
-			print txt > pid"~resMM_VDW.dat"
-			print txt > pid"~res_MMPBSA.dat"
+			txt   = txt""sprintf("%10s", ii)
+			txtDH = txtDH""sprintf("%21s", ii"(with DH)")
 		}
 		print txt > pid"~resPBSA.dat"
 		print txt > pid"~resPBSA_PB.dat"
 		print txt > pid"~resPBSA_SA.dat"
+		if(withLig) {
+			print txt   > pid"~resMM_VDW.dat"
+			print txtDH > pid"~resMM.dat"
+			print txtDH > pid"~resMM_COU.dat"
+			print txtDH > pid"~res_MMPBSA.dat"
+		}
 
 		print "   #Frame      Binding( with DH ) "         \
 			 "|    MM    ( with DH )    PB        SA     " \
@@ -523,6 +532,17 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 
 		maxstr=0
 		for(fr=1; fr<=Nfrm; fr++) maxstr=max(maxstr, length(Fname[fr]))
+
+		if(withLig) {
+			for(i=1; i<=Nres; i++) {
+				tag=Tres[i]
+				 dGres[tag,0]=0;  dGres[tag,1]=0
+				 dHres[tag,0]=0;  dHres[tag,1]=0
+				 MMres[tag,0]=0;  MMres[tag,1]=0
+				COUres[tag,0]=0; COUres[tag,1]=0
+				VDWres[tag]=0;   dPBres[tag]=0;  dSAres[tag]=0
+			}
+		}
 
 		for(fr=1; fr<=Nfrm; fr++) {
 			t_start = systime(); fflush("")
@@ -556,18 +576,18 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 							Ecou   = qi*Qatm[jj]/r;
 							EcouDH = Ecou*exp(-kap*r)
 							Evdw = (C12[ci,cj]*t-C6[ci,cj])*t
-							dEcou[resPro[i]] += Ecou; dEcou[resLig[j]] += Ecou
+							dEcou[  resPro[i]] += Ecou;   dEcou[  resLig[j]] += Ecou
 							dEcouDH[resPro[i]] += EcouDH; dEcouDH[resLig[j]] += EcouDH
-							dEvdw[resPro[i]] += Evdw; dEvdw[resLig[j]] += Evdw
+							dEvdw[  resPro[i]] += Evdw;   dEvdw[  resLig[j]] += Evdw
 						}
 					}
 				}
 
 				Ecou=0; Evdw=0
 				for(i in dEcou) {
-					dEcou[i] *= kJcou/(2*pdie); Ecou += dEcou[i];
+					dEcou[  i] *= kJcou/(2*pdie); Ecou   += dEcou[i];
 					dEcouDH[i] *= kJcou/(2*pdie); EcouDH += dEcouDH[i];
-					dEvdw[i] /= 2;              Evdw += dEvdw[i]
+					dEvdw[  i] /= 2;              Evdw   += dEvdw[i]
 				}
 			}
 
@@ -632,105 +652,223 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 			for(i=1; i<=Npro; i++) { Esol[2,i] -= Evac[2,i]; PBpro += Esol[2,i]; SApro += Esas[2,i] }
 			for(i=1; i<=Nlig; i++) { Esol[3,i] -= Evac[3,i]; PBlig += Esol[3,i]; SAlig += Esas[3,i] }
 
-			for(i=1; i<=Npro; i++) { PBres[resPro[i]]=0; SAres[resPro[i]]=0 }
-			for(i=1; i<=Nlig; i++) { PBres[resLig[i]]=0; SAres[resLig[i]]=0 }
+			for(i=1; i<=Npro; i++) { dPBres[resPro[i]]=0; dSAres[resPro[i]]=0 }
+			for(i=1; i<=Nlig; i++) { dPBres[resLig[i]]=0; dSAres[resLig[i]]=0 }
 			for(i=1; i<=Npro; i++) {
-				PBres[resPro[i]] += Esol[1, Ipro+i-1]-Esol[2, i]
-				SAres[resPro[i]] += Esas[1, Ipro+i-1]-Esas[2, i]
+				dPBres[resPro[i]] += Esol[1, Ipro+i-1]-Esol[2, i]
+				dSAres[resPro[i]] += Esas[1, Ipro+i-1]-Esas[2, i]
 			}
 			for(i=1; i<=Nlig; i++) {
-				PBres[resLig[i]] += Esol[1, Ilig+i-1]-Esol[3, i]
-				SAres[resLig[i]] += Esas[1, Ilig+i-1]-Esas[3, i]
+				dPBres[resLig[i]] += Esol[1, Ilig+i-1]-Esol[3, i]
+				dSAres[resLig[i]] += Esas[1, Ilig+i-1]-Esas[3, i]
 			}
 
 			preK=-1; if(withLig) preK=1
-			Eco[fr]=Ecou;      EcoDH[fr]=EcouDH
-			Emm[fr]=Ecou+Evdw; EmmDH[fr]=EcouDH+Evdw
-			Evd[fr]=Evdw
-			Epb[fr]=preK*(PBcom-PBpro-PBlig)
-			Esa[fr]=preK*(SAcom-SApro-SAlig)
-			Ebi[fr]=preK*(Ecou+Evdw+PBcom-PBpro-PBlig+SAcom-SApro-SAlig)
-			EbiDH[fr]=preK*(EcouDH+Evdw+PBcom-PBpro-PBlig+SAcom-SApro-SAlig)
+			vdw[fr]=Evdw
+			pb[fr]=preK*(PBcom-PBpro-PBlig)
+			sa[fr]=preK*(SAcom-SApro-SAlig)
+			cou[fr,0]=Ecou;
+			cou[fr,1]=EcouDH
+			mm[fr,0]=cou[fr,0]+vdw[fr];
+			mm[fr,1]=cou[fr,1]+vdw[fr]
+			dh[fr,0]=preK*mm[fr,0] + pb[fr]+sa[fr]
+			dh[fr,1]=preK*mm[fr,1] + pb[fr]+sa[fr]
 			printf "%-12s %9.3f(%9.3f) | %9.3f(%9.3f) %9.3f %9.3f " \
 				  "| %9.3f(%9.3f) %9.3f | %12.3f %12.3f %12.3f | %9.3f %9.3f %9.3f\n", \
-				Fout, Ebi[fr], EbiDH[fr], Emm[fr], EmmDH[fr], Epb[fr], Esa[fr], \
+				Fout, dh[fr,0], dh[fr,1], mm[fr,0], mm[fr,1], pb[fr], sa[fr], \
 				Ecou, EcouDH, Evdw, PBcom, PBpro, PBlig, SAcom, SApro, SAlig >> pid"~MMPBSA.dat"
 
 			total_time = (Nfrm-fr)*(systime() - t_start)
 			printf "  MM-PBSA(with DH) = %9.3f(%9.3f) kJ/mol    Estimated Time Remaining: ~ %0dh:%02dm:%02ds\n", \
-				Ebi[fr],  EbiDH[fr], int(total_time/3600), int(total_time%3600/60), total_time%60
+				dh[fr,0], dh[fr,1], int(total_time/3600), int(total_time%3600/60), total_time%60
 
-			fmt="%s%12.3f%s"
+			fmt ="%s%9.3f %s"
+			fmt2="%s%9.3f(%9.3f) %s"
 			for(i=1; i<=Nres; i++) {
-				ii="";  if(i==1) ii=sprintf("%-12s", Fout)
+				ii="";  if(i==1) ii=sprintf("%-9s", Fout)
 				txt=""; if(i==Nres) txt="\n"
+				tag=Tres[i]
 				if(withLig) {
-					printf fmt, ii, dEcou[Tres[i]], txt                > pid"~resMM_COU.dat"
-					printf fmt, ii, dEvdw[Tres[i]], txt                > pid"~resMM_VDW.dat"
-					printf fmt, ii, dEcou[Tres[i]]+dEvdw[Tres[i]], txt > pid"~resMM.dat"
-					printf fmt, ii, dEcou[Tres[i]]+dEvdw[Tres[i]] \
-								   +PBres[Tres[i]]+SAres[Tres[i]], txt > pid"~res_MMPBSA.dat"
+					printf fmt,  ii, dEvdw[tag], txt               > pid"~resMM_VDW.dat"
+					printf fmt2, ii, dEcou[tag], dEcouDH[tag], txt > pid"~resMM_COU.dat"
+					printf fmt2, ii, dEcou[tag]+dEvdw[tag], dEcouDH[tag]+dEvdw[tag], txt  > pid"~resMM.dat"
+					printf fmt2, ii, dEcou[tag]+dEvdw[tag]+dPBres[tag]+dSAres[tag],
+									 dEcouDH[tag]+dEvdw[tag]+dPBres[tag]+dSAres[tag], txt > pid"~res_MMPBSA.dat"
+
+					COUres[tag,0] += dEcou[tag]
+					COUres[tag,1] += dEcouDH[tag]
+					VDWres[tag]+= dEvdw[tag];
 				}
-				printf fmt, ii, preK*(PBres[Tres[i]]), txt                > pid"~resPBSA_PB.dat"
-				printf fmt, ii, preK*(SAres[Tres[i]]), txt                > pid"~resPBSA_SA.dat"
-				printf fmt, ii, preK*(PBres[Tres[i]]+SAres[Tres[i]]), txt > pid"~resPBSA.dat"
+				PBres[tag] += dPBres[tag]
+				SAres[tag] += dSAres[tag]
+				printf fmt, ii, preK*(dPBres[tag]+dSAres[tag]), txt > pid"~resPBSA.dat"
+				printf fmt, ii, preK*(dPBres[tag]), txt             > pid"~resPBSA_PB.dat"
+				printf fmt, ii, preK*(dSAres[tag]), txt             > pid"~resPBSA_SA.dat"
 			}
 
-			fmt="%s%6.1f%6.1f\n"
+			fmt="%s%6s%6s\n"
 			for(i=1; i<=Npro; i++) {
 				ii=Ipro+i-1
 				txt=sprintf("%-6s%5d %-4s %3s A%4d    %8.3f%8.3f%8.3f", \
 					"ATOM", ii, type[ii], res[ii], resID[ii], x[ii], y[ii], z[ii])
+
+				tag=resPro[i]
+				printf fmt, txt, fixfmt(preK*dPBres[tag],6), fixfmt(preK*dPBres[tag],6) > Fout"~resPBSA_PB.pdb"
+				printf fmt, txt, fixfmt(preK*dSAres[tag],6), fixfmt(preK*dSAres[tag],6) > Fout"~resPBSA_SA.pdb"
 				if(withLig) {
-					printf fmt, txt, dEcou[resPro[i]], dEvdw[resPro[i]] > Fout"~COU+VDW.pdb"
-					printf fmt, txt, dEcou[resPro[i]]+dEvdw[resPro[i]], \
-								 PBres[resPro[i]]+SAres[resPro[i]]  > Fout"~res_MM+PBSA.pdb"
-				}
-				printf fmt, txt, preK*PBres[resPro[i]], preK*SAres[resPro[i]] > Fout"~PB+SA.pdb"
-				printf fmt, txt, 0, dEcou[resPro[i]]+dEvdw[resPro[i]]  \
-								+preK*(PBres[resPro[i]]+SAres[resPro[i]])  > Fout"~res_MMPBSA.pdb"
+					printf fmt, txt, fixfmt(dEcou[tag],6),              fixfmt(dEcouDH[tag],6)            > Fout"~resMM_COU.pdb"
+					printf fmt, txt, fixfmt(dEvdw[tag],6),              fixfmt(dEvdw[tag],6)              > Fout"~resMM_VDW.pdb"
+					printf fmt, txt, fixfmt(dEcou[tag]+dEvdw[tag],6),   fixfmt(dEcouDH[tag]+dEvdw[tag],6) > Fout"~resMM.pdb"
+					printf fmt, txt, fixfmt(dPBres[tag]+dSAres[tag],6), fixfmt(dPBres[tag]+dSAres[tag],6) > Fout"~resPBSA.pdb"
+					printf fmt, txt, fixfmt(dEcou[tag]+dEvdw[tag]+preK*(dPBres[tag]+dSAres[tag]),6),
+									 fixfmt(dEcouDH[tag]+dEvdw[tag]+preK*(dPBres[tag]+dSAres[tag]),6)     > Fout"~res_MMPBSA.pdb"
+				} else
+					printf fmt, txt, fixfmt(preK*(dPBres[tag]+dSAres[tag]),6),
+									 fixfmt(preK*(dPBres[tag]+dSAres[tag]),6) > Fout"~resPBSA.pdb"
 			}
 			for(i=1; i<=Nlig; i++) {
 				ii=Ilig+i-1
 				txt=sprintf("%-6s%5d %-4s %3s A%4d    %8.3f%8.3f%8.3f", \
 					 "ATOM", ii, type[ii], res[ii], resID[ii], x[ii], y[ii], z[ii])
-				printf fmt, txt, dEcou[resLig[i]], dEvdw[resLig[i]] > Fout"~COU+VDW.pdb"
-				printf fmt, txt, PBres[resLig[i]], SAres[resLig[i]] > Fout"~PB+SA.pdb"
-				printf fmt, txt, dEcou[resLig[i]]+dEvdw[resLig[i]], \
-								 PBres[resLig[i]]+SAres[resLig[i]]  > Fout"~res_MM+PBSA.pdb"
-				printf fmt, txt, 0, dEcou[resLig[i]]+dEvdw[resLig[i]]  \
-								+PBres[resLig[i]]+SAres[resLig[i]]  > Fout"~res_MMPBSA.pdb"
+				tag=resLig[i]
+				printf fmt, txt, fixfmt(dEcou[tag]+dEvdw[tag]+preK*(dPBres[tag]+dSAres[tag]),6),
+								 fixfmt(dEcouDH[tag]+dEvdw[tag]+preK*(dPBres[tag]+dSAres[tag]),6)     > Fout"~res_MMPBSA.pdb"
+				printf fmt, txt, fixfmt(preK*dPBres[tag],6),        fixfmt(preK*dPBres[tag],6)        > Fout"~resPBSA_PB.pdb"
+				printf fmt, txt, fixfmt(preK*dSAres[tag],6),        fixfmt(preK*dSAres[tag],6)        > Fout"~resPBSA_SA.pdb"
+				printf fmt, txt, fixfmt(dEcou[tag],6),              fixfmt(dEcouDH[tag],6)            > Fout"~resMM_COU.pdb"
+				printf fmt, txt, fixfmt(dEvdw[tag],6),              fixfmt(dEvdw[tag],6)              > Fout"~resMM_VDW.pdb"
+				printf fmt, txt, fixfmt(dEcou[tag]+dEvdw[tag],6),   fixfmt(dEcouDH[tag]+dEvdw[tag],6) > Fout"~resMM.pdb"
+				printf fmt, txt, fixfmt(dPBres[tag]+dSAres[tag],6), fixfmt(dPBres[tag]+dSAres[tag],6) > Fout"~resPBSA.pdb"
 			}
 		}
 
-		meanEbi=0; meanEmm=0; meanEbiDH=0; meanEmmDH=0;
-		meanEco=0; meanEvd=0; meanEcoDH=0;
-		meanEpb=0; meanEsa=0;
-		for(i=1; i<=Nfrm; i++) {
-			meanEbi += Ebi[i]/Nfrm; meanEbiDH += EbiDH[i]/Nfrm
-			meanEmm += Emm[i]/Nfrm; meanEmmDH += EmmDH[i]/Nfrm
-			meanEco += Eco[i]/Nfrm; meanEcoDH += EcoDH[i]/Nfrm
-			meanEvd += Evd[i]/Nfrm
-			meanEpb += Epb[i]/Nfrm
-			meanEsa += Esa[i]/Nfrm
+		print "#mol res       MM-PBSA(with DH  )        MM(with DH  )      PBSA       " \
+			  "COU(with DH  )       VDW        PB        SA" > pid"~res.dat"
+		fmt="%-12s %9.3f(%9.3f) %9.3f(%9.3f) %9.3f %9.3f(%9.3f) %9.3f %9.3f %9.3f\n"
+		for(i=1; i<=Nres; i++) {
+			tag=Tres[i]
+
+			VDWres[tag]   /= Nfrm
+			PBres[tag]    /= Nfrm
+			SAres[tag]    /= Nfrm
+			COUres[tag,0] /= Nfrm
+			COUres[tag,1] /= Nfrm
+
+			MMres[tag,0]=COUres[tag,0]+VDWres[tag]
+			MMres[tag,1]=COUres[tag,1]+VDWres[tag]
+			dHres[tag,0]=MMres[tag,0]+PBres[tag]+SAres[tag]
+			dHres[tag,1]=MMres[tag,1]+PBres[tag]+SAres[tag]
+
+			txt=tag; sub(/L~0+/, "Lig ", txt); sub(/P~0+/, "Pro ", txt)
+			printf fmt, txt,
+				dHres[tag,0], dHres[tag,1],
+				MMres[tag,0], MMres[tag,1],
+				PBres[tag]+SAres[tag],
+				COUres[tag,0], COUres[tag,1], VDWres[tag], \
+				PBres[tag], SAres[tag]  > pid"~res.dat"
+
+			ii="";  if(i==1) ii=sprintf("---------------------------------------\n%-9s", "mean")
+			txt=""; if(i==Nres) txt="\n"
+			if(withLig) {
+				printf "%s%9.3f(%9.3f) %s", ii, dHres[tag,0], dHres[tag,1]  , txt > pid"~res_MMPBSA.dat"
+				printf "%s%9.3f(%9.3f) %s", ii, MMres[tag,0], MMres[tag,1]  , txt > pid"~resMM.dat"
+				printf "%s%9.3f %s",        ii, VDWres[tag]                 , txt > pid"~resMM_VDW.dat"
+				printf "%s%9.3f(%9.3f) %s", ii, COUres[tag,0], COUres[tag,1], txt > pid"~resMM_COU.dat"
+			}
+			printf "%s%9.3f %s",        ii, preK*(PBres[tag]+SAres[tag]), txt > pid"~resPBSA.dat"
+			printf "%s%9.3f %s",        ii, preK*(PBres[tag])           , txt > pid"~resPBSA_PB.dat"
+			printf "%s%9.3f %s",        ii, preK*(SAres[tag])           , txt > pid"~resPBSA_SA.dat"
 		}
-		TdS=0; TdS_dh=0
-		for(i=1; i<=Nfrm; i++) {
-			TdS    += exp((Emm[i]-meanEmm)/RT2kJ)/Nfrm
-			TdS_dh += exp((EmmDH[i]-meanEmmDH)/RT2kJ)/Nfrm
+
+		fmt="%s%6s%6s\n"
+		for(i=1; i<=Npro; i++) {
+			ii=Ipro+i-1
+			txt=sprintf("%-6s%5d %-4s %3s A%4d    %8.3f%8.3f%8.3f", \
+				"ATOM", ii, type[ii], res[ii], resID[ii], x[ii], y[ii], z[ii])
+
+			tag=resPro[i]
+			if(withLig) {
+				printf fmt, txt, fixfmt(dHres[tag,0],6),             fixfmt(dHres[tag,1],6)                 > pid"~res_MMPBSA.pdb"
+				printf fmt, txt, fixfmt(MMres[tag,0]+VDWres[tag],6), fixfmt(MMres[tag,1]+VDWres[tag],6)     > pid"~resMM.pdb"
+				printf fmt, txt, fixfmt(COUres[tag,0],6),            fixfmt(COUres[tag,1],6)                > pid"~resMM_COU.pdb"
+				printf fmt, txt, fixfmt(VDWres[tag],6),              fixfmt(VDWres[tag],6)                  > pid"~resMM_VDW.pdb"
+			}
+			printf fmt, txt, fixfmt(preK*(PBres[tag]+SAres[tag]),6), fixfmt(preK*(PBres[tag]+SAres[tag]),6) > pid"~resPBSA.pdb"
+			printf fmt, txt, fixfmt(preK*PBres[tag]+SAres[tag],6),   fixfmt(preK*PBres[tag]+SAres[tag],6)   > pid"~resPBSA_PB.pdb"
+			printf fmt, txt, fixfmt(preK*SAres[tag],6),              fixfmt(preK*SAres[tag],6)              > pid"~resPBSA_SA.pdb"
 		}
-		TdS=-RT2kJ*log(TdS)
-		TdS_dh=-RT2kJ*log(TdS_dh)
+		for(i=1; i<=Nlig; i++) {
+			ii=Ilig+i-1
+			txt=sprintf("%-6s%5d %-4s %3s A%4d    %8.3f%8.3f%8.3f", \
+				 "ATOM", ii, type[ii], res[ii], resID[ii], x[ii], y[ii], z[ii])
+			tag=resLig[i]
+			printf fmt, txt, fixfmt(dHres[tag,0],6),                 fixfmt(dHres[tag,1],6)                 > pid"~res_MMPBSA.pdb"
+			printf fmt, txt, fixfmt(MMres[tag,0]+VDWres[tag],6),     fixfmt(MMres[tag,1]+VDWres[tag],6)     > pid"~resMM.pdb"
+			printf fmt, txt, fixfmt(COUres[tag,0],6),                fixfmt(COUres[tag,1],6)                > pid"~resMM_COU.pdb"
+			printf fmt, txt, fixfmt(VDWres[tag],6),                  fixfmt(VDWres[tag],6)                  > pid"~resMM_VDW.pdb"
+			printf fmt, txt, fixfmt(preK*(PBres[tag]+SAres[tag]),6), fixfmt(preK*(PBres[tag]+SAres[tag]),6) > pid"~resPBSA.pdb"
+			printf fmt, txt, fixfmt(preK*PBres[tag]+SAres[tag],6),   fixfmt(preK*PBres[tag]+SAres[tag],6)   > pid"~resPBSA_PB.pdb"
+			printf fmt, txt, fixfmt(preK*SAres[tag],6),              fixfmt(preK*SAres[tag],6)              > pid"~resPBSA_SA.pdb"
+		}
+
+		 dH[0]=0;  dH[1]=0
+		 MM[0]=0;  MM[1]=0
+		COU[0]=0; COU[1]=0
+		VDW=0;    PB=0;     SA=0
+		for(i=1; i<=Nfrm; i++) {
+			dH[0] += dh[i,0]/Nfrm;  dH[1] += dh[i,1]/Nfrm
+			MM[0] += mm[i,0]/Nfrm;  MM[1] += mm[i,1]/Nfrm
+			COU[0]+= cou[i,0]/Nfrm; COU[1]+= cou[i,1]/Nfrm
+			VDW += vdw[i]/Nfrm
+			PB  += pb[i]/Nfrm
+			SA  += sa[i]/Nfrm
+		}
+
+		TdS[0]=0; TdS[1]=0 # 1 for DH
+		if(withLig) {
+			for(i=1; i<=Nfrm; i++) {
+				TdS[0] += exp((mm[i,0]-MM[0])/RT2kJ)/Nfrm
+				TdS[1] += exp((mm[i,1]-MM[1])/RT2kJ)/Nfrm
+			}
+		}
+		TdS[0]=-RT2kJ*log(TdS[0]); TdS[1]=-RT2kJ*log(TdS[1]);
+		 dG[0]=dH[0]-TdS[0];        dG[1]=dH[1]-TdS[1];
+		 Ki[0]=exp(dG[0]/RT2kJ);    Ki[1]=exp(dG[1]/RT2kJ)
 
 		printf "----------------------------------" \
-			   "|------------------------------------------" \
-			   "|--------------------------------|\n" \
-			   "%-12s %9.3f(%9.3f) | %9.3f(%9.3f) %9.3f %9.3f | %9.3f(%9.3f) %9.3f |\n"   \
-			   "%-12s %9.3f(%9.3f) |\n----------------------------------|\n" \
-			   "%-12s %9.3f(%9.3f) kJ/mol = %9.3f(%9.3f) kcal/mol\n",
-			"mean", meanEbi, meanEbiDH, meanEmm, meanEmmDH, meanEpb, meanEsa, meanEco, meanEcoDH, meanEvd,
-			"-TdS", -TdS, -TdS_dh, "  dG", meanEbi-TdS, meanEbiDH-TdS_dh, \
-			(meanEbi-TdS)/4.184,  (meanEbiDH-TdS_dh)/4.184  >> pid"~MMPBSA.dat"
+			"|------------------------------------------" \
+			"|--------------------------------|\n" \
+			"%-12s %9.3f(%9.3f) | %9.3f(%9.3f) %9.3f %9.3f | %9.3f(%9.3f) %9.3f |\n"   \
+			"%-12s %9.3f(%9.3f) |\n----------------------------------|\n" \
+			"%-12s %9.3f(%9.3f) kJ/mol = %9.3f(%9.3f) kcal/mol\n" \
+			"%-12s %9.3E(%9.3E)  uM    = %9.3E(%9.3E)    nM\n" ,
+			"  dH=",   dH[0],     dH[1],     MM[0], MM[1], PB, SA, COU[0], COU[1], VDW,
+			"-TdS=", -TdS[0],   -TdS[1],
+			"  dG=",   dG[0],     dG[1],     dG[0]/4.184, dG[1]/4.184,
+			"  Ki=",   Ki[0]*1E6, Ki[1]*1E6, Ki[0]*1E9,   Ki[1]*1E9     >> pid"~MMPBSA.dat"
+
+		print "+==============================================================+\n"\
+			"             dG = RTln(Ki) = -RTln(KA)                          \n" \
+			"             Ki = 1/KA = exp(dG/RT) = IC50 = EC50               \n" \
+			"+==============================================================+\n" \
+			"| M(mol/L) |  m/u/pM | dG(kcal/mol) | dG(kJ/mol) | Affinity    |\n" \
+			"|==============================================================|\n" \
+			"| 0.1      | 100  mM |    -1.364    |   -5.708   |             |\n" \
+			"| 0.01     |  10  mM |    -2.728    |  -11.416   |             |\n" \
+			"| 0.001    |   1  mM |    -4.093    |  -17.124   |             |\n" \
+			"| 0.0001   | 100  uM |    -5.457    |  -22.832   | Weak        |\n" \
+			"|--------------------------------------------------------------|\n" \
+			"| 0.00001  |  10  uM |    -6.821    |  -28.540   |             |\n" \
+			"| 1.0E-06  |   1  uM |    -8.185    |  -34.248   | Medium      |\n" \
+			"|--------------------------------------------------------------|\n" \
+			"| 1.0E-07  | 100  nM |    -9.550    |  -39.956   |             |\n" \
+			"| 1.0E-08  |  10  nM |   -10.914    |  -45.664   |             |\n" \
+			"| 1.0E-09  |   1  nM |   -12.278    |  -51.372   | Strong      |\n" \
+			"|--------------------------------------------------------------|\n" \
+			"| 1.0E-10  | 100  pM |   -13.642    |  -57.080   |             |\n" \
+			"| 1.0E-11  |  10  pM |   -15.007    |  -62.788   |             |\n" \
+			"| 1.0E-12  |   1  pM |   -16.371    |  -68.496   | Very strong |\n" \
+			"+==============================================================+\n" >> pid"~MMPBSA.dat"
 	}
 
 	function dimAPBS(file, Imol, minX, maxX, minY, maxY, minZ, maxZ) {
@@ -800,9 +938,32 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 			"print elecEnergy "file" - "file"~VAC end\n" \
 			"print apolEnergy "file"~SAS end\n\n"
 	}
-	function min(x, y) { return x<y ? x : y }
-	function max(x, y) { return x>y ? x : y }
-	function round(x)  { return int(x+0.5)  }
+	function min(x, y)    { return x<y ? x : y }
+	function max(x, y)    { return x>y ? x : y }
+	function round(x)     { return int(x+0.5)  }
+	function fixfmt(x,m, nint,npre,nexp,str){
+		str=sprintf("%.9f", x)
+		sub(/^0+/,   "", str);
+		sub(/^-0+/,  "-", str);
+		nint=index(str, ".")-1
+		if(-10^m<x && x<-10^(-m) || 10^(-m)<x &&x<10^m ) {
+			str=sprintf("%."(m-nint-1)"f", x)
+			sub(/^0+/,   "", str);
+			sub(/^-0+/,  "-", str);
+		} else {
+			str=sprintf("%.9E", x)
+			npre=index(str, ".")
+			sub(/.*E\+0*$/, "",  str);
+			sub(/.*E\+0*/, "E",  str);
+			sub(/.*E-0*/,  "E-", str)
+			nexp=length(str)
+			str=sprintf("%"(m-nexp)"."(m-nexp-npre)"E", x)
+			sub(/E\+0*$/, "",  str);
+			sub(/E\+0*/, "E",  str);
+			sub(/E-0*/,  "E-", str)
+		}
+		return str
+	}
 ' _$pid.pdb
 echo -e "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"
 fi
@@ -811,5 +972,5 @@ fi
 # 4. 删除临时文件
 # 4. remove intermediate files
 ################################################################################
-#rm -f $trjwho.xtc $trjcnt.xtc $trjcls.xtc
-#rm -f io.mc _$pid.pdb $scr $qrv \#_$pid*\#
+rm -f io.mc \#*
+#rm -f _$pid*
