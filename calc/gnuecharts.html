@@ -1,0 +1,96 @@
+<meta charset='utf-8'>
+
+<style>
+body { font: 1em/1.5 Consolas}
+code {
+	font: bold 1em/1.2 Consolas, Monaco, monospace, SimHei;
+	overflow: auto;
+	background: #F5F2F0;
+	max-width: 100%;
+	color: #DD1144;
+	padding: 0;
+	border: 1.2px solid #E0DFCC;
+	margin: 0 .3em 0 0.3em;
+}
+
+.th {
+	color:#fff;
+	background-color: #A82918;
+	padding: 5px;
+}
+
+.btn{
+  font: bold 1em/1.2 Consolas, Monaco;
+  width: 20%;
+  height: 2em;
+  color:#fff;background-color:#EF8C0E
+}
+</style>
+
+<div style='height:100%;width:100%;display:flex;justify-content:space-between;'>
+
+	<div id='container' style='height:100%; width:80%; flex:1;overflow:scroll'></div>
+	<div style='flex:0 0 20%;overflow:scroll;'>
+		<span class='th'>数据</span><br>
+		<textarea id='data' style='width: 90%; height:50%; margin: 0px;'>
+#测试数据
+#t   均匀随机数 正态随机数
+ 0.0      0.307     -0.355
+ 0.5      0.151     -0.856
+ 1.0      0.263     -0.889
+ 1.5      0.315     -0.021
+ 2.0      0.478     -1.454
+ 2.5      0.655      1.192
+ 3.0      0.889     -0.474
+ 3.5      0.331     -0.182
+ 4.0      0.965     -0.512
+ 4.5      0.302     -0.447
+ 5.0      0.554      2.187
+ 5.5      0.075     -1.225
+ 6.0      0.576      0.577
+ 6.5      0.920      1.232
+ 7.0      0.573     -0.777
+ 7.5      0.237     -0.204
+ 8.0      0.131      0.304
+ 8.5      0.616      0.960
+ 9.0      0.042     -0.473
+ 9.5      0.128     -0.780
+10.0      0.135      0.655
+		</textarea><br>
+		<span class='th'>绘图命令</span><br>
+		<textarea id='plot' style='width: 90%; height:10%; margin:0px; font: bold 1em Consolas'>
+1:2 O
+1:3 ~M
+[0:10] exp(sin(x)) ~
+			</textarea><br>
+		<input type='button' class='btn' value='更新绘图' onclick='update()' style='width:100px; height:30px'><br><br>
+		函数:<code>[初值:终值:步长] f(x) 线点型</code><br>
+		数据:<code>列号1:列号2 线点型</code><br>
+		线型:<code>-</code>折线 <code>~</code>平滑线 <code>--</code>虚线 <code>-.</code>点线<br>
+		点型:<code>O</code>圆点 <code>M</code>方块 <code>D</code>圆角方块 <code>A</code>三角 <code>V</code>菱形 <code>Q</code>大头针 <code>^</code>箭头
+	</div>
+</div>
+
+<script src='https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js'></script>
+
+<!-- Uncomment this line if you want to dataTool extension
+<script src='https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/extension/dataTool.min.js'></script>
+-->
+<!-- Uncomment this line if you want to use gl extension
+<script src='https://cdn.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js'></script>
+-->
+<!-- Uncomment this line if you want to echarts-stat extension
+<script src='https://cdn.jsdelivr.net/npm/echarts-stat@latest/dist/ecStat.min.js'></script>
+-->
+<!-- Uncomment this line if you want to use map
+<script src='https://cdn.jsdelivr.net/npm/echarts@5.2.2/map/js/china.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/echarts@5.2.2/map/js/world.js'></script>
+-->
+<!-- Uncomment these two lines if you want to use bmap extension
+<script src='https://api.map.baidu.com/api?v=2.0&ak=<Your Key Here>'></script>
+<script src='https://cdn.jsdelivr.net/npm/echarts@{{version}}/dist/extension/bmap.min.js'></script>
+-->
+
+<script>
+"use strict";function update(){var i=void 0,j=void 0,k=void 0,ii=void 0,jj=void 0,row=void 0,col=void 0,txt=void 0,str=void 0,tips="数据";for(txt=trim($("data").value).split(/\n/),i=-1,"#"==trim(txt[0])[0]&&(i=0,"#"==trim(txt[1])[0]&&(i=1)),i>=0&&(1==i&&(tips=trim(txt[0].slice(1))),legend=trim(txt[i].slice(1)).split(/\s+/),txt=txt.slice(i+1)),row=txt.length,col=trim(txt[0]).split(/\s+/).length,i=0;i<row;i++)data[i]=[];var xy=[],xmin=1e99,xmax=-1e99,dx=1;for(i=0;i<row;i++){for(xy=trim(txt[i]).split(/\s+/),j=0;j<col;j++)data[i][j]=parseFloat(xy[j]);data[i][0]<xmin&&(xmin=data[i][0]),data[i][0]>xmax&&(xmax=data[i][0])}txt=trim($("plot").value).split(/\n/);var nser=txt.length,series=[],ptype=[],ltype=[],swid=[],xname="",yname="";var x=void 0,y=void 0,fx="",fy="";for(k=0;k<nser;k++)if(series[k]=[],str=trim(txt[k]),"["==str[0]){fx=str.replace(/^.* +/,""),ptype[k]=plotType(fx),ltype[k]=lineType(fx),smooth[k]=smline(fx),symbol[k]=stype(fx),swid[k]=sizewidth(fx),xname+="x"+(k<nser-1?"|":""),yname+="f(x)"+(k<nser-1?"|":""),fx=trim(str.replace(/.*]/,"").replace(/ *[^ ]+$/,"")),sname[k]=fx;var range=trim(str.replace(/].*/,"")).slice(1).split(/ *: */);for(range[0]&&1==range.length&&(xmax=parseFloat(range[0])),range[0]&&2==range.length&&(xmax=parseFloat(range[1]),xmin=parseFloat(range[0])),dx=(xmax-xmin)/10,range[0]&&3==range.length&&(xmax=parseFloat(range[1]),xmin=parseFloat(range[0]),dx=parseFloat(range[2])),fx=new Function("x","return "+mathFunction(fx)),x=xmin;x<=xmax;x+=dx)series[k].push([x,fx(x)])}else{str=str.split(/[\s|:]+/),i=-1,j=-1,fx="",fy="",-1==str[0].indexOf("$")?i=parseInt(str[0])-1:fx=trim(str[0]),-1==str[1].indexOf("$")?j=parseInt(str[1])-1:fy=trim(str[1]),ptype[k]=plotType(str[2]),ltype[k]=lineType(str[2]),smooth[k]=smline(str[2]),symbol[k]=stype(str[2]),swid[k]=sizewidth(str[2]),sname[k]=j>=0&&legend[j]?legend[j]:"y"+(k+1),str=k<nser-1?"|":"",xname+=(i>=0&&legend[i]?legend[i]:"x"+(k+1))+str,yname+=sname[k]+str;for(var _ii=0;_ii<row;_ii++)i>=0?x=data[_ii][i]:(x=fx.replace(/\$(\d+)/g,"data["+_ii+"][$1-1]"),x=eval(mathFunction(x))),j>=0?y=data[_ii][j]:(y=fy.replace(/\$(\d+)/g,"data["+_ii+"][$1-1]"),y=eval(mathFunction(y))),series[k].push([x,y])}for(option.title.text=tips,option.xAxis.name=xname,option.yAxis.name=yname,option.series=[],k=0;k<nser;k++)option.series[k]={},option.series[k].name=sname[k],option.series[k].type=ptype[k],option.series[k].data=[],option.series[k].data=series[k],option.series[k].smooth=smooth[k],option.series[k].symbol=symbol[k],option.series[k].showSymbol=!!symbol[k],option.series[k].lineStyle={},option.series[k].lineStyle.type=ltype[k],option.series[k].symbolSize=swid[k].split(/\s+/)[0],option.series[k].lineStyle.width=swid[k].split(/\s+/)[1];myChart.setOption(option,!0)}function smline(e){return-1!=e.indexOf("~")}function plotType(e){return-1!=e.indexOf("-")||-1!=e.indexOf("~")?"line":"scatter"}function lineType(e){return-1!=e.indexOf(".")?"dotted":-1!=e.indexOf("--")?"dashed":"solid"}function sizewidth(e){var t=void 0,i=void 0;return t=trim(e.replace(/^[~-]*\d*/,"").replace(/.*[A-Z^]+/,"")),i=trim(e.replace(/[A-Z^]+.*/,"").replace(/[^\d]+/,"")),t||(t=10),i||(i=2),t+" "+i}function stype(e){return-1!=e.indexOf("O")?"circle":-1!=e.indexOf("M")?"rect":-1!=e.indexOf("D")?"roundRect":-1!=e.indexOf("A")?"triangle":-1!=e.indexOf("V")?"diamond":-1!=e.indexOf("Q")?"pin":-1!=e.indexOf("^")?"arrow":""}function mathFunction(e){var t="pow sqrt exp log abs ceil floor min max round random sin cos tan asin acos atan atan2 toSource valueOf";t=t.split(/\s+/);for(var i=0,n=t.length;i<n;i++)e=e.replace(new RegExp(t[i]+"\\(","g"),"Math."+t[i]+"(");return e=e.replace(/pi/gi,"(Math.PI)").replace(/tau/gi,"(2*Math.PI)")}var $=function(e){return document.getElementById(e)},trim=function(e){return e.replace(/^\s*\n*/,"").replace(/\s*\n*$/,"")},myChart=echarts.init($("container")),data=[],legend=[],sname=[],smooth=[],symbol=[],ssymbol=[],xname,yname,option;option={title:{text:"数据",textStyle:{fontFamily:"Microsoft YaHei",fontSize:24}},legend:{textStyle:{fontWeight:"bolder",fontFamily:"Microsoft YaHei",fontSize:18}},xAxis:{type:"value",offset:0,name:"x轴",nameLocation:"center",nameGap:36,nameTextStyle:{fontWeight:"bolder",fontFamily:"Microsoft YaHei",fontSize:24},axisLabel:{margin:18,fontWeight:"bolder",fontFamily:"Microsoft YaHei",fontSize:18},axisLine:{lineStyle:{width:5}},axisTick:{length:15,lineStyle:{width:5}},minorTick:{show:!0,splitNumber:5,length:10,lineStyle:{width:5}},splitLine:{lineStyle:{type:"dashed"}}},yAxis:{type:"value",offset:0,name:"y轴",nameLocation:"center",nameGap:72,nameTextStyle:{fontWeight:"bolder",fontFamily:"Microsoft YaHei",fontSize:24},axisLabel:{margin:18,fontWeight:"bolder",fontFamily:"Microsoft YaHei",fontSize:18},axisLine:{lineStyle:{width:5}},axisTick:{length:15,lineStyle:{width:5}},minorTick:{show:!0,splitNumber:5,length:10,lineStyle:{width:5}},splitLine:{lineStyle:{type:"dashed"}}},series:[{name:"y",type:"scatter"}],grid:{containLabel:!0},tooltip:{trigger:"axis",axisPointer:{type:"cross"}},toolbox:{feature:{dataZoom:{yAxisIndex:"none"},restore:{},saveAsImage:{}}},dataZoom:[{type:"slider",xAxisIndex:[0],filterMode:"none"},{type:"slider",yAxisIndex:[0],filterMode:"none"},{type:"inside",xAxisIndex:[0]},{type:"inside",yAxisIndex:[0]}]},update();
+</script>
