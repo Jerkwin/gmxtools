@@ -1,10 +1,10 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2021-11-25 15:35:21     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2022-02-09 22:51:52     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx        ]
                        [-com COMPLEX] [-pro PROTEIN] [-lig <LIGAND|none>]
-                       [-cou dh     ] [-ts ie      ]\n
+                       [-cou dh     ] [-ts ie      ] [-cas <B:E:S,#>    ]\n
 >> Default: gmx_mmpbsa -f   traj.xtc  -s   topol.tpr  -n   index.ndx
                        -com Complex   -pro Protein    -lig Ligand
                                        -ts  ie
@@ -18,6 +18,7 @@ echo -e "\
     -lig: index group name of ligand, can be ignored using none
     -cou: dh: calculate MM(COU) with Debye-Huckel screening method
      -ts: ie: calculate entropy with interaction entropy method
+    -cas: select res for CAS, begin:end:step or number
    Other: change them in the script directly
 --------------------------------------------------------------------------------
 >> Warning:
@@ -26,9 +27,11 @@ echo -e "\
    !!! 3. watch _pid.pdb to make sure PBC is correct
 --------------------------------------------------------------------------------
 >> Log:
-   TODO:       CAS
    TODO:       parallel APBS, focus
 
+   2022-02-09: CAS except GLY, PRO, CYX
+               fix radius bug, use AMBER mBondi
+               change to AMBER PB4
    2021-11-25: keep original PDB residue name
                output avaraged contibutions
                clean output files
@@ -84,8 +87,9 @@ export MCSH_HOME=/dev/null				# APBS io.mc
 pid=pid				# 输出文件($$可免重复) prefix of the output files($$)
 err=_$pid.err		# 屏幕输出文件 file to save the message from the screen
 qrv=_$pid.qrv		# 电荷/半径/VDW参数文件 to save charge/radius/vdw parmeters
+pdb=_$pid.pdb		# 轨迹构型文件 to save trajectory
 
-radType=1			# 原子半径类型 radius of atoms (0:ff; 1:mBondi; 2:Bondi)
+radType=1			# 原子半径类型 radius of atoms (0:ff; 1:mBondi)
 radLJ0=1.2			# 用于LJ参数原子的默认半径(A, 主要为H) radius when LJ=0 (H)
 
 meshType=0			# 网格大小 mesh (0:global  1:local)
@@ -128,8 +132,9 @@ PBAset='
   srad  1.4    # 探测半径(A)
   gamma 1      # 表面张力(kJ/mol-A^2)
 
-  #gamma const 0.027     0        # 表面张力, 常数
-  #gamma const 0.0226778 3.84928  # 表面张力, 常数
+  #gamma const 0.0301248 0         # AMBER-PB4 .0072*cal2J 表面张力, 常数
+  #gamma const 0.0226778 3.84928
+  #gamma const 0.027     0
 
   press  0     # 压力(kJ/mol-A^3)
   bconc  0     # 溶剂本体密度(A^3)
@@ -167,7 +172,11 @@ str=$($apbs --version 2>&1 | grep -i "Poisson-Boltzmann")
 # parse command line options
 ################################################################################
 
-useDH=1;  useTS=1
+useDH=1;  useTS=1; isCAS=0
+
+cas="$*";
+cas=${cas##*-cas}; cas=${cas%%-*}; cas=${cas// /}
+
 opt=($*); N=${#opt[@]}
 for((i=0; i<N; i++)); do
 	arg=${opt[$i]}; j=$((i+1)); val=${opt[$j]}
@@ -179,6 +188,7 @@ for((i=0; i<N; i++)); do
 	[[ $arg =~ -lig ]] && { lig=$val; }
 	[[ $arg =~ -cou ]] && { useDH=1;  }
 	[[ $arg =~ -ts  ]] && { useTS=1;  }
+	[[ $arg =~ -cas ]] && { isCAS=1;  }
 done
 
 withLig=1; [[ -z "$lig" || $lig =~ none ]] && { withLig=0; com=$pro; lig=$pro; }
@@ -214,11 +224,11 @@ echo $com                | $trjconv  -s $tpr -n $ndx -f $trj    -o $trjwho &> $e
 
 if [[ $withLig -eq 1 ]]; then
 # usful for single protein and ligand
-	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $trjcnt   &>>$err -pbc mol -center
-	echo -e "$com\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcnt -o $trjcls   &>>$err -pbc cluster
-	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcls -o _$pid.pdb &>>$err -fit rot+trans
+	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $trjcnt &>>$err -pbc mol -center
+	echo -e "$com\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcnt -o $trjcls &>>$err -pbc cluster
+	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcls -o $pdb    &>>$err -fit rot+trans
 else
-	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o _$pid.pdb &>>$err -pbc mol -center
+	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $pdb    &>>$err -pbc mol -center
 fi
 echo -e ">> 1. pre-processe trajectory: OK !\n"
 
@@ -229,7 +239,6 @@ fi; if [[ $step -le 2 ]]; then
 #    feel free to change radius with radType
 #    radType=0: radius from C6/C12, or radLJ0 if either C6 or C12 is zero
 #    radType=1: mBondi
-#    radType=2: Bondi
 ################################################################################
 
 $dump -quiet -s $tpr 2>>$err \
@@ -304,6 +313,21 @@ $dump -quiet -s $tpr 2>>$err \
 		resName[nres]=sprintf("%05d%s", txt, $0)
 	}
 
+	/^ +Angle:/ {
+		getline; n=$2+0
+		if(n>0) {
+			getline
+			while(getline) {
+				if(!index($0, "ANGLES")) break
+				k=$NF; j=$(NF-1); i=$(NF-2)
+				tag=toupper(Tatm[Imol,i])
+				if(substr(tag,1,1)=="H") Tatm[Imol,i]=sprintf("H%s", Tatm[Imol,j])
+				tag=toupper(Tatm[Imol,k])
+				if(substr(tag,1,1)=="H") Tatm[Imol,k]=sprintf("H%s", Tatm[Imol,j])
+			}
+		}
+	}
+
 	END {
 		Ntot=0; Nidx=0
 		for(i=0; i<Ntyp; i++) {
@@ -326,37 +350,147 @@ $dump -quiet -s $tpr 2>>$err \
 		}
 	}
 
-	function getRadi(tag, radType) {
-		radBondi["O" ]= 1.50; if(radType==2) radBondi["O" ]= 1.52
-		radBondi["S" ]= 1.80; if(radType==2) radBondi["S" ]= 1.83
-		radBondi["P" ]= 1.85; if(radType==2) radBondi["P" ]= 1.80
-		radBondi["I" ]= 1.98; if(radType==2) radBondi["I" ]= 2.06
-		radBondi["BR"]= 1.85; if(radType==2) radBondi["BR"]= 1.92
-		radBondi["N" ]= 1.55
-		radBondi["F" ]= 1.47
-		radBondi["CL"]= 1.77
-
-		radBondi["C" ]= 1.70; radBondi["H" ]= 1.20
-		radBondi["C*"]= 1.77; radBondi["H4"]= 1.00
-		radBondi["CA"]= 1.77; radBondi["H5"]= 1.00
-		radBondi["CB"]= 1.77; radBondi["HA"]= 1.00
-		radBondi["CC"]= 1.77; radBondi["HC"]= 1.30
-		radBondi["CD"]= 1.77; radBondi["HN"]= 1.30
-		radBondi["CN"]= 1.77; radBondi["HP"]= 1.30
-		radBondi["CR"]= 1.77; radBondi["HO"]= 0.80
-		radBondi["CV"]= 1.77; radBondi["HS"]= 0.80
-		radBondi["CW"]= 1.77;
+	function getRadi(tag, radType) { # mBondi from AMBER20/parmed/tools/changeradii.py
+		radBondi["C" ]= 1.7  ; radBondi["H" ]= 1.2
+		radBondi["N" ]= 1.55 ; radBondi["HC"]= 1.3
+		radBondi["O" ]= 1.5  ; radBondi["HN"]= 1.3
+		radBondi["F" ]= 1.5  ; radBondi["HP"]= 1.3
+		radBondi["SI"]= 2.1  ; radBondi["HO"]= 0.8
+		radBondi["P" ]= 1.85 ; radBondi["HS"]= 0.8
+		radBondi["S" ]= 1.8  # radBondi["BR"]= 1.85
+		radBondi["CL"]= 1.7  # radBondi["I" ]= 1.98
 
 		tag=toupper(tag)
 		if(length(tag)>=2) {
-			if(!radBondi[substr(tag,1,2)]) return radBondi[substr(tag,1,1)]
-			else return radBondi[substr(tag,1,2)]
+			if(radBondi[substr(tag,1,2)]) return radBondi[substr(tag,1,2)]
+			else return radBondi[substr(tag,1,1)]
+		} else {
+			if(radBondi[tag]) return radBondi[tag]
+			else return 1.5
 		}
-		return radBondi[tag]
 	}
 '
 
 [[ ! -f "$qrv" ]] && { echo -e "!!! ERROR !!! gmx dump Failed ! Check $err to find out why.\n"; exit; }
+
+if [[ $isCAS -eq 1 ]]; then
+################################################################################
+# CAS: qrv pdb
+################################################################################
+
+awk -v qrv=$qrv -v cas="$cas" -v RS="\r?\n" '
+	BEGIN {
+		txt="NME Z ALA A ARG R ASN N ASP D ASH D CYS C CYM C CYX C "
+		txt=txt"GLU E GLH E GLN Q GLY G HID H HIE H HIP H ILE I LEU L LYS K LYN K "
+		txt=txt"MET M PHE F PRO P SER S THR T TRP W TYR Y VAL V"
+		n=split(txt, arr)
+		for(i=1; i<=n/2; i++) resnm[arr[2*i-1]]=arr[2*i]
+
+		split(cas,arr,",")
+		for(i in arr) {
+			if(index(arr[i],":")) {
+				n=split(arr[i], arr2, ":")
+				s=1; if(n>2) s=arr[3]
+				for(j=arr2[1]; j<=arr2[2]; j+=s) resCAS[j]=1
+			} else resCAS[arr[i]]=1
+		}
+
+		getline < qrv
+		getline Atyp < qrv
+		for(i=0; i<Atyp; i++) getline < qrv
+		while(getline < qrv) {
+			res=$(NF-2); gsub(/[0-9]+/,"",res)
+			if(res=="ALA") { n=$(NF-1);
+				Qala[n]=$2; Rala[n]=$3; Cala[n]=$4
+				Sala[n]=$5; Eala[n]=$6
+			}
+		}
+		close(qrv)
+
+		out=qrv; sub(".qrv", "_CAS.qrv", out)
+		getline < qrv;      print     >out
+		getline Atyp < qrv; print Atyp>out
+		for(i=0; i<Atyp; i++) { getline < qrv; print >out }
+		while(getline < qrv) {
+			res=$(NF-2); gsub(/[0-9]+/,"",res)
+			idx=$(NF-2); gsub(/^0*/,"",idx); gsub(/[A-Z]+/,"",idx)
+			atm=$(NF-1)
+
+			if(!resCAS[idx]) print >out
+			else {
+				if(res=="GLY") {
+				# CH3
+				} else if(res=="PRO") {
+				# HN
+				} else if(  ( res=="SER" &&  atm=="OG"                ) \
+						 || ( res=="THR" && (atm=="OG1"||atm=="CG2") ) \
+						 || ((res=="ILE"||res=="VAL") && (atm=="CG1"||atm=="CG2") ) \
+						 || ((res=="CYS"||res=="CYM"||res=="CYX") && atm=="SG"     ) \
+						 || ( atm=="CG") ) atm="HCB"
+
+				if(atm=="N"  || atm=="HN"  || atm=="C"  || atm=="O" \
+				|| atm=="CA" || atm=="HCA" || atm=="CB" || atm=="HCB") {
+					$2=Qala[atm]; $5=Sala[atm]
+					$3=Rala[atm]; $6=Eala[atm]
+					$4=Cala[atm]; $9=sprintf("%05d%s", idx, resnm[res]"2"resnm["ALA"])
+					printf "%6d %9.5f %9.6f %6d %9.6f %9.6f %6d %s %s %-6s  %s\n",
+						$1, $2, $3, $4, $5, $6, $7, $8, $9, atm, $11 >out
+				}
+			}
+		}
+		close(qrv)
+	}
+
+	/^ATOM/ {
+		ATOM=substr($0,1,6)
+		INDX=substr($0,7,5)+0; isCAS[INDX]=0
+		NAME=substr($0,13,4); name=NAME; gsub(/ /,"", name)
+		RES =substr($0,18,3)
+		CHN =substr($0,22,1);  if(CHN=" ") CHN="A"
+		NUM =substr($0,23,4)+0
+		X=substr($0,31,8); X += 0
+		Y=substr($0,39,8); Y += 0
+		Z=substr($0,47,8); Z += 0
+
+		if(resCAS[NUM]) {
+
+			Rhb=1.1
+			if(name=="CB") { Xcb=X; Ycb=Y; Zcb=Z }
+
+			if(RES=="GLY") {
+			# CH3
+			} else if(RES=="PRO") {
+			# HN
+			} else if(  ( RES=="SER" &&  name=="OG"                ) \
+					 || ( RES=="THR" && (name=="OG1"||name=="CG2") ) \
+					 || ((RES=="ILE"||RES=="VAL") && (name=="CG1"||name=="CG2") ) \
+					 || ((RES=="CYS"||RES=="CYM"||RES=="CYX") && name=="SG"     ) \
+					 || ( name=="CG") ) {
+				NAME=" HB "; name="HB"
+				dx=X-Xcb; dy=Y-Ycb; dz=Z-Zcb
+				r=sqrt(dx*dx+dy*dy+dz*dz)
+				X=Xcb+Rhb*dx/r
+				Y=Ycb+Rhb*dy/r
+				Z=Zcb+Rhb*dz/r
+			}
+
+			RES=resnm[RES]"2"resnm["ALA"]
+			if(!(name=="N"  || name=="H"   \
+			  || name=="CA" || name=="HA"  \
+			  || name=="CB" || name=="HB" || name=="HB1" || name=="HB2" || name=="HB3" \
+			  || name=="C"  || name=="O")) next
+		}
+		printf("%-6s%5d %-4s %3s %s%4d    %8.3f%8.3f%8.3f\n", \
+			ATOM, INDX, NAME, RES, CHN, NUM, X, Y, Z)
+		next
+	}
+	{print}
+' $pdb > ${pdb/.pdb/_CAS.pdb}
+
+qrv=${qrv/.qrv/_CAS.qrv}
+pdb=${pdb/.pdb/_CAS.pdb}
+
+fi
 
 echo -e ">> 2. generate qrv file: OK !\n"
 
@@ -367,7 +501,7 @@ fi; if [[ $step -le 3 ]]; then
 ################################################################################
 
 echo -e ">> 3. run MM-PBSA calculatons"
-dt=$(awk '/t=/{n++;sub(/.*t=/,"");sub(/step=.*/,"");t[n]=$0;if(n==2){print t[n]-t[1];exit}}' _$pid.pdb)
+dt=$(awk '/t=/{n++;sub(/.*t=/,"");sub(/step=.*/,"");t[n]=$0;if(n==2){print t[n]-t[1];exit}}' $pdb)
 awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 	-v apbs="$apbs"       -v useDH=$useDH       -v useTS=$useTS \
 	-v PBEset="$PBEset"   -v PBAset="$PBAset"                   \
@@ -381,13 +515,13 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 			getline < qrv
 			for(j=0; j<Atyp; j++) { C6[i, j]=$(2+2*j); C12[i,j]=$(3+2*j) }
 		}
-		while(getline < qrv) {
+		n=0
+		while(getline < qrv) { n++
 			Qatm[$1]=$2; Ratm[$1]=$3; Catm[$1]=$4
-			Satm[$1]=$5; Eatm[$1]=$6
-			if($NF=="Pro") { Npro++; if(Npro==1) Ipro=$1
+			if($NF=="Pro") { Npro++; if(Npro==1) Ipro=n
 				ndxPro[$1]++; resPro[Npro]="P~"$(NF-2)
 			}
-			if($NF=="Lig") { Nlig++; if(Nlig==1) Ilig=$1
+			if($NF=="Lig") { Nlig++; if(Nlig==1) Ilig=n
 				ndxLig[$1]++; resLig[Nlig]="L~"$(NF-2)
 			}
 		}
@@ -442,7 +576,7 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 		txt=$0; sub(/.*t= */,"",txt); sub(/ .*/,"",txt)
 		txt=sprintf(fmt, txt/1E3);
 		sub(".pdb", txt, Fout)
-		Nfrm++; n=0
+		Nfrm++
 		Fname[Nfrm]=Fout
 
 		minXpro[Nfrm]= MAXPOS; minXlig[Nfrm]= MAXPOS;
@@ -554,7 +688,7 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 			close(txt)
 			n=0;
 			while(getline < txt) { n++;
-				type[n]=$3; res[n]=$4;
+				qr[n]=$2; type[n]=$3; res[n]=$4;
 				x[n]=$(NF-4);    y[n]=$(NF-3);   z[n]=$(NF-2)
 				resID[n]=$(NF-5); gsub(/[A-Z]+/, "", resID[n])
 			}
@@ -566,14 +700,14 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 				for(i=1; i<=Nlig; i++) { dEcou[resLig[i]]=0; dEcouDH[resLig[i]]=0; dEvdw[resLig[i]]=0 }
 				for(i=1; i<=Npro; i++) {
 					ii=i+Ipro-1
-					qi=Qatm[ii]; ci=Catm[ii]; si=Satm[ii]; ei=Eatm[ii]
+					qi=Qatm[qr[ii]]; ci=Catm[qr[ii]]
 					xi=x[ii]; yi=y[ii]; zi=z[ii]
 					for(j=1; j<=Nlig; j++) {
-						jj=j+Ilig-1; cj=Catm[jj]
+						jj=j+Ilig-1; cj=Catm[qr[jj]]
 						r=sqrt( (xi-x[jj])^2+(yi-y[jj])^2+(zi-z[jj])^2 )
 						if(r<Rcut) {
 							t=1/(.1*r)^6
-							Ecou   = qi*Qatm[jj]/r;
+							Ecou   = qi*Qatm[qr[jj]]/r;
 							EcouDH = Ecou*exp(-kap*r)
 							Evdw = (C12[ci,cj]*t-C6[ci,cj])*t
 							dEcou[  resPro[i]] += Ecou;   dEcou[  resLig[j]] += Ecou
@@ -964,7 +1098,7 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 		}
 		return str
 	}
-' _$pid.pdb
+' $pdb
 echo -e "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"
 fi
 
