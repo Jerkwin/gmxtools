@@ -1,6 +1,6 @@
 <body><div class="wrapper">
 	<header>
-		<h1><a href="https://jerkwin.github.io/gmxtool/">gmxtools</a></h1>
+		<h1><a href="https://jerkwin.github.io/gmxtools/">gmxtools</a></h1>
 		<p>scripts/programs/utilities/tools for GROMACS</p>
 		<p class="view"><a href="#Introduction">Introduction</a></p>
 		<p class="view"><a href="#Tools">Tools</a></p>
@@ -114,8 +114,8 @@
 If you have any quesiotns about these tools, please let me know.
 
 <ul>
-<li><a href="https://groups.google.com/forum/#!forum/gmxtool">Google Forum</a></li>
-<li><a href="https://github.com/Jerkwin/gmxtool/issues">GitHub issues</a></li>
+<li><a href="https://groups.google.com/forum/#!forum/gmxtools">Google Forum</a></li>
+<li><a href="https://github.com/Jerkwin/gmxtools/issues">GitHub issues</a></li>
 </ul>
 
 </div></body>
