@@ -9,6 +9,7 @@
 <h2 id="Introduction">Introduction</h2>
 
 <p>This is a collection of the tools I used for GROMACS. Hope it helps for you as well.</p>
+<p>If you use one/some of the tools for your publication(s), I will appreciate if you cite the Zenodo DOI <a href="https://doi.org/10.5281/zenodo.6408973">10.5281/zenodo.6408973</a></p>
 
 <h2 id="Tools">Tools</h2></p>
 
@@ -18,7 +19,8 @@
 <tr>
 <td>calc</td>
 <td><a href="https://jerkwin.github.io/2019/11/19/%E5%9C%A8%E7%BA%BF%E8%AE%A1%E7%AE%97%E5%85%BC%E5%8D%95%E4%BD%8D%E6%8D%A2%E7%AE%97%E5%99%A8/">在线计算兼单位换算器</a></td>
-<td><a href="./calc/calc.html">calc</a></td>
+<td><a href="./calc/calc.html">calc</a><br>
+<a href="./calc/gnuecharts.html">gnuECharts</a></td>
 <td>N/A</td>
 </tr>
 
