@@ -1,7 +1,7 @@
 usage="\
 >>>>>>>>>>>>>>>>    gmx_ir     <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun LI   <<<<<<<<<<<<<<<<
->>>>>>>>>>     2022-04-08 01:30:18    <<<<<<<<<
+>>>>>>>>>>     2022-04-09 00:34:59    <<<<<<<<<
 >>   Usage: gmx_ir [-s File.tpr] [-f File.trr] [-n  File.ndx] [-g Group]
 >> Default: gmx_ir  -s topol.tpr  -f traj.trr   -n index.ndx   -g System\n\n"
 
@@ -100,7 +100,7 @@ BEGIN {
 	qvx=0; qvy=0; qvz=0
 	for(i=1; i<=Natm; i++) {
 		getline
-		if(i in ndxGrp) qvx += q[i]*$(NF-2); qvy += q[i]*$(NF-1); qvz += q[i]*$NF
+		if(i in ndxGrp) { qvx += q[i]*$(NF-2); qvy += q[i]*$(NF-1); qvz += q[i]*$NF }
 		if(i!=maxAtm) printf FMT, substr($0,1,20), $(NF-5), $(NF-4), $(NF-3), 0,0,0
 		else printf FMT, substr($0,1,20), $(NF-5), $(NF-4), $(NF-3), qvx, qvy, qvz
 	}
