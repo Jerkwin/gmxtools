@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2022-02-09 22:51:52     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2022-04-10 09:40:23     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx        ]
                        [-com COMPLEX] [-pro PROTEIN] [-lig <LIGAND|none>]
                        [-cou dh     ] [-ts ie      ] [-cas <B:E:S,#>    ]\n
@@ -29,6 +29,7 @@ echo -e "\
 >> Log:
    TODO:       parallel APBS, focus
 
+   2022-04-10: fix bug for CAS
    2022-02-09: CAS except GLY, PRO, CYX
                fix radius bug, use AMBER mBondi
                change to AMBER PB4
@@ -390,7 +391,7 @@ awk -v qrv=$qrv -v cas="$cas" -v RS="\r?\n" '
 		for(i in arr) {
 			if(index(arr[i],":")) {
 				n=split(arr[i], arr2, ":")
-				s=1; if(n>2) s=arr[3]
+				s=1; if(n>2) s=arr2[3]
 				for(j=arr2[1]; j<=arr2[2]; j+=s) resCAS[j]=1
 			} else resCAS[arr[i]]=1
 		}
