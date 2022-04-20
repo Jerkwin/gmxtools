@@ -1,24 +1,23 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2022-04-10 09:40:23     <<<<<<<<<<<<<<<<<<<<<<<<<\n
->>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx        ]
-                       [-com COMPLEX] [-pro PROTEIN] [-lig <LIGAND|none>]
-                       [-cou dh     ] [-ts ie      ] [-cas <B:E:S,#>    ]\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2022-04-19 23:11:27     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx     ]
+                       [-pro PROTEIN] [-lig <LIGAND|none>]
+                       [-cou dh     ] [-ts ie      ] [-cas <B:E:S,#> ]\n
 >> Default: gmx_mmpbsa -f   traj.xtc  -s   topol.tpr  -n   index.ndx
-                       -com Complex   -pro Protein    -lig Ligand
-                                       -ts  ie
+                       -pro Protein   -lig Ligand
+                                       -ts ie
 --------------------------------------------------------------------------------
 >> Option:
       -f: trajectory file
       -s: topology file
       -n: index file
-    -com: index group name of complex
     -pro: index group name of protein
     -lig: index group name of ligand, can be ignored using none
     -cou: dh: calculate MM(COU) with Debye-Huckel screening method
      -ts: ie: calculate entropy with interaction entropy method
-    -cas: select res for CAS, begin:end:step or number
+    -cas: select res for CAS, begin:end:step or number, using global resnum
    Other: change them in the script directly
 --------------------------------------------------------------------------------
 >> Warning:
@@ -29,7 +28,8 @@ echo -e "\
 >> Log:
    TODO:       parallel APBS, focus
 
-   2022-04-10: fix bug for CAS
+   2022-04-19: fix bug for CAS
+               remove -com option
    2022-02-09: CAS except GLY, PRO, CYX
                fix radius bug, use AMBER mBondi
                change to AMBER PB4
@@ -65,11 +65,10 @@ trj=traj.xtc		# 轨迹文件 trajectory file
 tpr=topol.tpr		# tpr文件  tpr file
 ndx=index.ndx		# 索引文件 index file
 
-com=Complex			# 复合物索引组 index group name of complex
 pro=Protein			# 蛋白索引组   index group name of protein
 lig=Ligand			# 配体索引组   index group name of ligand
 
-step=1	# 从第几步开始运行 step number to run
+step=0	# 从第几步开始运行 step number to run
 		# 1. 预处理轨迹: 复合物完整化, 团簇化, 居中叠合, 然后生成pdb文件
 		# 2. 获取每个原子的电荷, 半径, LJ参数, 然后生成qrv文件
 		# 3. MM-PBSA计算: pdb->pqr, 输出apbs, 计算MM, APBS
@@ -184,7 +183,6 @@ for((i=0; i<N; i++)); do
 	[[ $arg =~ -f   ]] && { trj=$val; }
 	[[ $arg =~ -s   ]] && { tpr=$val; }
 	[[ $arg =~ -n   ]] && { ndx=$val; }
-	[[ $arg =~ -com ]] && { com=$val; }
 	[[ $arg =~ -pro ]] && { pro=$val; }
 	[[ $arg =~ -lig ]] && { lig=$val; }
 	[[ $arg =~ -cou ]] && { useDH=1;  }
@@ -192,7 +190,11 @@ for((i=0; i<N; i++)); do
 	[[ $arg =~ -cas ]] && { isCAS=1;  }
 done
 
-withLig=1; [[ -z "$lig" || $lig =~ none ]] && { withLig=0; com=$pro; lig=$pro; }
+if [[ -z "$lig" || $lig =~ none ]]; then
+	withLig=0; com=$pro; lig=$pro;
+else
+	withLig=1; com=${pro}_${lig}
+fi
 
 ################################################################################
 # 检查所需文件, 索引组
@@ -202,13 +204,29 @@ withLig=1; [[ -z "$lig" || $lig =~ none ]] && { withLig=0; com=$pro; lig=$pro; }
 [[ ! -f "$trj" ]] && { echo -e "!!! ERROR !!! trajectory File NOT Exist !\n"; exit; }
 [[ ! -f "$tpr" ]] && { echo -e "!!! ERROR !!! topology   File NOT Exist !\n"; exit; }
 [[ ! -f "$ndx" ]] && { echo -e "!!! ERROR !!! index      File NOT Exist !\n"; exit; }
-str=$(grep "\[ *$com *\]" "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! [ $com ] NOT in $ndx !\n"; exit; }
-str=$(grep "\[ *$pro *\]" "$ndx"); [[ -z "$str" ]] && { echo -e "!!! ERROR !!! [ $pro ] NOT in $ndx !\n"; exit; }
-str=$(grep "\[ *$lig *\]" "$ndx"); [[ -z "$str" && $withLig -eq 1 ]] && { echo -e "!!! ERROR !!! [ $lig ] NOT in $ndx !\n"; exit; }
 
-str=$(grep "\[ *$com *\]" "$ndx" | wc -l); [[ $str -gt 1 ]] && { echo -e "!!! ERROR !!! more than ONE [ $com ] in $ndx !\n"; exit; }
-str=$(grep "\[ *$pro *\]" "$ndx" | wc -l); [[ $str -gt 1 ]] && { echo -e "!!! ERROR !!! more than ONE [ $pro ] in $ndx !\n"; exit; }
+str=$(grep "\[ *$pro *\]" "$ndx"); [[ -z "$str"                   ]] && { echo -e "!!! ERROR !!! [ $pro ] NOT in $ndx !\n"; exit; }
+str=$(grep "\[ *$lig *\]" "$ndx"); [[ -z "$str" && $withLig -eq 1 ]] && { echo -e "!!! ERROR !!! [ $lig ] NOT in $ndx !\n"; exit; }
+str=$(grep "\[ *$pro *\]" "$ndx" | wc -l); [[ $str -gt 1                   ]] && { echo -e "!!! ERROR !!! more than ONE [ $pro ] in $ndx !\n"; exit; }
 str=$(grep "\[ *$lig *\]" "$ndx" | wc -l); [[ $str -gt 1 && $withLig -eq 1 ]] && { echo -e "!!! ERROR !!! more than ONE [ $lig ] in $ndx !\n"; exit; }
+
+if [[ $withLig -eq 1 ]]; then
+	awk -v pro=$pro -v lig=$lig '
+		BEGIN {i=-1; cp=""}
+		index($0, "[") { i++
+			txt=$0;
+			sub(/ *\[ */, "", txt);
+			sub(/ *\] */, "", txt)
+			if(txt==pro || txt==lig) cp=cp" "i
+		}
+		END {
+			sub(/^ */, "", cp)
+			gsub(/ +/, "\n", cp)
+			print cp"\ndel 0-"i"\n0|1\nq"
+		}
+	' $ndx | $gmx make_ndx -f $tpr -n $ndx -o _$pid.ndx &> $err
+	ndx=_$pid.ndx
+fi
 
 echo -e ">> 0. set up environmets and parameters: OK !\n"
 
@@ -220,7 +238,7 @@ if [[ $step -le 1 ]]; then
 ################################################################################
 
 trjwho=_$pid~trj_who.xtc; trjcnt=_$pid~trj_cnt.xtc; trjcls=_$pid~trj_cls.xtc
-echo $com                | $trjconv  -s $tpr -n $ndx -f $trj    -o $trjwho &> $err -pbc whole
+echo $com                | $trjconv  -s $tpr -n $ndx -f $trj    -o $trjwho &>>$err -pbc whole
 [[ ! -f "$trjwho" ]] && { echo -e "!!! ERROR !!! gmx trjconv Failed ! Check $err to find out why.\n"; exit; }
 
 if [[ $withLig -eq 1 ]]; then
@@ -231,7 +249,7 @@ if [[ $withLig -eq 1 ]]; then
 else
 	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $pdb    &>>$err -pbc mol -center
 fi
-echo -e ">> 1. pre-processe trajectory: OK !\n"
+echo -e ">> 1. preprocessing trajectory: OK !\n"
 
 fi; if [[ $step -le 2 ]]; then
 ################################################################################
@@ -424,13 +442,14 @@ awk -v qrv=$qrv -v cas="$cas" -v RS="\r?\n" '
 				} else if(res=="PRO") {
 				# HN
 				} else if(  ( res=="SER" &&  atm=="OG"                ) \
-						 || ( res=="THR" && (atm=="OG1"||atm=="CG2") ) \
+						 || ( res=="THR" && (atm=="OG1"||atm=="CG2") )  \
 						 || ((res=="ILE"||res=="VAL") && (atm=="CG1"||atm=="CG2") ) \
-						 || ((res=="CYS"||res=="CYM"||res=="CYX") && atm=="SG"     ) \
-						 || ( atm=="CG") ) atm="HCB"
+						 || ((res=="CYS"||res=="CYM"||res=="CYX") && atm=="SG"    ) \
+						 || ( atm=="CG") ) atm="HB3"
 
-				if(atm=="N"  || atm=="HN"  || atm=="C"  || atm=="O" \
-				|| atm=="CA" || atm=="HCA" || atm=="CB" || atm=="HCB") {
+				if(atm=="N"  || atm=="HN"  || atm=="C"   || atm=="O"   \
+				|| atm=="CA" || atm=="CB"  || atm=="HA"  || atm=="HCA" \
+				|| atm=="HB" || atm=="HB1" || atm=="HB2" || atm=="HB3") {
 					$2=Qala[atm]; $5=Sala[atm]
 					$3=Rala[atm]; $6=Eala[atm]
 					$4=Cala[atm]; $9=sprintf("%05d%s", idx, resnm[res]"2"resnm["ALA"])
@@ -454,7 +473,6 @@ awk -v qrv=$qrv -v cas="$cas" -v RS="\r?\n" '
 		Z=substr($0,47,8); Z += 0
 
 		if(resCAS[NUM]) {
-
 			Rhb=1.1
 			if(name=="CB") { Xcb=X; Ycb=Y; Zcb=Z }
 
