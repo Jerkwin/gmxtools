@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2022-04-19 23:11:27     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2022-04-20 11:12:46     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx     ]
                        [-pro PROTEIN] [-lig <LIGAND|none>]
                        [-cou dh     ] [-ts ie      ] [-cas <B:E:S,#> ]\n
@@ -447,7 +447,8 @@ awk -v qrv=$qrv -v cas="$cas" -v RS="\r?\n" '
 						 || ((res=="CYS"||res=="CYM"||res=="CYX") && atm=="SG"    ) \
 						 || ( atm=="CG") ) atm="HB3"
 
-				if(atm=="N"  || atm=="HN"  || atm=="C"   || atm=="O"   \
+				if(atm=="N"  || atm=="H"   || atm=="HN"  \
+				|| atm=="C"  || atm=="O"                 \
 				|| atm=="CA" || atm=="CB"  || atm=="HA"  || atm=="HCA" \
 				|| atm=="HB" || atm=="HB1" || atm=="HB2" || atm=="HB3") {
 					$2=Qala[atm]; $5=Sala[atm]
@@ -494,8 +495,8 @@ awk -v qrv=$qrv -v cas="$cas" -v RS="\r?\n" '
 			}
 
 			RES=resnm[RES]"2"resnm["ALA"]
-			if(!(name=="N"  || name=="H"   \
-			  || name=="CA" || name=="HA"  \
+			if(!(name=="N"  || name=="H"  || name=="HN"  \
+			  || name=="CA" || name=="HA"                \
 			  || name=="CB" || name=="HB" || name=="HB1" || name=="HB2" || name=="HB3" \
 			  || name=="C"  || name=="O")) next
 		}
