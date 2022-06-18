@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2022-04-20 11:12:46     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2022-06-18 08:53:43     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx     ]
                        [-pro PROTEIN] [-lig <LIGAND|none>]
                        [-cou dh     ] [-ts ie      ] [-cas <B:E:S,#> ]\n
@@ -28,6 +28,7 @@ echo -e "\
 >> Log:
    TODO:       parallel APBS, focus
 
+   2022-06-18: fix bug for ndx when Lig is 1st
    2022-04-19: fix bug for CAS
                remove -com option
    2022-02-09: CAS except GLY, PRO, CYX
@@ -222,7 +223,7 @@ if [[ $withLig -eq 1 ]]; then
 		END {
 			sub(/^ */, "", cp)
 			gsub(/ +/, "\n", cp)
-			print cp"\ndel 0-"i"\n0|1\nq"
+			print cp"\ndel 0-"i"\n0|1\nname 2 "pro"_"lig"\nq"
 		}
 	' $ndx | $gmx make_ndx -f $tpr -n $ndx -o _$pid.ndx &> $err
 	ndx=_$pid.ndx
