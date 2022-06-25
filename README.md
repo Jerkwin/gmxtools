@@ -97,9 +97,12 @@
 
 <tr>
 <td>gmx_hbdat</td>
-<td><a href="https://jerkwin.github.io/2021/06/19/GROMACS氢键分析工具hbond的使用及扩展/">GROMACS氢键分析工具hbond的使用及扩展</a></td>
+<td>
+<a href="https://jerkwin.github.io/2021/06/19/GROMACS氢键分析工具hbond的使用及扩展/">GROMACS氢键分析工具hbond的使用及扩展</a><br>
+<a href="https://jerkwin.github.io/2022/05/23/使用gnuplot绘制氢键数据的平行轴图/">使用gnuplot绘制氢键数据的平行轴图</a><br>
+</td>
 <td><a href="./gmx_hbdat/gmx_hbdat.bsh">gmx_hbdat.bsh</a></td>
-<td>N/A</td>
+<td><a href="./gmx_hbdat/hbdat_1crn.zip">hbdat_1crn.zip</a></td>
 </tr>
 
 <tr>
