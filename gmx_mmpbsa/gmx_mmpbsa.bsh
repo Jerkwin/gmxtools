@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2022-06-18 08:53:43     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2022-07-01 23:03:28     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx     ]
                        [-pro PROTEIN] [-lig <LIGAND|none>]
                        [-cou dh     ] [-ts ie      ] [-cas <B:E:S,#> ]\n
@@ -28,6 +28,7 @@ echo -e "\
 >> Log:
    TODO:       parallel APBS, focus
 
+   2022-07-01: fix bug for awk too many open files
    2022-06-18: fix bug for ndx when Lig is 1st
    2022-04-19: fix bug for CAS
                remove -com option
@@ -100,7 +101,7 @@ cfac=3				# 分子尺寸到粗略格点的放大系数
 					# Factor to expand mol-dim to get coarse grid dim
 fadd=10				# 分子尺寸到细密格点的增加值(A)
 					# Amount added to mol-dim to get fine grid dim (A)
-df=.5				# 细密格点间距(A) The desired fine mesh spacing (A)
+df=0.5				# 细密格点间距(A) The desired fine mesh spacing (A)
 
 # 极性计算设置(Polar)
 PBEset='
@@ -163,7 +164,7 @@ PBAset='
 ################################################################################
 
 str=$($gmx --version | grep -i "GROMACS version")
-[[ -z "$str" ]] && { echo -e "!!! ERROR !!!  GROMACS NOT available !\n"; exit; }
+[[ $step -lt 3 && -z "$str" ]] && { echo -e "!!! ERROR !!!  GROMACS NOT available !\n"; exit; }
 
 str=$($apbs --version 2>&1 | grep -i "Poisson-Boltzmann")
 [[ -z "$str" ]] && { echo -e "!!! WARNING !!!  APBS NOT available !\n"; }
@@ -197,6 +198,7 @@ else
 	withLig=1; com=${pro}_${lig}
 fi
 
+if [[ $step -lt 3 ]]; then
 ################################################################################
 # 检查所需文件, 索引组
 # check needed files, index group
@@ -230,6 +232,7 @@ if [[ $withLig -eq 1 ]]; then
 fi
 
 echo -e ">> 0. set up environmets and parameters: OK !\n"
+fi
 
 if [[ $step -le 1 ]]; then
 ################################################################################
@@ -651,7 +654,7 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 		next
 	}
 
-	END{
+	END {
 		close(Fname[Nfrm]"_com.pqr")
 		close(Fname[Nfrm]"_pro.pqr")
 		if(withLig) close(Fname[Nfrm]"_lig.pqr")
@@ -774,31 +777,32 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 			close(Fout".apbs")
 
 			cmd=apbs" "Fout".apbs > "Fout".out 2>&1";
-			cmd | getline err; close(cmd)
+			if( (cmd | getline err)>0 ) {
+				txt=Fout".out";
+				while(getline < txt ) {
+					if(index($0, "CALCULATION #")) {
+						if(index($0, "("Fout"_com")) { t=1; n=Ncom }
+						if(index($0, "("Fout"_pro")) { t=2; n=Npro }
+						if(index($0, "("Fout"_lig")) { t=3; n=Nlig }
+						if(index($0, "~VAC)")) t += 10
+						if(index($0, "~SAS)")) t += 20
+						while(getline < txt) {
+							if(t<20 && index($0, "Per-atom energies:") \
+							|| t>20 && index($0, "Solvent Accessible Surface Area")) break
+						}
 
-			txt=Fout".out";
-			while(getline < txt ) {
-				if(index($0, "CALCULATION #")) {
-					if(index($0, "("Fout"_com")) { t=1; n=Ncom }
-					if(index($0, "("Fout"_pro")) { t=2; n=Npro }
-					if(index($0, "("Fout"_lig")) { t=3; n=Nlig }
-					if(index($0, "~VAC)")) t += 10
-					if(index($0, "~SAS)")) t += 20
-					while(getline < txt) {
-						if(t<20 && index($0, "Per-atom energies:") \
-						|| t>20 && index($0, "Solvent Accessible Surface Area")) break
-					}
-
-					for(i=1; i<=n; i++) {
-						getline <txt;
-						if(t<20) r=$3; else r=$NF
-						if(t<10)       Esol[t%10, i]=r
-						else if(t<20)  Evac[t%10, i]=r
-						else if(t<30)  Esas[t%10, i]=gamma*r+const/n
+						for(i=1; i<=n; i++) {
+							getline <txt;
+							if(t<20) r=$3; else r=$NF
+							if(t<10)       Esol[t%10, i]=r
+							else if(t<20)  Evac[t%10, i]=r
+							else if(t<30)  Esas[t%10, i]=gamma*r+const/n
+						}
 					}
 				}
+				close(txt)
 			}
-			close(txt)
+			close(cmd)
 
 			PBcom=0; SAcom=0;
 			PBpro=0; SApro=0;
@@ -895,6 +899,14 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 				printf fmt, txt, fixfmt(dEcou[tag]+dEvdw[tag],6),   fixfmt(dEcouDH[tag]+dEvdw[tag],6) > Fout"~resMM.pdb"
 				printf fmt, txt, fixfmt(dPBres[tag]+dSAres[tag],6), fixfmt(dPBres[tag]+dSAres[tag],6) > Fout"~resPBSA.pdb"
 			}
+
+			close(Fout"~resMM.pdb")
+			close(Fout"~resMM_COU.pdb")
+			close(Fout"~resMM_VDW.pdb")
+			close(Fout"~resPBSA.pdb")
+			close(Fout"~resPBSA_PB.pdb")
+			close(Fout"~resPBSA_SA.pdb")
+			close(Fout"~res_MMPBSA.pdb")
 		}
 
 		print "#mol res       MM-PBSA(with DH  )        MM(with DH  )      PBSA       " \
