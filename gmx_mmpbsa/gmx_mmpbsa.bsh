@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2022-07-01 23:03:28     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2022-07-08 22:19:22     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx     ]
                        [-pro PROTEIN] [-lig <LIGAND|none>]
                        [-cou dh     ] [-ts ie      ] [-cas <B:E:S,#> ]\n
@@ -27,7 +27,8 @@ echo -e "\
 --------------------------------------------------------------------------------
 >> Log:
    TODO:       parallel APBS, focus
-
+   
+   2022-07-08: fix bug, No PB SA value
    2022-07-01: fix bug for awk too many open files
    2022-06-18: fix bug for ndx when Lig is 1st
    2022-04-19: fix bug for CAS
@@ -777,32 +778,31 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 			close(Fout".apbs")
 
 			cmd=apbs" "Fout".apbs > "Fout".out 2>&1";
-			if( (cmd | getline err)>0 ) {
-				txt=Fout".out";
-				while(getline < txt ) {
-					if(index($0, "CALCULATION #")) {
-						if(index($0, "("Fout"_com")) { t=1; n=Ncom }
-						if(index($0, "("Fout"_pro")) { t=2; n=Npro }
-						if(index($0, "("Fout"_lig")) { t=3; n=Nlig }
-						if(index($0, "~VAC)")) t += 10
-						if(index($0, "~SAS)")) t += 20
-						while(getline < txt) {
-							if(t<20 && index($0, "Per-atom energies:") \
-							|| t>20 && index($0, "Solvent Accessible Surface Area")) break
-						}
+			cmd | getline err; close(cmd)
 
-						for(i=1; i<=n; i++) {
-							getline <txt;
-							if(t<20) r=$3; else r=$NF
-							if(t<10)       Esol[t%10, i]=r
-							else if(t<20)  Evac[t%10, i]=r
-							else if(t<30)  Esas[t%10, i]=gamma*r+const/n
-						}
+			txt=Fout".out";
+			while(getline < txt ) {
+				if(index($0, "CALCULATION #")) {
+					if(index($0, "("Fout"_com")) { t=1; n=Ncom }
+					if(index($0, "("Fout"_pro")) { t=2; n=Npro }
+					if(index($0, "("Fout"_lig")) { t=3; n=Nlig }
+					if(index($0, "~VAC)")) t += 10
+					if(index($0, "~SAS)")) t += 20
+					while(getline < txt) {
+						if(t<20 && index($0, "Per-atom energies:") \
+						|| t>20 && index($0, "Solvent Accessible Surface Area")) break
+					}
+
+					for(i=1; i<=n; i++) {
+						getline <txt;
+						if(t<20) r=$3; else r=$NF
+						if(t<10)       Esol[t%10, i]=r
+						else if(t<20)  Evac[t%10, i]=r
+						else if(t<30)  Esas[t%10, i]=gamma*r+const/n
 					}
 				}
-				close(txt)
 			}
-			close(cmd)
+			close(txt)
 
 			PBcom=0; SAcom=0;
 			PBpro=0; SApro=0;
