@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2022-07-08 22:19:22     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2022-07-14 11:17:41     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx     ]
                        [-pro PROTEIN] [-lig <LIGAND|none>]
                        [-cou dh     ] [-ts ie      ] [-cas <B:E:S,#> ]\n
@@ -27,7 +27,7 @@ echo -e "\
 --------------------------------------------------------------------------------
 >> Log:
    TODO:       parallel APBS, focus
-   
+   2022-07-14: fix issues with Chinease in PBSAset
    2022-07-08: fix bug, No PB SA value
    2022-07-01: fix bug for awk too many open files
    2022-06-18: fix bug for ndx when Lig is 1st
@@ -135,9 +135,9 @@ PBAset='
   srad  1.4    # 探测半径(A)
   gamma 1      # 表面张力(kJ/mol-A^2)
 
-  #gamma const 0.0301248 0         # AMBER-PB4 .0072*cal2J 表面张力, 常数
   #gamma const 0.0226778 3.84928
   #gamma const 0.027     0
+  #gamma const 0.0301248 0         # AMBER-PB4 .0072*cal2J 表面张力, 常数
 
   press  0     # 压力(kJ/mol-A^3)
   bconc  0     # 溶剂本体密度(A^3)
@@ -576,9 +576,14 @@ awk -v pid=_$pid          -v qrv=$qrv           -v dt="$dt"     \
 
 		PBEset0=PBEset; sub(/sdie +[0-9]*\.*[0-9]*/, "sdie  1", PBEset0)
 
-		txt=PBAset; sub(/.*#gamma +con[a-zA-Z]+/, "", txt);
-		sub(/\n.*/, "", txt); split(txt, arr)
-		gamma=arr[1]; const=arr[2]
+		txt=PBAset; split(txt, arr, "\n")
+		for(i in arr) {
+			if(arr[i]~/gamma +const/) {
+				sub(/.*gamma +con[^ ]+ +/, "", arr[i]);
+				split(arr[i], arr2)
+				gamma=arr2[1]; const=arr2[2]
+			}
+		}
 
 		MAXPOS=1E9
 		minX= MAXPOS; maxX=-MAXPOS;
