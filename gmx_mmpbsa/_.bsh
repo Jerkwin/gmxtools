@@ -1,0 +1,13 @@
+awk '
+function _exp(x) { return x<-100 ? 0 : x>100 ? 1E99 : exp(x) }
+
+BEGIN {
+
+print exp(-7E2)
+
+}
+
+
+
+
+' 
