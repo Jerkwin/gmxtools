@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2022-07-14 11:17:41     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2022-10-16 22:46:13     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx     ]
                        [-pro PROTEIN] [-lig <LIGAND|none>]
                        [-cou dh     ] [-ts ie      ] [-cas <B:E:S,#> ]\n
@@ -27,6 +27,7 @@ echo -e "\
 --------------------------------------------------------------------------------
 >> Log:
    TODO:       parallel APBS, focus
+   2022-10-16: fix issue with ndx file
    2022-07-14: fix issues with Chinease in PBSAset
    2022-07-08: fix bug, No PB SA value
    2022-07-01: fix bug for awk too many open files
@@ -220,7 +221,7 @@ if [[ $withLig -eq 1 ]]; then
 		index($0, "[") { i++
 			txt=$0;
 			sub(/ *\[ */, "", txt);
-			sub(/ *\] */, "", txt)
+			sub(/ *\].*/, "", txt)
 			if(txt==pro || txt==lig) cp=cp" "i
 		}
 		END {
