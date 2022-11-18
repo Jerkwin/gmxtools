@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_mmpbsa   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2022-10-16 22:46:13     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2022-11-18 00:24:41     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_mmpbsa [-f   *.xtc  ] [-s   *.tpr  ] [-n   *.ndx     ]
                        [-pro PROTEIN] [-lig <LIGAND|none>]
                        [-cou dh     ] [-ts ie      ] [-cas <B:E:S,#> ]\n
@@ -27,6 +27,7 @@ echo -e "\
 --------------------------------------------------------------------------------
 >> Log:
    TODO:       parallel APBS, focus
+   2022-11-18: fix issues with non-continuous ndx
    2022-10-16: fix issue with ndx file
    2022-07-14: fix issues with Chinease in PBSAset
    2022-07-08: fix bug, No PB SA value
@@ -38,7 +39,7 @@ echo -e "\
                fix radius bug, use AMBER mBondi
                change to AMBER PB4
    2021-11-25: keep original PDB residue name
-               output avaraged contibutions
+               output averaged contributions
                clean output files
    2021-05-17: add systime and fflush, only for gawk
    2021-05-16: revise cmd for all Linux
@@ -62,7 +63,7 @@ echo -e "\
 
 ################################################################################
 # 设置运行环境, 计算参数
-# setting up environmets and parameters
+# setting up environments and parameters
 ################################################################################
 
 trj=traj.xtc		# 轨迹文件 trajectory file
@@ -83,15 +84,18 @@ step=0	# 从第几步开始运行 step number to run
 gmx='gmx'								# /path/to/GMX/bin/gmx_mpi
 dump="$gmx dump"						# gmx dump
 trjconv="$gmx trjconv -dt 1000"			# gmx trjconv, use -b -e -dt, NOT -skip
+converttpr="$gmx convert-tpr"			# to generate reduced tpr
 
 #apbs='/path/APBS/bin/apbs'				# APBS(Linux)
-apbs='E:/APBS1.5/apbs.exe'			# APBS(Windows), USE "/", NOT "\"
+apbs='E:/APBS1.5/apbs.exe'				# APBS(Windows), USE "/", NOT "\"
 export MCSH_HOME=/dev/null				# APBS io.mc
 
 pid=pid				# 输出文件($$可免重复) prefix of the output files($$)
 err=_$pid.err		# 屏幕输出文件 file to save the message from the screen
-qrv=_$pid.qrv		# 电荷/半径/VDW参数文件 to save charge/radius/vdw parmeters
+qrv=_$pid.qrv		# 电荷/半径/VDW参数文件 to save charge/radius/vdw parameters
 pdb=_$pid.pdb		# 轨迹构型文件 to save trajectory
+idx=_$pid.ndx		# 临时索引文件 to generate pdb
+tpx=_$pid.tpr		# 临时tpr文件  to generate pdb
 
 radType=1			# 原子半径类型 radius of atoms (0:ff; 1:mBondi)
 radLJ0=1.2			# 用于LJ参数原子的默认半径(A, 主要为H) radius when LJ=0 (H)
@@ -229,11 +233,10 @@ if [[ $withLig -eq 1 ]]; then
 			gsub(/ +/, "\n", cp)
 			print cp"\ndel 0-"i"\n0|1\nname 2 "pro"_"lig"\nq"
 		}
-	' $ndx | $gmx make_ndx -f $tpr -n $ndx -o _$pid.ndx &> $err
-	ndx=_$pid.ndx
+	' $ndx | $gmx make_ndx -f $tpr -n $ndx -o $idx &> $err
 fi
 
-echo -e ">> 0. set up environmets and parameters: OK !\n"
+echo -e ">> 0. set up environments and parameters: OK !\n"
 fi
 
 if [[ $step -le 1 ]]; then
@@ -243,17 +246,38 @@ if [[ $step -le 1 ]]; then
 # 1. pre-processe trajectory, whole, cluster, center, fit, then generate pdb file
 ################################################################################
 
-trjwho=_$pid~trj_who.xtc; trjcnt=_$pid~trj_cnt.xtc; trjcls=_$pid~trj_cls.xtc
-echo $com                | $trjconv  -s $tpr -n $ndx -f $trj    -o $trjwho &>>$err -pbc whole
-[[ ! -f "$trjwho" ]] && { echo -e "!!! ERROR !!! gmx trjconv Failed ! Check $err to find out why.\n"; exit; }
+trjwho=_$pid~trj_who.xtc;
+echo "$com" | $trjconv -s $tpr -n $idx -f $trj -o $trjwho -pbc whole &>>$err
+[[ ! -f "$trjwho" ]] && { echo -e "!!! ERROR !!! gmx trjconv Failed ! Check $err to figure out why.\n"; exit; }
 
+echo "$com" | $converttpr -s $tpr -n $idx -o $tpx &>>$err
+
+awk >$idx -v ndx=$ndx -v pro=$pro -v lig=$lig -v withLig=$withLig '
+	BEGIN { RS="["
+		while(getline < ndx) {
+			gsub(" ","", $1); gsub("\t","", $1)
+			if($1==pro)    { ipro=$3; npro=NF-2; }
+			if($1==pro"]") { ipro=$2; npro=NF-1; }
+			if(withLig) {
+				if($1==lig)    { ilig=$3; nlig=NF-2; }
+				if($1==lig"]") { ilig=$2; nlig=NF-1; }
+			}
+		}
+		if(ipro<ilig) { dpro=0; dlig=npro }
+		else          { dlig=0; dpro=nlig }
+		print "[ "pro" ]"; for(i=1; i<=npro; i++) printf "%d%s", i+dpro, i%15==0?"\n":" "; print ""
+		print "[ "lig" ]"; for(i=1; i<=nlig; i++) printf "%d%s", i+dlig, i%15==0?"\n":" "; print ""
+		print "[ "pro"_"lig" ]"; for(i=1; i<=npro+nlig; i++) printf "%d%s", i, i%15==0?"\n":" "; print ""
+	} '
+
+trjcnt=_$pid~trj_cnt.xtc; trjcls=_$pid~trj_cls.xtc
 if [[ $withLig -eq 1 ]]; then
 # usful for single protein and ligand
-	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $trjcnt &>>$err -pbc mol -center
-	echo -e "$com\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcnt -o $trjcls &>>$err -pbc cluster
-	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjcls -o $pdb    &>>$err -fit rot+trans
+	echo -e "$lig\n$com" | $trjconv  -s $tpx -n $idx -f $trjwho -o $trjcnt &>>$err -pbc mol -center
+	echo -e "$com\n$com" | $trjconv  -s $tpx -n $idx -f $trjcnt -o $trjcls &>>$err -pbc cluster
+	echo -e "$lig\n$com" | $trjconv  -s $tpx -n $idx -f $trjcls -o $pdb    &>>$err -fit rot+trans
 else
-	echo -e "$lig\n$com" | $trjconv  -s $tpr -n $ndx -f $trjwho -o $pdb    &>>$err -pbc mol -center
+	echo -e "$lig\n$com" | $trjconv  -s $tpx -n $idx -f $trjwho -o $pdb    &>>$err -pbc mol -center
 fi
 echo -e ">> 1. preprocessing trajectory: OK !\n"
 
