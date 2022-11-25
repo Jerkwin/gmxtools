@@ -265,9 +265,9 @@ awk >$idx -v ndx=$ndx -v pro=$pro -v lig=$lig -v withLig=$withLig '
 		}
 		if(ipro<ilig) { dpro=0; dlig=npro }
 		else          { dlig=0; dpro=nlig }
-		print "[ "pro" ]"; for(i=1; i<=npro; i++) printf "%d%s", i+dpro, i%15==0?"\n":" "; print ""
-		print "[ "lig" ]"; for(i=1; i<=nlig; i++) printf "%d%s", i+dlig, i%15==0?"\n":" "; print ""
-		print "[ "pro"_"lig" ]"; for(i=1; i<=npro+nlig; i++) printf "%d%s", i, i%15==0?"\n":" "; print ""
+		print "[ "pro" ]";       for(i=1; i<=npro; i++)      printf "%d%s", i+dpro, i%15==0?"\n":" "; print ""
+		print "[ "lig" ]";       for(i=1; i<=nlig; i++)      printf "%d%s", i+dlig, i%15==0?"\n":" "; print ""
+		print "[ "pro"_"lig" ]"; for(i=1; i<=npro+nlig; i++) printf "%d%s", i,      i%15==0?"\n":" "; print ""
 	} '
 
 trjcnt=_$pid~trj_cnt.xtc; trjcls=_$pid~trj_cls.xtc
