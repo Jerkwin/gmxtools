@@ -1,12 +1,11 @@
 usage="\
 >>>>>>>>>>>>>>>>    gmx_ir     <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun LI   <<<<<<<<<<<<<<<<
->>>>>>>>>>     2022-12-10 11:14:37    <<<<<<<<<
+>>>>>>>>>>     2022-04-09 00:34:59    <<<<<<<<<
 >>   Usage: gmx_ir [-s File.tpr] [-f File.trr] [-n  File.ndx] [-g Group]
 >> Default: gmx_ir  -s topol.tpr  -f traj.trr   -n index.ndx   -g System\n\n"
 
 # 默认设置
-gmx="gmx"      # gmx命令
 tpr=topol.tpr  # 拓扑文件
 trr=traj.trr   # 轨迹文件
 ndx=index.ndx  # 索引文件
@@ -27,28 +26,13 @@ done
 [[ ! -f "$ndx" ]] && { echo -e "$usage !!! ERROR !!! index      File NOT Exist !\n"; exit; }
 
 # 中间文件
-val=${trr%.trr}
-atm=$val~atm.ndx  # 单原子索引
-tpx=$val~atm.tpr  # 单原子拓扑
-chg=$val~chg.dat  # 电荷文件
-vgro=$val~v.gro   # 含速度的gro文件
-vqgro=$val~vq.gro # 含vq的gro文件
-vqtrr=$val~vq.trr # 含vq的trr文件
+chg=${tpr%.tpr}~chg.dat  # 电荷文件
+vgro=${trr%.trr}~v.gro   # 含速度的gro文件
+vqgro=${trr%.trr}~vq.gro # 含vq的gro文件
+vqtrr=${trr%.trr}~vq.trr # 含vq的trr文件
 
 # 获取电荷信息
-$gmx dump -quiet -s $tpr | awk -v ndx=$ndx -v grp=$grp -v atm=$atm >$chg '
-
-BEGIN {
-	RS="[";
-	while(getline < ndx) { gsub(/\s/,"", $1)
-		if($1==grp)    for(i=3; i<=NF; i++) ndxGrp[$i+0]++
-		if($1==grp"]") for(i=2; i<=NF; i++) ndxGrp[$i+0]++
-	}
-	RS="\r?\n"
-	maxAtm=0
-	for(i in ndxGrp) { n=i+0; if(n>maxAtm) maxAtm=n }
-	print "[ "grp"_LAST ]\n"maxAtm >atm
-}
+gmx dump -quiet -s $tpr | awk -v chg=$chg '
 
 /#molblock/  { Ntyp=$3+0 }
 
@@ -77,51 +61,58 @@ BEGIN {
 }
 
 END {
-	#print "#Mol  Name  #Atom #Num"
+	print "#Mol  Name  #Atom #Num"
 	Ntot=0
 	for(i=0; i<Ntyp; i++) {
-		#printf "%3d %6s %3d %5d\n",  i+1, Name[i], Natm[i], Nmol[i]
+		printf "%3d %6s %3d %5d\n",  i+1, Name[i], Natm[i], Nmol[i]
 		for(n=0; n<Nmol[i]; n++) {
 			for(j=0; j<Natm[i]; j++) {
 				Ntot++
-				if(Ntot in ndxGrp) printf "%6d %15s %s %5d %s\n",
-					Ntot, Qatm[i, j], n+1"."Name[i], j+1, Tatm[i, j]
+				printf "%6d %15s %s %5d %s\n", \
+					Ntot, Qatm[i, j], n+1"."Name[i], \
+					j+1, Tatm[i, j] >chg
 			}
 		}
 	}
-} '
+}'
 
 # 获得带速度的gro文件
-echo $grp | $gmx trjconv -s $tpr -f $trr -n $ndx -o $vgro -vel
+echo 0 | gmx trjconv -s $tpr -f $trr -o $vgro -vel
 
 # 使用vq替换速度
-awk -v chg=$chg -v grp=$grp '
+awk -v chg=$chg -v ndx=$ndx -v grp=$grp '
 BEGIN {
 	FMT="%s%15.8f%15.8f%15.8f%15.9f%15.9f%15.9f\r\n"
-	i=0; while(getline<chg) { i++; q[i]=$2; }
+	while(getline < chg) if($1!~/#/) q[$1]=$2
+
+	RS="[";
+	while(getline < ndx) { gsub(/\s/,"", $1)
+		if($1==grp)    for(i=3; i<=NF; i++) ndxGrp[$i+0]++
+		if($1==grp"]") for(i=2; i<=NF; i++) ndxGrp[$i+0]++
+	}
+	RS="\r?\n"
+	maxAtm=0
+	for(i in ndxGrp) { n=i+0; if(n>maxAtm) maxAtm=n }
 }
 
-{	print $0"\r"
-	getline Natm; print "    1\r"
+{	print
+	getline Natm; print Natm
 	qvx=0; qvy=0; qvz=0
 	for(i=1; i<=Natm; i++) {
 		getline
-		qvx += q[i]*$(NF-2); qvy += q[i]*$(NF-1); qvz += q[i]*$NF
+		if(i in ndxGrp) { qvx += q[i]*$(NF-2); qvy += q[i]*$(NF-1); qvz += q[i]*$NF }
+		if(i!=maxAtm) printf FMT, substr($0,1,20), $(NF-5), $(NF-4), $(NF-3), 0,0,0
+		else printf FMT, substr($0,1,20), $(NF-5), $(NF-4), $(NF-3), qvx, qvy, qvz
 	}
-	printf FMT, substr($0,1,20), $(NF-5), $(NF-4), $(NF-3), qvx, qvy, qvz
-
-	getline; print $0"\r"
+	getline; print
 } ' $vgro >$vqgro
 
-# 抽取单个原子的拓扑
-echo "${grp}_LAST" | $gmx convert-tpr -s $tpr -n $atm -o $tpx
-
 # 将gro转换为trr
-echo 0 | $gmx trjconv -s $tpx -f $vqgro -o $vqtrr
+echo 0 | gmx trjconv -s $tpr -f $vqgro -o $vqtrr
 
 # 计算光谱
-echo 0 | $gmx velacc -f $vqtrr -s $tpx -o vac.xvg -os spectrum.xvg -mol
+echo 0 | gmx velacc -f $vqtrr -s $tpr -o vac.xvg -os spectrum.xvg -mol yes
 
 # 清理中间文件
 rm -f \#*
-#rm -f $atm $tpx $chg $vgro $vqgro $vqtrr
+#rm -f $chg $vgro $vqgro $vqtrr
