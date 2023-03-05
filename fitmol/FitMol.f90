@@ -1,14 +1,14 @@
 Program FitMol
 	integer, parameter:: n = 2000, Lxyz = 1, Lout = 2
 
-	integer i, Ierr, Narg, Lsta, Natm, Icnt, Nfit, Nmol
-	real*8  RMSD, XYZref(3,n), XYZmol(3,n), XYZrot(3,n), Wref(n), Xcnt(3), q(4), u(3, 3)
+	integer i, Ierr, Narg, Lsta, Natm, Icnt, Nfit, Nmol, Idone
+	real*8  RMSD, RMSDmin, XYZref(3,n), XYZmol(3,n), XYZrot(3,n), Wref(n), Xcnt(3), Ycnt(3), q(4), u(3, 3)
 	logical	YesBat
 	character*8 Sref(n), Smol(n)
 	character*256	txt, Tips
 	common /Lsta/ Lsta
 
-	integer, allocatable:: Ifit(:)
+	integer, allocatable:: Ifit(:), idx(:), pidx(:)
 	real*8,  allocatable:: w(:), x(:,:), y(:,:), z(:,:)
 
 	Icnt = 0
@@ -61,7 +61,7 @@ Program FitMol
 
 	print*, '>>Input File Readin.'
 	print*
-	write(*, '(A, I4)') ' >>>>No. of Atoms of Ref. Mol.      ', Natm
+	write(*, '(A, I4)') ' >>>>#Atoms of Ref-Mol      ', Natm
 	if(Icnt==0) write(*, '(A, I4)') ' >>>>Rotation Origin is the weighted centriod.'
 	if(Icnt/=0) write(*, '(A, I4)') ' >>>>Rotation Origin Fixed at Atom     ', Icnt
 
@@ -76,7 +76,7 @@ Program FitMol
 	end if
 
 	print*
-	print*, '>>FitMol Calculation Running...'
+	print*, '>>FitMol Running...'
 	print*
 
 	rewind(Lxyz)
@@ -84,8 +84,7 @@ Program FitMol
 	read(Lxyz, '(A256)') Tips
 	read(Lxyz, '(A256)') txt; backspace(Lxyz)
 	read(txt, *, IOstat=Ierr) Sref(1), Wref(1), Wref(1), Wref(1), Wref(1)
-	
-	print*, ierr
+	!print*, ierr
 
 	Wref=1.d0
 	do i=1, Natm
@@ -94,21 +93,19 @@ Program FitMol
 	end do
 
 	call center(Icnt, Natm, XYZref, Wref, Xcnt)
-	if(.NOT. YesBat) write(Lsta, '(A, 3F14.9)') 'Center of Mol. Ref.: ', Xcnt
+	!if(.NOT. YesBat) write(Lsta, '(A, 3F14.9)') 'Center of Ref-Mol: ', Xcnt
 
 	write(Lout, *) Natm
-	write(Lout, '(A)') trim(Tips)//' Ref Mol'
+	write(Lout, '(A)') trim(Tips)//' Ref-Mol'
 	write(Lout, '(A4, 3F14.9, F8.1)') (Sref(i), XYZref(:, i), Wref(i), i=1, Natm)
 
 	Nfit=0
 	do i=1, Natm
-		if(Wref(i)>0.d0) then
-			Nfit=Nfit+1
-		end if
+		if(Wref(i)>0.d0) Nfit=Nfit+1
 	end do
-	if(.NOT. YesBat) write(Lsta, '(A, I4, /)') 'No. of Atoms used to fit: ', Nfit
 
-	allocate(Ifit(Nfit), w(Nfit), x(3, Nfit), y(3, Nfit), z(3, Nfit))
+	allocate(Ifit(Nfit), w(Nfit), idx(0:Nfit), pidx(0:Nfit), &
+	&		x(3, Nfit), y(3, Nfit), z(3, Nfit))
 
 	Nfit=0
 	do i=1, Natm
@@ -120,6 +117,8 @@ Program FitMol
 		end if
 	end do
 
+	if(.NOT. YesBat) write(Lsta, '(A, I4, /)') '#Atoms to fit: ', Nfit
+
 	Nmol=0; Ierr=0
 	do
 		read(Lxyz, *, IOstat=Ierr) Natm; if(Ierr/=0) exit
@@ -128,62 +127,76 @@ Program FitMol
 			read(Lxyz, *) Smol(i), XYZmol(1, i), XYZmol(2, i), XYZmol(3, i)
 		end do
 
-		call center(Icnt, Natm, XYZmol, Wref, Xcnt)
-
-		do i=1, Nfit
-			y(1:3, i)=XYZmol(1:3, Ifit(i))
-		end do
+		call center(Icnt, Natm, XYZmol, Wref, Ycnt)
 
 		Nmol=Nmol+1
-		if (.NOT. YesBat)  then
-			write(Lsta, '(A, I4, A, 3F14.9/)') 'Center of Mol. ', Nmol, ': ', Xcnt
-			write(Lsta, '(A)') 'Atom     Xref          Yref          Zref' &
-	&						//'          Xfit          Yfit          Zfit'
-			write(Lsta, '(X, A4, 6F14.9, F8.1)') (Sref(i), x(:,i), y(:,i), w(i), i=1, Nfit)
-			write(Lsta, *)
-		end if
+		RMSDmin=1.E9
 
-		u = 0.d0; u(1,1) = 1.d0; u(2,2) = 1.d0; u(3,3) = 1.d0
-		if(.NOT.YesBat) then
-			call analyz(Nfit, x, y, w, u)
-			write (Lsta, '(/, A)') 'Fitting    XYZref = R x XYZmol'
-		end if
+		Idone=0; Imol=0
+		do while(Idone<Nfit)
+			call NextQuickPerm(Idone, Nfit, idx, pidx)
 
-		call qtrfit(Nfit, y, x, w, q, u, Ierr)
-		call rotmol(Nfit, y, z, u)
-		if (.NOT.YesBat) call analyz(Nfit, z, x, w, u)
-
-		call rotmol(Natm, XYZmol, XYZrot, u)
-
-		if (.NOT.YesBat) then
-			write(Lsta, *)
-			write(Lsta, '(A)') 'Atom     Xfit          Yfit          Zfit' &
-	&						// '          Xref          Yref          Zref         |Fit-Ref|'
-			do	i=1, Natm
-				write(Lsta, '(X, A4, 7F14.9)') Smol(i), XYZrot(:,i), &
-			&				XYZmol(:,i), norm2(XYZrot(:,i)-XYZmol(:,i))
+			imat=1
+			do i=1, Nfit
+				ii=Ifit(i); ip=Ifit(idx(i-1))
+				if(Smol(ip) /= Sref(ii)) then; imat=0; exit; end if
 			end do
-		end if
+			if(imat==0) cycle
 
-		RMSD = 0.d0
-		do	i = 1, Nfit
-			RMSD = RMSD + w(i)* ( (x(1,i)-z(1,i))**2 + (x(2,i)-z(2,i))**2 &
-	&							+ (x(3,i)-z(3,i))**2 )
-		end do
-		RMSD = sqrt(RMSD/dble(Nfit))
+			Imol=Imol+1
 
-		write(Lout, *) Natm
-		write(Lout, '(A, A, F12.6)') trim(Tips), ' RMSD(Fit)=', RMSD
-		do i = 1, Natm
-			write(Lout, '(A4, 3F14.9)') Smol(i), XYZrot(:,i)
+			do i=1, Nfit
+				y(1:3, i)=XYZmol(1:3, Ifit(idx(i-1)))
+			end do
+
+			u = 0.d0; u(1,1) = 1.d0; u(2,2) = 1.d0; u(3,3) = 1.d0
+
+			if (.NOT. YesBat)  then
+				write(Lsta, *) '>> Mol:', Nmol, '    permutation:', Imol
+				!call analyz(Nfit, x, y, w, u)
+				write(Lsta, *) ' #Atom    Xmol        Ymol        Zmol      ' &
+				&			// '#Atom    Xref        Yref        Zref      Weight'
+				write(Lsta, '(2(I4,A3,3F12.6), 2F8.3)') &
+				&	(Ifit(idx(i-1)), Smol(i), y(:,i), Ifit(i), Sref(i), x(:,i), &
+				&	w(i), norm2(y(:,i)-x(:,i)), i=1, Nfit)
+				write(Lsta, *)
+			end if
+
+			call qtrfit(Nfit, y, x, w, q, u, Ierr)
+			call rotmol(Nfit, y, z, u)
+			!if (.NOT.YesBat) call analyz(Nfit, z, x, w, u)
+
+			RMSD = 0.d0
+			do	i = 1, Nfit
+				RMSD = RMSD + w(i)*norm2(x(:,i)-z(:,i))**2
+			end do
+			RMSD = sqrt(RMSD/dble(Nfit))
+			RMSDmin=min(RMSDmin, RMSD)
+
+			call rotmol(Natm, XYZmol, XYZrot, u)
+
+			if (.NOT.YesBat) then
+				write(Lsta, *) ' #Atom    Xfit        Yfit        Zfit      ' &
+				&			// '#Atom    Xref        Yref        Zref    |Mol-Ref|  Weight'
+				write(Lsta, '(2(I4,A3,3F12.6), 2F8.3)') (i, Smol(i), XYZrot(:,i), &
+				&			i, Sref(i), XYZref(:,i), norm2(XYZrot(:,i)-XYZref(:,i)), Wref(i), i=1, Natm)
+				write(Lsta, *)
+			end if
+
+			write(Lout, *) Natm
+			write(Lout, '(A, 2(A, F12.6))') trim(Tips), ' RMSD(Fit)=', RMSD, ' minRMSD=', RMSDmin
+			do i = 1, Natm
+				write(Lout, '(A4, 3F14.9)') Smol(i), XYZrot(:,i)
+			end do
 		end do
+
 	end do
 
 	close(Lout)
 	close(Lxyz)
 
 	print*
-	print*, '>>FitMol Calculation Achieved.'
+	print*, '>>FitMol Achieved.'
 
 	if (.NOT.YesBat) then
 		print*, '>>Any Key to Exit...'
@@ -244,13 +257,11 @@ Subroutine analyz(n, x, y, w, u)
 	urnorm (3) = u (3, 1)**2 + u (3, 2)**2 + u (3, 3)**2
 
 ! write the error and u norms
-	write (Lsta, *) '   Rot Matrix                                  Row Norm'
+	write (Lsta, *) '       [Rot Matrix]                                    |Row|'
 	do	i = 1, 3
-		write (Lsta, '(3F14.9, 4X, F10.4)') (u (i, j), j = 1, 3), urnorm (i)
+		write (Lsta, '(5X, 3F14.9, F14.3)') (u (i, j), j = 1, 3), urnorm (i)
 	end do
-	write (Lsta, *) '   Col Norm                                        RMSD'
-	write (Lsta, '(3F14.4, F14.9)') (ucnorm (j), j = 1, 3), Rerr
-
+	write (Lsta, '(8X, A, F6.3, 2F14.3, F14.9, A)') '|Col|', (ucnorm (j), j = 1, 3), Rerr, '=RMSD'
 End
 !
 !
@@ -320,19 +331,19 @@ Subroutine qtrfit(n, x, y, w, q, u, nr)
 		xzyz = xzyz + x (3, i) * y (3, i) * w (i)
 	end do
 
-	c (0, 0) = xxyx + xyyy + xzyz
+	c(0, 0) = xxyx + xyyy + xzyz
 
-	c (0, 1) = xzyy - xyyz
-	c (1, 1) = xxyx - xyyy - xzyz
+	c(0, 1) = xzyy - xyyz
+	c(1, 1) = xxyx - xyyy - xzyz
 
-	c (0, 2) = xxyz - xzyx
-	c (1, 2) = xxyy + xyyx
-	c (2, 2) = xyyy - xzyz - xxyx
+	c(0, 2) = xxyz - xzyx
+	c(1, 2) = xxyy + xyyx
+	c(2, 2) = xyyy - xzyz - xxyx
 
-	c (0, 3) = xyyx - xxyy
-	c (1, 3) = xzyx + xxyz
-	c (2, 3) = xyyz + xzyy
-	c (3, 3) = xzyz - xxyx - xyyy
+	c(0, 3) = xyyx - xxyy
+	c(1, 3) = xzyx + xxyz
+	c(2, 3) = xyyz + xzyy
+	c(3, 3) = xzyz - xxyx - xyyy
 
 ! diagonalize c
 	nr = 16
@@ -465,3 +476,85 @@ Subroutine jacobi (a, n, np, d, v, nrot)
 		end if
 	end do
 End
+
+subroutine NextPermut(Ndat, P, YesDone)
+	integer i, j, tmp, Ibeg, Iend, Ndat, YesDone, P(*)
+
+	if (Ndat==0) then; YesDone=1; return; end if
+
+	if(YesDone==-1) then
+		YesDone=0
+		do i=1, Ndat; P(i)=i; end do
+		return
+	end if
+
+	!从后向前查找，看是否有后面的数大于前面的数的情况P(i-1)<Pi
+	!若有则停在后一个数的位置。
+	!若没有后面的数大于前面的数的情况，说明已经到了最后一个排列，返回
+	do Iend=Ndat, 1, -1
+		if ( P(Iend-1) < P(Iend) ) exit
+	end do
+
+	if (Iend==1) then; YesDone=1; return; end if
+
+	!从后查到Iend，查找大于P(Iend-1)的最小的数，记入Ibeg
+	Ibeg=Iend
+	do i=Ndat, Iend, -1
+		if (P(Iend-1)<P(i) .and. P(i)<P(Ibeg)) Ibeg=i
+	end do
+
+	!交换p(Ibeg)和p(Iend-1)
+	tmp=P(Ibeg); P(Ibeg)=P(Iend-1); P(Iend-1)=tmp
+
+	!倒置p(Iend)到p(Ndat)
+	j=Ndat
+	do i=Iend, Ndat
+		tmp=P(j); P(j)=P(i); P(i)=tmp
+		j=j-1
+		if(i>=j) exit
+	end do
+end
+
+subroutine qp()
+	integer, parameter:: N=6
+	integer idx(0:N), pidx(0:N)
+	integer num, Idone
+
+   !print*, "\nEXAMPLE_01 of head permutations using a linear array of %d objects.\n",N
+   !display(a);          // remove comment to display linear array a[] (optional)
+
+	call NextQuickPerm(0, N, idx, pidx)
+
+	num=1
+	Idone = 1;   ! setup first swap points to be 1 and 0 respectively (i & j)
+	do while(Idone < N)
+		num=num+1
+		call NextQuickPerm(Idone, N, idx, pidx)
+		print*, idx
+	end do
+	print*,  num
+
+end
+
+subroutine NextQuickPerm(i, n, a, p)
+	integer i, j, t, a(0:*), p(0:*)
+
+	if(i==0) then
+		do j=0, n      ! initialize arrays; a[N] can be any type
+			p(j) = j   ! p[N] > 0 controls iteration and the index boundary for i
+			a(j) = j+1 ! a[i] value is not revealed and can be arbitrary
+		end do
+		i=1
+		return
+	end if
+
+	p(i) = p(i)-1                   ! decrease index "weight" for i by one
+	j = mod(i,2) * p(i)             ! IF i is odd then j = p[i] otherwise j = 0
+	t = a(j); a(j) = a(i); a(i) = t ! swap(a[i], a[j])
+
+	i = 1                           ! reset index i to 1 (assumed)
+	do while(p(i) == 0)
+		p(i) = i                    ! reset p[i] zero value
+		i = i+1                     ! set new index value for i (increase by one)
+	end do
+end
