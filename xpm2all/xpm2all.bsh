@@ -111,10 +111,11 @@ function xpm2gpl {
 
 		if(xyz) {
 			print "unset colorbox"
+			print "set cbr [0:8]"
 			printf "set pal defined("
-			for(n=0; n<=7; n++) {
+			for(n=0; n<=8; n++) {
 				for(i in vss) if(vss[i]==n) printf "%s", n" \""c[i, color]"\""
-				if(n<7) printf ","; else print ")"
+				if(n<8) printf ","; else print ")"
 			}
 			print "\n$data <<EOD"
 		} else {
@@ -605,7 +606,7 @@ function xpm2rgb {
 usage="\
 >>>>>>>>>>>>>>>>     xpm2all    <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
->>>>>>>>>>     2021-06-19 08:55:55     <<<<<<<<<
+>>>>>>>>>>     2023-03-09 00:54:13     <<<<<<<<<
 Usage:   xpm2all <File> [-xyz|-mat|-rgb <cm>|-gpl <ssmode> <color> <minRes> <maxRes> <yminRes> ]
 Default: xpm2all <File>  -xyz
 option:  -xyz: xyz datafile
@@ -640,7 +641,9 @@ option:  -xyz: xyz datafile
                color:   gmx, pdb, p1, p2
                minRes:  initial index of residue
                maxRes:  final   index of residue
-               yminRes: y value of initial residue"
+               yminRes: y value of initial residue
+--------------------------------------------------------------------------------
+2023-03-09: fix bugs for -gpl xyz"
 
 [[ $# -lt 1 ]] && { echo "$usage"; exit; }
 
