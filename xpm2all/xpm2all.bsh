@@ -4,14 +4,14 @@ function xpm2xyzmat {
 	/Hydrogen Bonds/ { isHB=1; next }
 
 	/gromacs_xpm/ {
-		getline; gsub(/"/, "");
+		getline; gsub(/"/, " ");
 		nlev=$3; ncode=$4 # 每种颜色编码字符数
 		for(i=1; i<=nlev; i++) {
 			getline
 			if(isHB) {
 				v[" "]=0; v["o"]=1
 			} else {
-				gsub(/[",\n\r]/, "")
+				gsub(/"/, " ")
 				v[$1]=$5   # 编码代表数值
 			}
 		}
@@ -59,38 +59,45 @@ function xpm2gpl {
 		xyz=0; if(ssmode=="xyz") xyz=1;
 		fx=.5; if(ssmode=="box") fx=1;
 		ny=0; ix=1; iy=1;
-		vss["Chain_Separator"]=0;
-		vss["A-Helix" ]= 8;  c["A-Helix" ,"gmx"]= "#0000FF"
-		vss["3-Helix" ]= 7;  c["3-Helix" ,"gmx"]= "#808080"
-		vss["5-Helix" ]= 6;  c["5-Helix" ,"gmx"]= "#800080"
-		vss["B-Sheet" ]= 5;  c["B-Sheet" ,"gmx"]= "#FF0000"
-		vss["B-Bridge"]= 4;  c["B-Bridge","gmx"]= "#000000"
-		vss["Turn"    ]= 3;  c["Turn"    ,"gmx"]= "#FFFF00"
-		vss["Bend"    ]= 2;  c["Bend"    ,"gmx"]= "#008000"
-		vss["Coil"    ]= 1;  c["Coil"    ,"gmx"]= "#BBBBBB"
+		vss["A-Helix" ]       = 8;  c["A-Helix"        ,"gmx"]= "#0000FF"
+		vss["3-Helix" ]       = 7;  c["3-Helix"        ,"gmx"]= "#808080"
+		vss["5-Helix" ]       = 6;  c["5-Helix"        ,"gmx"]= "#800080"
+		vss["B-Sheet" ]       = 5;  c["B-Sheet"        ,"gmx"]= "#FF0000"
+		vss["B-Bridge"]       = 4;  c["B-Bridge"       ,"gmx"]= "#000000"
+		vss["Turn"    ]       = 3;  c["Turn"           ,"gmx"]= "#FFFF00"
+		vss["Bend"    ]       = 2;  c["Bend"           ,"gmx"]= "#008000"
+		vss["Coil"    ]       = 1;  c["Coil"           ,"gmx"]= "#BBBBBB"
+		vss["Chain_Separator"]= 0;  c["Chain_Separator","gmx"]= "#E6E6E6"
 
-		c["A-Helix" ,"pdb"]="#E53535"; c["A-Helix" ,"vmd"]="#E182E1";
-		c["3-Helix" ,"pdb"]="#EC6262"; c["3-Helix" ,"vmd"]="#FFA0FF";
-		c["5-Helix" ,"pdb"]="#F28E8E"; c["5-Helix" ,"vmd"]="#E11414";
-		c["B-Sheet" ,"pdb"]="#FFF000"; c["B-Sheet" ,"vmd"]="#FFFF64";
-		c["B-Bridge","pdb"]="#D4A800"; c["B-Bridge","vmd"]="#B4B400";
-		c["Turn"    ,"pdb"]="#00B266"; c["Turn"    ,"vmd"]="#469696";
-		c["Bend"    ,"pdb"]="#00CC00"; c["Bend"    ,"vmd"]="#00CC00";
-		c["Coil"    ,"pdb"]="#000000"; c["Coil"    ,"vmd"]="#000000";
-#		p1: 10.1371/journal.pone.0178333
-#		p2: 10.1371/journal.pcbi.1007487
-		c["A-Helix" ,"p1"]="#00FF00"; c["A-Helix" ,"p2"]="#0171B6"
-		c["3-Helix" ,"p1"]="#2E8B57"; c["3-Helix" ,"p2"]="#D16000"
-		c["5-Helix" ,"p1"]="#008000"; c["5-Helix" ,"p2"]="#FCAEE5"
-		c["B-Sheet" ,"p1"]="#0000FF"; c["B-Sheet" ,"p2"]="#019E73"
-		c["B-Bridge","p1"]="#3399FF"; c["B-Bridge","p2"]="#CA9261"
-		c["Turn"    ,"p1"]="#FF8C00"; c["Turn"    ,"p2"]="#C99260"
-		c["Bend"    ,"p1"]="#FF0000"; c["Bend"    ,"p2"]="#F8B0E7"
-		c["Coil"    ,"p1"]="#000000"; c["Coil"    ,"p2"]="#000000"
-
-		c["Chain_Separator","gmx"]="#E6E6E6"
+		c["A-Helix"        ,"pdb"]="#E53535"; c["A-Helix"        ,"vmd"]="#E182E1";
+		c["3-Helix"        ,"pdb"]="#EC6262"; c["3-Helix"        ,"vmd"]="#FFA0FF";
+		c["5-Helix"        ,"pdb"]="#F28E8E"; c["5-Helix"        ,"vmd"]="#E11414";
+		c["B-Sheet"        ,"pdb"]="#FFF000"; c["B-Sheet"        ,"vmd"]="#FFFF64";
+		c["B-Bridge"       ,"pdb"]="#D4A800"; c["B-Bridge"       ,"vmd"]="#B4B400";
+		c["Turn"           ,"pdb"]="#00B266"; c["Turn"           ,"vmd"]="#469696";
+		c["Bend"           ,"pdb"]="#00CC00"; c["Bend"           ,"vmd"]="#00CC00";
+		c["Coil"           ,"pdb"]="#000000"; c["Coil"           ,"vmd"]="#000000";
 		c["Chain_Separator","pdb"]="#FFFFFF"; c["Chain_Separator","vmd"]="#FFFFFF"
-		c["Chain_Separator","p1" ]="#FFFFFF"; c["Chain_Separator","p2" ]="#FFFFFF"
+#		p1: 10.1371/journal.pone.0178333     p2: 10.1371/journal.pcbi.1007487
+		c["A-Helix"        ,"p1"]="#00FF00"; c["A-Helix"        ,"p2"]="#0171B6"
+		c["3-Helix"        ,"p1"]="#2E8B57"; c["3-Helix"        ,"p2"]="#D16000"
+		c["5-Helix"        ,"p1"]="#008000"; c["5-Helix"        ,"p2"]="#FCAEE5"
+		c["B-Sheet"        ,"p1"]="#0000FF"; c["B-Sheet"        ,"p2"]="#019E73"
+		c["B-Bridge"       ,"p1"]="#3399FF"; c["B-Bridge"       ,"p2"]="#CA9261"
+		c["Turn"           ,"p1"]="#FF8C00"; c["Turn"           ,"p2"]="#C99260"
+		c["Bend"           ,"p1"]="#FF0000"; c["Bend"           ,"p2"]="#F8B0E7"
+		c["Coil"           ,"p1"]="#000000"; c["Coil"           ,"p2"]="#000000"
+		c["Chain_Separator","p1"]="#FFFFFF"; c["Chain_Separator","p2"]="#FFFFFF"
+
+		c["A-Helix"        ,"p3"]="#FFFF00";
+		c["3-Helix"        ,"p3"]="#FE7D6D";
+		c["5-Helix"        ,"p3"]="#C12323";
+		c["B-Sheet"        ,"p3"]="#000080";
+		c["B-Bridge"       ,"p3"]="#00FFFF";
+		c["Turn"           ,"p3"]="#006400";
+		c["Bend"           ,"p3"]="#FF0000";
+		c["Coil"           ,"p3"]="#BFBFBF";
+		c["Chain_Separator","p3"]="#FFFFFF";
 	}
 
 	/^"/ {
@@ -109,16 +116,7 @@ function xpm2gpl {
 		if(ny<maxRes) maxRes=ny
 		nx=length(zv[1])/ncode
 
-		if(xyz) {
-			print "unset colorbox"
-			print "set cbr [0:8]"
-			printf "set pal defined("
-			for(n=0; n<=8; n++) {
-				for(i in vss) if(vss[i]==n) printf "%s", n" \""c[i, color]"\""
-				if(n<8) printf ","; else print ")"
-			}
-			print "\n$data <<EOD"
-		} else {
+		if(!xyz) {
 			fun["A-Helix"] ="Ha"
 			fun["3-Helix"] ="H3"
 			fun["5-Helix"] ="H5"
@@ -159,7 +157,9 @@ function xpm2gpl {
 
 		print "# residue index: "minRes"-"maxRes >file"~count.xvg"
 		print "#      Time("xu")  A-Helix  3-Helix  5-Helix  B-Sheet B-Bridge     Turn     Bend     Coil     Chain_Separator" >file"~count.xvg"
+
 		n=0
+		if(xyz) print "$data <<EOD"
 		for(i=0; i<nx; i++) {
 			ftype["A-Helix"] =0
 			ftype["3-Helix"] =0
@@ -169,7 +169,7 @@ function xpm2gpl {
 			ftype["Turn"]    =0
 			ftype["Bend"]    =0
 			ftype["Coil"]    =0
-			ftype["Chain_Separator"]    =0
+			ftype["Chain_Separator"] =0
 
 			x = x0+i*dx
 			for(j=0; j<ny; j++) {
@@ -203,8 +203,27 @@ function xpm2gpl {
 			}
 		}
 
-		if(xyz) print "EOD"
-		print ""
+		if(!xyz) print "\n$data <<EOD\n0 0 0\n0 0 0\n0 0 0\n0 0 0"
+		print "EOD\n"
+
+		for(n=0; n<=8; n++) for(i in vss) if(vss[i]==n) print "c"n"=\""c[i, color]"\""
+
+		print "\nset pal defined( \\"
+		print "\t-.5 c0, 0.5 c0, 0.5 c1, 1.5 c1, 1.5 c2, 2.5 c2, \\"
+		print "\t2.5 c3, 3.5 c3, 3.5 c4, 4.5 c4, 4.5 c5, 5.5 c5, \\"
+		print "\t5.5 c6, 6.5 c6, 6.5 c7, 7.5 c7, 7.5 c8, 8.5 c8  )\n"
+		print "set cbtics ( \\"
+		print "\t\"Chain-Sep.\" 0, \\"
+		print "\t\"C Coil    \" 1, \\"
+		print "\t\"S Bend    \" 2, \\"
+		print "\t\"T Turn    \" 3, \\"
+		print "\t\"B B-Bridge\" 4, \\"
+		print "\t\"E B-Sheet \" 5, \\"
+		print "\t\"I 5-Helix \" 6, \\"
+		print "\t\"G 3-Helix \" 7, \\"
+		print "\t\"H A-Helix \" 8  )\n"
+		print "set cbr [-.5:8.5]\n"
+
 		print "#set tmargin at screen 0.95"
 		print "#set bmargin at screen 0.2"
 		print "#set rmargin at screen 0.85"
@@ -215,23 +234,14 @@ function xpm2gpl {
 		print "#set label \" B-Bridge\" at screen 0.85,0.52 left textcolor rgb \""c["B-Bridge",color]"\""
 		print "#set label \" Turn    \" at screen 0.85,0.42 left textcolor rgb \""c["Turn"    ,color]"\""
 		print "#set label \" Bend    \" at screen 0.85,0.32 left textcolor rgb \""c["Bend"    ,color]"\""
-		print "#set label \" Coil    \" at screen 0.85,0.22 left textcolor rgb \""c["Coil"    ,color]"\""
+		print "#set label \" Coil    \" at screen 0.85,0.22 left textcolor rgb \""c["Coil"    ,color]"\"\n"
 
 		print "set output \"ss.png\""
-		print "set term pngcairo enhanced truecolor font \"HelveticaNeueLT Pro 85 Hv,85\" fontscale 1 linewidth 20 pointscale 5 size 6000,3033"
+		print "set term pngcairo enhanced truecolor font \"HelveticaNeueLT Pro 85 Hv,85\" fontscale 1 linewidth 20 pointscale 5 size 6000,4000"
 		print "set tics out nomirror;"
 		print "set key out reverse Left spacing 2 samplen 1/2"
 		print "set xl\"Time("xu")\"; set yl\"#res\";"
-		printf "plot ["x0-dx/2":"x0+(nx-1)*dx+dx/2"] ["y0+(minRes-1)*dy":"y0+(maxRes-1)*dy"] "
-		print (xyz)? "$data u 1:2:3 w imag notit, \\" : " -1 notit, \\"
-		print "-1 w p ps 3 pt 5 lc rgb \""c["A-Helix" ,color]"\" t\"H A-Helix \", \\"
-		print "-1 w p ps 3 pt 5 lc rgb \""c["3-Helix" ,color]"\" t\"G 3-Helix \", \\"
-		print "-1 w p ps 3 pt 5 lc rgb \""c["5-Helix" ,color]"\" t\"I 5-Helix \", \\"
-		print "-1 w p ps 3 pt 5 lc rgb \""c["B-Sheet" ,color]"\" t\"E B-Sheet \", \\"
-		print "-1 w p ps 3 pt 5 lc rgb \""c["B-Bridge",color]"\" t\"B B-Bridge\", \\"
-		print "-1 w p ps 3 pt 5 lc rgb \""c["Turn"    ,color]"\" t\"T Turn    \", \\"
-		print "-1 w p ps 3 pt 5 lc rgb \""c["Bend"    ,color]"\" t\"S Bend    \", \\"
-		print "-1 w p ps 3 pt 5 lc rgb \""c["Coil"    ,color]"\" t\"C Coil    \""
+		print "plot ["x0-dx/2":"x0+(nx-1)*dx+dx/2"] ["y0+(minRes-1)*dy":"y0+(maxRes-1)*dy"] $data u 1:2:3 w imag notit"
 	}
 
 	function obj(x, y1, y2, type, dx, pos, i,j,k) {
@@ -613,44 +623,36 @@ option:  -xyz: xyz datafile
          -mat: matrix datafile
          -rgb: regular xpm file with
                colormap cm
-                         1:  Rainbow
-                         2:  Rainbow gnuplot_33/13/10
-                         3:  Rainbow gnuplot_26/13/10
-                         4:  Rainbow gnuplot_22/13/-31
-                         5:  Rainbow Mathmatica
-                         6:  DarkRainbow Mathmatica
-                         7:  Rainbow CETR2
-                         8:  viridis python
-                         9:  BlueGreenYellow
-                        10:  parula matlab
-                        11:  avocado
-                        12:  Diverging-CoolWarm
-                        13:  thermometer
-                        14:  redbluetones
-                        15:  tmap
-                        16:  ltmap
-                        17:  cividis
-                        18:  inferno
-                        19:  magma
-                        20:  plasma
+                         1:  Rainbow                        11:  avocado
+                         2:  Rainbow gnuplot_33/13/10       12:  Diverging-CoolWarm
+                         3:  Rainbow gnuplot_26/13/10       13:  thermometer
+                         4:  Rainbow gnuplot_22/13/-31      14:  redbluetones
+                         5:  Rainbow Mathmatica             15:  tmap
+                         6:  DarkRainbow Mathmatica         16:  ltmap
+                         7:  Rainbow CETR2                  17:  cividis
+                         8:  viridis python                 18:  inferno
+                         9:  BlueGreenYellow                19:  magma
+                        10:  parula matlab                  20:  plasma
          -gpl: gnuplot file to plot 2nd structure
                ssmode:  draw method
                         xyz:   xyz data
                         box:   plain box
                         fancy: fancy helix and beta sheet
-               color:   gmx, pdb, p1, p2
+               color:   gmx, pdb, p1, p2, p3
                minRes:  initial index of residue
                maxRes:  final   index of residue
                yminRes: y value of initial residue
 --------------------------------------------------------------------------------
-2023-03-09: fix bugs for -gpl xyz"
+2023-04-19: fix bug  for -xyz
+2023-03-09: fix bugs for -gpl
+--------------------------------------------------------------------------------"
 
 [[ $# -lt 1 ]] && { echo "$usage"; exit; }
 
-opt=($@); N=${#opt[@]};
 job=xyzmat; dat=xyz; cm=1;
 minRes=1; maxRes=1E9; yminRes=1; ssmode="xyz"; color="pdb"
 
+opt=($@); N=${#opt[@]};
 for((i=0; i<N; i++)); do
 	arg=${opt[$i]};
 	[[ $arg =~ (-xyz)|(-mat) ]] && { dat=${arg/-/}; opt[$i]=""; }
