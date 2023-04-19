@@ -616,7 +616,7 @@ function xpm2rgb {
 usage="\
 >>>>>>>>>>>>>>>>     xpm2all    <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
->>>>>>>>>>     2023-03-09 00:54:13     <<<<<<<<<
+>>>>>>>>>>     2023-04-19 12:33:27     <<<<<<<<<
 Usage:   xpm2all <File> [-xyz|-mat|-rgb <cm>|-gpl <ssmode> <color> <minRes> <maxRes> <yminRes> ]
 Default: xpm2all <File>  -xyz
 option:  -xyz: xyz datafile
