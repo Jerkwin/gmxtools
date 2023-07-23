@@ -230,7 +230,7 @@ N=10
 R=10
 r=5
 
-eval setpal('cm_plasma')
+eval set_pal('cm_plasma')
 set tr [0:1]
 plot for [i=1:|$HBdat|] \
 Bxy(t, R*cos(t1(i)),r*cos(t1(i)),r*cos(t2(i)),R*cos(t2(i)) ),  \

@@ -1,13 +1,14 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_hbdat    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2022-06-25 09:07:48     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2023-06-05 00:54:15     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_hbdat -s     *.tpr  -n     *.ndx  -m     *.xpm
 >> Default: gmx_hbdat -s topol.tpr  -n hbond.ndx  -m hbmap.xpm
 
 --------------------------------------------------------------------------------
 >> Log:
    2022-06-25: add #res for atoms
+   2023-06-05: revise output
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 
 tpr=topol.tpr
@@ -41,7 +42,7 @@ $dump -s $tpr -quiet 2>>/dev/null | awk -v ndx=$ndx -v xpm=$xpm '
 			if(index($0, "y-axis")) isHB=1
 			if(isHB && index($0, "\"")) {
 				nhb++
-				n=0; gsub(/[,"]/, "")
+				n=0; gsub(/[,\"]/, "")
 				for(i=1; i<=length($0); i++) if(substr($0, i, 1)=="o") n++
 				occ[nhb]=n*100/length($0)
 			}
@@ -68,25 +69,42 @@ $dump -s $tpr -quiet 2>>/dev/null | awk -v ndx=$ndx -v xpm=$xpm '
 
 	/residue\[/ { nres++
 		sub(/.*="/,"",$0); sub(/".*/,"",$0);
-		resName[nres]=sprintf("%0d%s", nres, $0)
+		resName[nres]=sprintf("%4d%s", nres, $0)
 	}
 
 	END {
+
+	n=split("ALA A CYS C ASP D GLU E PHE F GLY G HIS H ILE I LYS K LEU L MET M ASN N PRO P GLN Q ARG R SER S THR T VAL V TRP W TYR Y UNK X", arr)
+	for(i=1; i<=n/2; i++) sname[arr[2*i-1]]=arr[2*i]
+
 		Ntot=0; maxlen=0
 		for(i=0; i<Ntyp; i++) {
+			if(length(Name[i])>maxlen) maxlen=length(Name[i])
 			for(n=0; n<Nmol[i]; n++) {
 				for(j=0; j<Natm[i]; j++) {
 					Ntot++
-					Label[Ntot]=sprintf("%s", \
-						Ntot"#"Name[i]"_"resName[resID[i,j]]"@"Tatm[i, j])
-					if(length(Label[Ntot])>maxlen) maxlen=length(Label[Ntot])
+					Label[Ntot]=Ntot" "Name[i]" "resName[resID[i,j]]" "Tatm[i, j]
 				}
 			}
 		}
 
-		fmt="%-"maxlen"s ""%-"maxlen"s ""%-"maxlen"s"
-		printf fmt"%12s\n", "#Donor", "Hydrogen", "Acceptor", "Occupancy%"
-		for(i=1; i<=nhb; i++) printf fmt"%12.1f\n", \
-			Label[don[i]], Label[hyd[i]], Label[acc[i]], occ[nhb-i+1]
+		print "#HBond #atom                 mol.         #res Donor-H     mol.         #res Acceptor  Occupancy%   inter?  Label"
+		fmt="%4d   %-20s %-"maxlen"s %8s %-9s  %-"maxlen"s %8s %-9s %9.3f    %4d    %-s\n"
+		for(i=1; i<=nhb; i++) {
+			split(Label[don[i]]" "Label[hyd[i]]" "Label[acc[i]], arr)
+
+			n=arr[3]; sub(/[^0-9]+/, "", n)
+			s=arr[3]; sub(/[0-9]+/,  "", s)
+			tag=sname[s]""n"@"arr[4]"-"arr[8]
+			n=arr[11]; sub(/[^0-9]+/, "", n)
+			s=arr[11]; sub(/[0-9]+/,  "", s)
+			tag=tag"..."sname[s]""n"@"arr[12]
+
+			printf fmt, i,
+				arr[1]"-"arr[5]"..."arr[9],
+				arr[2],  arr[3], arr[4]"-"arr[8],
+				arr[10], arr[11], arr[12], occ[nhb-i+1], 
+				arr[3]==arr[11]? 0:1, tag
+		}
 	}
 ' > hbdat.dat
