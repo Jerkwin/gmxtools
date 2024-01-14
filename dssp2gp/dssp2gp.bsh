@@ -1,0 +1,320 @@
+usage="\
+>>>>>>>>>>>>>>>>     dssp2gp    <<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
+>>>>>>>>>>     2024-01-11 23:12:11     <<<<<<<<<
+Usage:   dssp2gp <file.dat|file.xpm> [-DRAW] [-COLOR] [RANGE]
+                                     [-t0 t0] [-dt dt] [-tu tu]
+Default: dssp2gp  dssp.dat -xyz -pdb 1:1E9:1 -t0 0 -dt 1 -tu ps
+option:  DRAW:
+             -xyz:   xyz data
+             -box:   plain box
+             -fancy: fancy helix and beta sheet
+         COLOR: gmx, vmd, pdb, rcsb, taylor, p1, p2, p3, p4
+         RANGE: [minRes:maxRes:ystart]
+                minRes: start from #residue
+                maxRes: end   with #residue
+                ystart: y value of minRes
+         -t0: starting time
+         -dt: timestep
+         -tu: unit of time, fs, ps, ns
+--------------------------------------------------------------------------------"
+#	H = "A-Helix"  4-turn RH helix (α helix).   Min length 4 residues.
+#	G = "3-Helix"  3-turn RH helix (3_10 helix). Min length 3 residues.
+#	I = "5-Helix"  5-turn RH helix (π helix).   Min length 5 residues.
+#	P = "PPII-Helix"  LH
+#	E = "B-Sheet"  extended strand (in beta ladder) in parallel
+#                  and/or anti-parallel β-sheet conformation. Min length 2 residues.
+#	B = "B-Bridge" beta-bridge residue. residue in isolated β-bridge
+#                  (single pair β-sheet hydrogen bond formation)
+#	T = "Turn"     H-bonded turn (3, 4 or 5 turn)
+#	S = "Bend"     bend (the only non-hydrogen-bond based assignment)
+#	~ = "Coil"     C, loops/coil (residues which are not in any of the above conformations)
+
+[[ $# -lt 1 ]] && { echo "$usage"; exit; }
+
+ssmode="xyz"; color="pdb"
+minRes=1; maxRes=1E9; ystart=1;
+t0=0;     dt=1;       tu=ps
+
+opt=($@); N=${#opt[@]};
+for((i=0; i<N; i++)); do
+	arg=${opt[$i]}; j=$((i+1)); val=${opt[$j]}
+
+	[[ $arg =~ (-xyz)|(-box)|(-fancy)  ]] && { ssmode=${arg/-/}; opt[$i]=""; }
+	[[ $arg =~ (-gmx)|(-vmd)|(-pdb)    ]] && { color=${arg/-/};  opt[$i]=""; }
+	[[ $arg =~ (-p1)|(-p2)|(-p3)|(-p4) ]] && { color=${arg/-/};  opt[$i]=""; }
+	[[ $arg =~ (-rcsb)|(-taylor)       ]] && { color=${arg/-/};  opt[$i]=""; }
+
+	[[ $arg =~ -t0 ]] && { t0=$val; opt[$j]=""; }
+	[[ $arg =~ -dt ]] && { dt=$val; opt[$j]=""; }
+	[[ $arg =~ -tu ]] && { tu=$val; opt[$j]=""; }
+
+	[[ $arg =~ : ]] && {
+		opt[$i]="";
+		arg=${arg//:/ }; arg=($arg); n=${#arg[@]}
+		[[ $n -ge 1 ]] && { minRes=${arg[0]}; ystart=$minRes; }
+		[[ $n -ge 2 ]] && { maxRes=${arg[1]}; }
+		[[ $n -ge 3 ]] && { ystart=${arg[2]}; }
+	}
+done
+
+file=${opt[@]}
+
+awk -v file=$file     -v ssmode=$ssmode -v color=$color   \
+	-v minRes=$minRes -v maxRes=$maxRes -v ystart=$ystart \
+	-v x0=$t0         -v dx=$dt         -v tu=$tu       '
+
+BEGIN {
+	name["H"] = "α-Helix"        ; vss["H"] = 9;
+	name["G"] = "3_10-Helix"     ; vss["G"] = 8;
+	name["I"] = "π-Helix"        ; vss["I"] = 7;
+	name["P"] = "PPII-Helix"     ; vss["P"] = 6;
+	name["E"] = "β-Sheet"        ; vss["E"] = 5;
+	name["B"] = "β-Bridge"       ; vss["B"] = 4;
+	name["T"] = "Turn"           ; vss["T"] = 3;
+	name["S"] = "Bend"           ; vss["S"] = 2;
+	name["~"] = "Coil"           ; vss["~"] = 1;
+	name["="] = "Chain_Separator"; vss["="] = 0;
+
+	c["H","gmx"]="#0000FF"; c["H","vmd"]="#E182E1"; c["H","pdb"]="#E53535";
+	c["G","gmx"]="#808080"; c["G","vmd"]="#FFA0FF"; c["G","pdb"]="#EC6262";
+	c["I","gmx"]="#800080"; c["I","vmd"]="#E11414"; c["I","pdb"]="#F28E8E";
+	c["P","gmx"]="#008080"; c["P","vmd"]="#F28E8E"; c["P","pdb"]="#FFA0FF";
+	c["E","gmx"]="#FF0000"; c["E","vmd"]="#FFFF64"; c["E","pdb"]="#FFF000";
+	c["B","gmx"]="#000000"; c["B","vmd"]="#B4B400"; c["B","pdb"]="#D4A800";
+	c["T","gmx"]="#FFFF00"; c["T","vmd"]="#469696"; c["T","pdb"]="#00B266";
+	c["S","gmx"]="#008000"; c["S","vmd"]="#00CC00"; c["S","pdb"]="#00CC00";
+	c["~","gmx"]="#BBBBBB"; c["~","vmd"]="#000000"; c["~","pdb"]="#000000";
+	c["=","gmx"]="#E6E6E6"; c["=","vmd"]="#FFFFFF"; c["=","pdb"]="#FFFFFF";
+#		p1: 10.1371/journal.pone.0178333     p2: 10.1371/journal.pcbi.1007487
+	c["H","p1"]="#00FF00"; c["H","p2"]="#0171B6"; c["H","p3"]="#FFFF00";
+	c["G","p1"]="#2E8B57"; c["G","p2"]="#D16000"; c["G","p3"]="#FE7D6D";
+	c["I","p1"]="#008000"; c["I","p2"]="#C12323"; c["I","p3"]="#C12323";
+	c["P","p1"]="#00CC00"; c["P","p2"]="#FCAEE5"; c["P","p3"]="#FCAEE5";
+	c["E","p1"]="#0000FF"; c["E","p2"]="#019E73"; c["E","p3"]="#000080";
+	c["B","p1"]="#3399FF"; c["B","p2"]="#CA9261"; c["B","p3"]="#00FFFF";
+	c["T","p1"]="#FF8C00"; c["T","p2"]="#008000"; c["T","p3"]="#006400";
+	c["S","p1"]="#FF0000"; c["S","p2"]="#BFBFBF"; c["S","p3"]="#FF0000";
+	c["~","p1"]="#000000"; c["~","p2"]="#000000"; c["~","p3"]="#BFBFBF";
+	c["=","p1"]="#FFFFFF"; c["=","p2"]="#FFFFFF"; c["=","p3"]="#FFFFFF";
+	#                                     taylor: 10.1186/s12859-020-3526-6
+	c["H","p4"]="#C78CB5"; c["H","rcsb"]="#EA357F"; c["H","taylor"]="#65FF00";
+	c["G","p4"]="#465C9F"; c["G","rcsb"]="#91207C"; c["G","taylor"]="#C9FF01";
+	c["I","p4"]="#DF3431"; c["I","rcsb"]="#57137B"; c["I","taylor"]="#03C9FC";
+	c["P","p4"]="#FE7D6D"; c["P","rcsb"]="#9F2EF5"; c["P","taylor"]="#FD3300";
+	c["E","p4"]="#F3EF41"; c["E","rcsb"]="#F7C945"; c["E","taylor"]="#0001FB";
+	c["B","p4"]="#C1BD38"; c["B","rcsb"]="#6582F7"; c["B","taylor"]="#6201FC";
+	c["T","p4"]="#2A87A0"; c["T","rcsb"]="#4FAF6D"; c["T","taylor"]="#FF57D8";
+	c["S","p4"]="#A5A7F4"; c["S","rcsb"]="#83D5C9"; c["S","taylor"]="#FF6500";
+	c["~","p4"]="#000000"; c["~","rcsb"]="#E93464"; c["~","taylor"]="#000000";
+	c["=","p4"]="#FFFFFF"; c["=","rcsb"]="#FFFFFF"; c["=","taylor"]="#FFFFFF";
+
+	isXPM=match(file, /\.xpm$/)
+	xyz=0; if(ssmode=="xyz") xyz=1;
+	fx=.5; if(ssmode=="box") fx=1;
+	nx=0; ny=0; ix=1; dy=1
+	fileName=file; sub(/\.[^\.]+$/, "", fileName)
+}
+
+isXPM && /x-label:/ { sub(/.*\(/,""); sub(/).*/,""); tu=$0; next }
+isXPM && ix && /x-axis/ { ix=0; x0=$3; dx=$4-x0;  next }
+isXPM && NF==1 { gsub(/[",\n\r]/, ""); zv[ny++]=$0; next } #"
+
+!isXPM && NF>0 { zv[nx++]=$0 }
+
+END { Pi=4*atan2(1,1)
+	if(isXPM) nx=length(zv[1])
+	else      ny=length(zv[1])
+	if(ny<maxRes) maxRes=ny
+
+	n=split("gmx vmd pdb rcsb taylor p1 p2 p3 p4 "color, arr)
+	for(i=1; i<=n; i++) {
+		for(v=1; v<=9; v++) {
+			for(ss in vss) if(vss[ss]==v) printf "c"v"=\""c[ss, arr[i]]"\"; ";
+			for(ss in vss) if(vss[ss]==v) printf "c"v"=\""c[ss, arr[i]]"\"; ">fileName"~count.gp"
+		}
+		print "#"arr[i]
+		print "#"arr[i] >fileName"~count.gp"
+	}
+
+	if(!xyz) {
+		fun["H"] = "H"; fun["G"] = "G"; fun["I"] = "I"; fun["P"] = "P";
+		fun["E"] = "E"; fun["B"] = "B"; fun["T"] = "T";  fun["S"] = "S";
+		fun["~"] = "C";
+		for(ss in fun)
+		printf "%s(n)=sprintf(\"set obj %%d fc rgb \\\"%%s\\\" " \
+				"fs solid border lw 1;\", n, c%d)\n", fun[ss], vss[ss]
+		print ""
+
+		Nh=10; dt=1./Nh; t=-dt;
+		for(i=0; i<=Nh; i++) {
+			t += dt
+			Hy[i]=Hy[2*Nh-i]=t*dy
+			Hx[i]=Hx[2*Nh-i]=fx*dx*sin(2*Pi*t)/2.
+		}
+
+		d=0; Nt=10; dt=1./Nt; t=-dt
+		for(i=0; i<=Nt; i++) {
+			t += dt;
+			Ty[i]=Ty[2*Nt-i]=dy*t
+			Tx[i]=Tx[2*Nt-i]=(t<d || t>1-d) ? 0 : dx*fx*((.5-t)^2/(.5-d)^2-1)/2.
+		}
+
+		Ns=10; dt=1./Ns; t=-dt;
+		for(i=0; i<=Ns; i++) {
+			t += dt
+			Sy[i]=Sy[2*Ns-i]=dy*t
+			Sx[i]=Sx[2*Ns-i]=dx*fx*(t<0.5 ? t: 1-t)
+		}
+	}
+
+	printf "\n$data <<EOD\n# residue index: %d-%d\n" \
+		"#      Time(%s)    %11s%11s%11s%11s%11s%11s%11s%11s%11s%16s\n",
+		minRes, maxRes, tu,
+		name["H"], name["G"], name["I"], name["P"],
+		name["E"], name["B"], name["T"], name["S"],
+		name["~"], name["="] >fileName"~count.gp"
+
+	nobj=0
+
+	if(xyz) print "\n$data <<EOD"
+	for(i=0; i<nx; i++) {
+		nss["H"] =0; nss["G"] =0; nss["I"] =0; nss["P"] =0; nss["~"] =0
+		nss["E"] =0; nss["B"] =0; nss["T"] =0; nss["S"] =0; nss["="] =0
+
+		x = x0+i*dx
+		for(j=minRes-1; j<maxRes; j++) {
+			y = ystart+(j+1-minRes)*dy
+			if(isXPM) txt=substr(zv[ny-1-j], i+1, 1)
+			else      txt=substr(zv[i], j+1, 1)
+			nss[txt]++; type[j]=txt
+			if(xyz) print x, y, vss[txt]
+		}
+
+		printf "%15.6f%11d%11d%11d%11d%11d%11d%11d%11d%11d%11d\n", x,
+			nss["H"], nss["G"], nss["I"], nss["P"],
+			nss["E"], nss["B"], nss["T"], nss["S"],
+			nss["~"], nss["="] >fileName"~count.gp"
+
+		if(!xyz) {
+			for(j=minRes-1; j<maxRes; j++) {
+				y = ystart+(j+1-minRes)*dy
+				for(jj=j+1; jj<maxRes && type[jj]==type[j]; jj++) type[jj]=""
+				if(type[j]) print obj(type[j], x, y, ystart+(jj-minRes)*dy, dx*fx, dy)
+			}
+		}
+	}
+
+	print "EOD\n"                                                                                 \
+		"\nset output \"ss~count.png\""                                                           \
+		"\nset term pngcairo enhanced truecolor font \"HelveticaNeueLT Pro 85 Hv,85\" \\"         \
+		"\n\tfontscale 1 linewidth 20 pointscale 5 size 6000,4000"                                \
+		"\nset tics out nomirror;"                                                                \
+		"\nset key out reverse Left spacing 2 samplen 1/2"                                        \
+		"\nset xl\"Time("tu")\"; set yl\"res%\";"                                                 \
+		"\nf=100./"ny";\nplot [0:] [0:100] $data \\"                                              \
+		"\n   u 1:(100-sum[i=2:2 ]column(i)*f) w filledcur y=0 fc rgb c9 t\"α-Helix     \", \\"   \
+		"\n\"\" u 1:(100-sum[i=2:3 ]column(i)*f) w filledcur y=0 fc rgb c8 t\"3_{10}-Helix\", \\" \
+		"\n\"\" u 1:(100-sum[i=2:4 ]column(i)*f) w filledcur y=0 fc rgb c7 t\"π-Helix     \", \\" \
+		"\n\"\" u 1:(100-sum[i=2:5 ]column(i)*f) w filledcur y=0 fc rgb c6 t\"PPII-Helix  \", \\" \
+		"\n\"\" u 1:(100-sum[i=2:6 ]column(i)*f) w filledcur y=0 fc rgb c5 t\"β-Sheet     \", \\" \
+		"\n\"\" u 1:(100-sum[i=2:7 ]column(i)*f) w filledcur y=0 fc rgb c4 t\"β-Bridge    \", \\" \
+		"\n\"\" u 1:(100-sum[i=2:8 ]column(i)*f) w filledcur y=0 fc rgb c3 t\"Turn        \", \\" \
+		"\n\"\" u 1:(100-sum[i=2:9 ]column(i)*f) w filledcur y=0 fc rgb c2 t\"Bend        \", \\" \
+		"\n\"\" u 1:(100-sum[i=2:10]column(i)*f) w filledcur y=0 fc rgb c1 t\"Coil        \"" >fileName"~count.gp"
+
+	if(!xyz) print "\n$data <<EOD\n0 0 0\n0 0 0\n0 0 0\n0 0 0"
+	print "EOD\n"
+
+	print "\nset pal defined( \\"
+	print "\t0.5 c1, 1.5 c1, 1.5 c2, 2.5 c2, 2.5 c3, 3.5 c3, \\"
+	print "\t3.5 c4, 4.5 c4, 4.5 c5, 5.5 c5, 5.5 c6, 6.5 c6, \\"
+	print "\t6.5 c7, 7.5 c7, 7.5 c8, 8.5 c8, 8.5 c9, 9.5 c9 )"
+	print "set cbtics ( \\"
+	print "\t\"C Coil        \" 1, \\"
+	print "\t\"S Bend        \" 2, \\"
+	print "\t\"T Turn        \" 3, \\"
+	print "\t\"B β-Bridge    \" 4, \\"
+	print "\t\"E β-Sheet     \" 5, \\"
+	print "\t\"P PPII-Helix  \" 6, \\"
+	print "\t\"I π-Helix     \" 7, \\"
+	print "\t\"G 3_{10}-Helix\" 8, \\"
+	print "\t\"H α-Helix     \" 9  )"
+	print "set cbr [.5:9.5]\n"
+
+	print "set output \"ss.png\""
+	print "set term pngcairo enhanced truecolor font \"HelveticaNeueLT Pro 85 Hv,85\" \\"
+	print "\tfontscale 1 linewidth 20 pointscale 5 size 6000,4000"
+	print "set tics out nomirror;"
+	print "set key out reverse Left spacing 2 samplen 1/2"
+	print "set xl\"Time("tu")\"; set yl\"#res\";"
+	print "plot ["x0-dx/2":"x0+(nx-1)*dx+dx/2"] " \
+			"["ystart":"ystart+(maxRes-minRes)*dy"] $data u 1:2:3 w imag notit"
+}
+
+function obj(type, x, y1, y2, dx, dy,    i,y, x1, x2) {
+
+	if(ssmode=="box") {
+		nobj++
+		x1 = x-dx/2; y1 -= dy/2
+		x2 = x+dx/2; y2 += dy/2
+		return "set obj "nobj" poly from " \
+		x1","y1" to "x1","y2" to " \
+		x2","y2" to "x2","y1" to "x1","y1"; eval "fun[type]"("nobj")"
+	}
+
+	if(type=="H" || type=="G" || type=="I" || type=="P") {
+		str=""
+		fdir=1; if(type=="P") fdir=-1
+		for(y=y1; y<=y2; y+=dy) {
+			nobj++
+			str=str"set obj "nobj" poly from   "x+fdir*Hx[0]","y+Hy[0]-dy/2
+			for(i=1; i<=2*Nh; i++) str=str" to "x+fdir*Hx[i]","y+Hy[i]-dy/2
+			str=str"; eval "fun[type]"("nobj")\n"
+		}
+		return str
+	}
+
+	if(type=="S") {
+		str=""
+		for(y=y1; y<=y2; y+=dy) {
+			nobj++
+			str=str"set obj "nobj" poly from   "x+Sx[0]","y+Sy[0]-dy/2
+			for(i=1; i<=2*Ns; i++) str=str" to "x+Sx[i]","y+Sy[i]-dy/2
+			str=str"; eval "fun[type]"("nobj")\n"
+		}
+		return str
+	}
+
+	if(type=="T") {
+		nobj++
+		y1 -= dy/2; y2 += dy/2
+		str="set obj "nobj" poly from "x+Tx[0]","y1+(y2-y1)*Ty[0]
+		for(i=1; i<=2*Nt; i++) str=str" to "x+Tx[i]","y1+(y2-y1)*Ty[i]
+		return str"; eval "fun[type]"("nobj")"
+	}
+
+	if(type=="B") {
+		nobj++
+		return "set obj "nobj" poly from " \
+			x-dx/2","y1-dy/2" to "x","y2+dy/2" to " \
+			x+dx/2","y1-dy/2" to "x-dx/2","y1-dy/2"; eval "fun[type]"("nobj")"
+	}
+
+	if(type=="E") {
+		nobj++
+		return "set obj "nobj" poly from " \
+			x-dx/4","y1-dy/2" to "x-dx/4","y2      " to " \
+			x-dx/2","y2     " to "x     ","y2+dy/2 " to " \
+			x+dx/2","y2     " to "x+dx/4","y2      " to " \
+			x+dx/4","y1-dy/2" to "x-dx/4","y1-dy/2 "; eval "fun[type]"("nobj")"
+	}
+
+	if(type=="~") {
+		nobj++
+		return "set obj "nobj" poly from " \
+		x","y1-dy/2" to "x","y2+dy/2" to "x","y1-dy/2 "; eval "fun[type]"("nobj")"
+	}
+}
+
+' $file > ${file%.*}.gp

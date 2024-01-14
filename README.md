@@ -55,10 +55,7 @@
 <tr>
 <td><code>xpm2all</code></td>
 <td><a href="https://jerkwin.github.io/2018/05/09/xpm%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86%E8%84%9A%E6%9C%AC/">xpm文件处理脚本</a><br>
-<a href="https://jerkwin.github.io/2020/02/29/%E5%88%86%E5%AD%90%E6%A8%A1%E6%8B%9F%E5%91%A8%E5%88%8A-%E7%AC%AC_8_%E6%9C%9F/">xpm2all: xpm文件转换工具</a><br>
-<a href="http://jerkwin.github.io/2020/07/10/%E4%BD%BF%E7%94%A8xpm2all%E8%84%9A%E6%9C%AC%E8%AE%A1%E7%AE%97%E8%9B%8B%E7%99%BD%E4%BA%8C%E7%BA%A7%E7%BB%93%E6%9E%84%E6%BC%94%E5%8C%96%E5%8F%8A%E5%90%AB%E9%87%8F/">使用xpm2all脚本计算蛋白二级结构演化及含量</a><br>
-<a href="https://jerkwin.github.io/2021/03/30/xpm2all%E6%9B%B4%E6%96%B0-%E4%BA%8C%E7%BA%A7%E7%BB%93%E6%9E%84%E7%BB%98%E5%88%B6,_%E9%A2%9C%E8%89%B2%E6%96%B9%E6%A1%88/">xpm2all更新：二级结构绘制, 颜色方案</a>
-
+<a href="https://jerkwin.github.io/2020/02/29/%E5%88%86%E5%AD%90%E6%A8%A1%E6%8B%9F%E5%91%A8%E5%88%8A-%E7%AC%AC_8_%E6%9C%9F/">xpm2all: xpm文件转换工具</a>
 </td>
 <td><a href="./xpm2all/xpm2all.bsh">xpm2all.bsh</a><br>
 <a href="./xpm2all/xpm2rgb.bat">xpm2rgb.bat</a>
@@ -66,6 +63,15 @@
 <td><a href="./xpm2all/ss.xpm">ss.xpm</a><br>
 <a href="./xpm2all/gibbs.xpm">gibbs.xpm</a>
 </td>
+</tr>
+
+<tr>
+<td><code>dssp2gp</code></td>
+<td><a href="http://jerkwin.github.io/2020/07/10/%E4%BD%BF%E7%94%A8xpm2all%E8%84%9A%E6%9C%AC%E8%AE%A1%E7%AE%97%E8%9B%8B%E7%99%BD%E4%BA%8C%E7%BA%A7%E7%BB%93%E6%9E%84%E6%BC%94%E5%8C%96%E5%8F%8A%E5%90%AB%E9%87%8F/">使用xpm2all脚本计算蛋白二级结构演化及含量</a><br>
+<a href="https://jerkwin.github.io/2021/03/30/xpm2all%E6%9B%B4%E6%96%B0-%E4%BA%8C%E7%BA%A7%E7%BB%93%E6%9E%84%E7%BB%98%E5%88%B6,_%E9%A2%9C%E8%89%B2%E6%96%B9%E6%A1%88/">xpm2all更新：二级结构绘制, 颜色方案</a>
+</td>
+<td><a href="./dssp2gp/dssp2gp.bsh">dssp2gp.bsh</a></td>
+<td><a href="./dssp2gp/ss.xpm">dssp.dat</a></td>
 </tr>
 
 <tr>
@@ -132,7 +138,7 @@
 
 <tr>
 <td><code>matchmol</code></td>
-<td><a href="https://jerkwin.github.io/2022/09/02/%E6%B0%B4%E6%BA%B6%E6%B6%B2%E4%BD%93%E7%B3%BB%E6%88%90%E7%AC%BC%E5%88%86%E6%9E%90%E7%A8%8B%E5%BA%8Fcagen/">分子结构匹配程序matchmol</a></td>
+<td><a href="https://jerkwin.github.io/2023/06/02/%E5%88%86%E5%AD%90%E7%BB%93%E6%9E%84%E5%8C%B9%E9%85%8D%E7%A8%8B%E5%BA%8Fmatchmol/">分子结构匹配程序matchmol</a></td>
 <td>N/A</td>
 <td><a href="./matchmol/matchmol.zip">matchmol.zip</a></td>
 </tr>
