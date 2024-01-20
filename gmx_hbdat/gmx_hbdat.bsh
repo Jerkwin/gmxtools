@@ -1,7 +1,7 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_hbdat    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2023-06-05 00:54:15     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2024-01-20 15:42:55     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_hbdat -s     *.tpr  -n     *.ndx  -m     *.xpm
 >> Default: gmx_hbdat -s topol.tpr  -n hbond.ndx  -m hbmap.xpm
 
@@ -42,7 +42,7 @@ $dump -s $tpr -quiet 2>>/dev/null | awk -v ndx=$ndx -v xpm=$xpm '
 			if(index($0, "y-axis")) isHB=1
 			if(isHB && index($0, "\"")) {
 				nhb++
-				n=0; gsub(/[,\"]/, "")
+				n=0; gsub(/[,"]/, "") #"
 				for(i=1; i<=length($0); i++) if(substr($0, i, 1)=="o") n++
 				occ[nhb]=n*100/length($0)
 			}
@@ -69,7 +69,7 @@ $dump -s $tpr -quiet 2>>/dev/null | awk -v ndx=$ndx -v xpm=$xpm '
 
 	/residue\[/ { nres++
 		sub(/.*="/,"",$0); sub(/".*/,"",$0);
-		resName[nres]=sprintf("%4d%s", nres, $0)
+		resName[nres]=sprintf("%4d-%s", nres, $0)
 	}
 
 	END {
@@ -88,11 +88,11 @@ $dump -s $tpr -quiet 2>>/dev/null | awk -v ndx=$ndx -v xpm=$xpm '
 			}
 		}
 
-		print "#HBond #atom                 mol.         #res Donor-H     mol.         #res Acceptor  Occupancy%   inter?  Label"
+		print "#HBond #atom                 mol.             #res Donor-H        mol.              #res Acceptor      Occupancy%   inter?  Label"
 		fmt="%4d   %-20s %-"maxlen"s %8s %-9s  %-"maxlen"s %8s %-9s %9.3f    %4d    %-s\n"
 		for(i=1; i<=nhb; i++) {
 			split(Label[don[i]]" "Label[hyd[i]]" "Label[acc[i]], arr)
-
+			
 			n=arr[3]; sub(/[^0-9]+/, "", n)
 			s=arr[3]; sub(/[0-9]+/,  "", s)
 			tag=sname[s]""n"@"arr[4]"-"arr[8]

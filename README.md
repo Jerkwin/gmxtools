@@ -33,7 +33,7 @@
 
 <tr>
 <td><code>graphene</code></td>
-<td><a href="http://jerkwin.github.io/2014/05/09/%E7%9F%B3%E5%A2%A8%E7%83%AF-%E5%BB%BA%E6%A8%A1-%E5%87%A0%E4%BD%95%E6%80%A7%E8%B4%A8%E5%8F%8A%E5%8A%9B%E5%9C%BA%E6%A8%A1%E6%8B%9F/">石墨烯：建模, 几何性质及力场模拟</a><br>
+<td><a href="https://jerkwin.github.io/2014/05/09/%E7%9F%B3%E5%A2%A8%E7%83%AF-%E5%BB%BA%E6%A8%A1-%E5%87%A0%E4%BD%95%E6%80%A7%E8%B4%A8%E5%8F%8A%E5%8A%9B%E5%9C%BA%E6%A8%A1%E6%8B%9F/">石墨烯：建模, 几何性质及力场模拟</a><br>
 <a href="https://jerkwin.github.io/2014/12/24/%E7%9F%B3%E5%A2%A8%E7%83%AF%E5%9C%A8%E7%BA%BF%E5%88%9B%E5%BB%BA%E5%B7%A5%E5%85%B7/">石墨烯在线创建工具</a><br>
 <a href="https://jerkwin.github.io/GMX/GMXtut-8/">创建周期性体系的拓扑文件：以石墨烯为例</a><br>
 <a href="https://jerkwin.github.io/2020/04/05/%E6%B0%A7%E5%8C%96%E7%9F%B3%E5%A2%A8%E7%83%AF%E7%9A%84%E7%BB%93%E6%9E%84%E4%B8%8E%E5%BB%BA%E6%A8%A1/">氧化石墨烯的结构与建模</a><br>
@@ -67,8 +67,10 @@
 
 <tr>
 <td><code>dssp2gp</code></td>
-<td><a href="http://jerkwin.github.io/2020/07/10/%E4%BD%BF%E7%94%A8xpm2all%E8%84%9A%E6%9C%AC%E8%AE%A1%E7%AE%97%E8%9B%8B%E7%99%BD%E4%BA%8C%E7%BA%A7%E7%BB%93%E6%9E%84%E6%BC%94%E5%8C%96%E5%8F%8A%E5%90%AB%E9%87%8F/">使用xpm2all脚本计算蛋白二级结构演化及含量</a><br>
-<a href="https://jerkwin.github.io/2021/03/30/xpm2all%E6%9B%B4%E6%96%B0-%E4%BA%8C%E7%BA%A7%E7%BB%93%E6%9E%84%E7%BB%98%E5%88%B6,_%E9%A2%9C%E8%89%B2%E6%96%B9%E6%A1%88/">xpm2all更新：二级结构绘制, 颜色方案</a>
+<td><a href="https://jerkwin.github.io/2020/07/10/%E4%BD%BF%E7%94%A8xpm2all%E8%84%9A%E6%9C%AC%E8%AE%A1%E7%AE%97%E8%9B%8B%E7%99%BD%E4%BA%8C%E7%BA%A7%E7%BB%93%E6%9E%84%E6%BC%94%E5%8C%96%E5%8F%8A%E5%90%AB%E9%87%8F/">使用xpm2all脚本计算蛋白二级结构演化及含量</a><br>
+<a href="https://jerkwin.github.io/2021/03/30/xpm2all%E6%9B%B4%E6%96%B0-%E4%BA%8C%E7%BA%A7%E7%BB%93%E6%9E%84%E7%BB%98%E5%88%B6,_%E9%A2%9C%E8%89%B2%E6%96%B9%E6%A1%88/">xpm2all更新：二级结构绘制, 颜色方案</a><br>
+<a href="https://jerkwin.github.io/2024/01/14/dssp%E6%95%B0%E6%8D%AE%E7%BB%98%E5%9B%BE%E8%84%9A%E6%9C%ACdssp2gp/">dssp数据绘图脚本dssp2gp</a>
+
 </td>
 <td><a href="./dssp2gp/dssp2gp.bsh">dssp2gp.bsh</a></td>
 <td><a href="./dssp2gp/ss.xpm">dssp.dat</a></td>
@@ -80,7 +82,7 @@
 <a href="https://jerkwin.github.io/2019/07/31/gmx_mmpbsa%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">gmx_mmpbsa使用说明</a><br>
 <a href="https://jerkwin.github.io/2021/03/16/gmx_mmpbsa%E8%84%9A%E6%9C%AC%E6%9B%B4%E6%96%B0-%E5%B1%8F%E8%94%BD%E6%95%88%E5%BA%94%E4%B8%8E%E7%86%B5%E8%B4%A1%E7%8C%AE/">gmx_mmpbsa脚本更新：屏蔽效应与熵贡献</a><br>
 <a href="https://jerkwin.github.io/2021/11/26/gmx_mmpbsa%E8%84%9A%E6%9C%AC%E6%9B%B4%E6%96%B0-%E6%B8%85%E7%90%86%E6%95%B4%E7%90%86%E8%BE%93%E5%87%BA/">gmx_mmpbsa脚本更新：清理整理输出</a><br>
-<a href="http://jerkwin.github.io/2022/02/09/gmx_mmpbsa%E6%9B%B4%E6%96%B0-%E4%BF%AE%E6%AD%A3%E5%8E%9F%E5%AD%90%E5%8D%8A%E5%BE%84bug,_%E6%94%B9%E7%94%A8AMBRR_PB4,_%E4%B8%99%E6%B0%A8%E9%85%B8%E6%89%AB%E6%8F%8FCAS/">gmx_mmpbsa更新：修正原子半径bug, 改用AMBRR PB4, 丙氨酸扫描CAS</a>
+<a href="https://jerkwin.github.io/2022/02/09/gmx_mmpbsa%E6%9B%B4%E6%96%B0-%E4%BF%AE%E6%AD%A3%E5%8E%9F%E5%AD%90%E5%8D%8A%E5%BE%84bug,_%E6%94%B9%E7%94%A8AMBRR_PB4,_%E4%B8%99%E6%B0%A8%E9%85%B8%E6%89%AB%E6%8F%8FCAS/">gmx_mmpbsa更新：修正原子半径bug, 改用AMBRR PB4, 丙氨酸扫描CAS</a>
 
 </td>
 <td><a href="./gmx_mmpbsa/gmx_mmpbsa.bsh">gmx_mmpbsa.bsh</a></td>
@@ -113,7 +115,7 @@
 
 <tr>
 <td><code>xff</code></td>
-<td><a href="http://jerkwin.github.io/2022/04/15/%E5%8A%9B%E5%9C%BA%E6%8B%9F%E5%90%88%E5%B7%A5%E5%85%B7xff%E5%BC%80%E5%8F%91%E6%9D%82%E8%AE%B0/">力场拟合工具xff开发杂记</a></td>
+<td><a href="https://jerkwin.github.io/2022/04/15/%E5%8A%9B%E5%9C%BA%E6%8B%9F%E5%90%88%E5%B7%A5%E5%85%B7xff%E5%BC%80%E5%8F%91%E6%9D%82%E8%AE%B0/">力场拟合工具xff开发杂记</a></td>
 <td><a href="./xff/xff.html">xff</a></td>
 <td><a href="./xff/c6h6.fchk">c6h6.fchk</a><br>
 <a href="./xff/sf6.FChk">sf6.FChk</a>

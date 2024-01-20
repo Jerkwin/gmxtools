@@ -1,255 +1,255 @@
-#Donor                   Hydrogen                 Acceptor                  Occupancy%
-1#"Protein"_1THR@N       2#"Protein"_1THR@H1      13#"Protein"_1THR@OG1            0.3
-1#"Protein"_1THR@N       2#"Protein"_1THR@H1      16#"Protein"_1THR@O              0.1
-1#"Protein"_1THR@N       2#"Protein"_1THR@H1      27#"Protein"_2THR@OG1            0.2
-1#"Protein"_1THR@N       2#"Protein"_1THR@H1      334#"Protein"_23GLU@OE2          1.3
-1#"Protein"_1THR@N       2#"Protein"_1THR@H1      508#"Protein"_35ILE@O           45.0
-1#"Protein"_1THR@N       2#"Protein"_1THR@H1      522#"Protein"_36PRO@O            2.5
-1#"Protein"_1THR@N       2#"Protein"_1THR@H1      523#"Protein"_37GLY@N            0.2
-13#"Protein"_1THR@OG1    14#"Protein"_1THR@HG1    16#"Protein"_1THR@O              0.1
-13#"Protein"_1THR@OG1    14#"Protein"_1THR@HG1    508#"Protein"_35ILE@O            3.8
-13#"Protein"_1THR@OG1    14#"Protein"_1THR@HG1    522#"Protein"_36PRO@O            6.4
-13#"Protein"_1THR@OG1    14#"Protein"_1THR@HG1    523#"Protein"_37GLY@N            1.8
-13#"Protein"_1THR@OG1    14#"Protein"_1THR@HG1    529#"Protein"_37GLY@O            7.2
-13#"Protein"_1THR@OG1    14#"Protein"_1THR@HG1    530#"Protein"_38ALA@N            2.7
-13#"Protein"_1THR@OG1    14#"Protein"_1THR@HG1    539#"Protein"_38ALA@O            5.9
-17#"Protein"_2THR@N      18#"Protein"_2THR@H      27#"Protein"_2THR@OG1            0.2
-27#"Protein"_2THR@OG1    28#"Protein"_2THR@HG1    16#"Protein"_1THR@O              2.8
-27#"Protein"_2THR@OG1    28#"Protein"_2THR@HG1    30#"Protein"_2THR@O              2.3
-27#"Protein"_2THR@OG1    28#"Protein"_2THR@HG1    31#"Protein"_3CYS@N              0.4
-27#"Protein"_2THR@OG1    28#"Protein"_2THR@HG1    40#"Protein"_3CYS@O              0.2
-27#"Protein"_2THR@OG1    28#"Protein"_2THR@HG1    137#"Protein"_10ARG@NH1          5.9
-27#"Protein"_2THR@OG1    28#"Protein"_2THR@HG1    140#"Protein"_10ARG@NH2          0.8
-27#"Protein"_2THR@OG1    28#"Protein"_2THR@HG1    333#"Protein"_23GLU@OE1          2.2
-27#"Protein"_2THR@OG1    28#"Protein"_2THR@HG1    334#"Protein"_23GLU@OE2          0.8
-27#"Protein"_2THR@OG1    28#"Protein"_2THR@HG1    451#"Protein"_32CYS@O            0.1
-27#"Protein"_2THR@OG1    28#"Protein"_2THR@HG1    452#"Protein"_33ILE@N            0.1
-27#"Protein"_2THR@OG1    28#"Protein"_2THR@HG1    470#"Protein"_33ILE@O            1.6
-27#"Protein"_2THR@OG1    28#"Protein"_2THR@HG1    471#"Protein"_34ILE@N            0.1
-31#"Protein"_3CYS@N      32#"Protein"_3CYS@H      16#"Protein"_1THR@O              0.3
-31#"Protein"_3CYS@N      32#"Protein"_3CYS@H      140#"Protein"_10ARG@NH2          0.2
-31#"Protein"_3CYS@N      32#"Protein"_3CYS@H      451#"Protein"_32CYS@O            0.1
-31#"Protein"_3CYS@N      32#"Protein"_3CYS@H      452#"Protein"_33ILE@N            0.1
-31#"Protein"_3CYS@N      32#"Protein"_3CYS@H      470#"Protein"_33ILE@O           61.8
-41#"Protein"_4CYS@N      42#"Protein"_4CYS@H      30#"Protein"_2THR@O              0.1
-41#"Protein"_4CYS@N      42#"Protein"_4CYS@H      137#"Protein"_10ARG@NH1          0.0
-41#"Protein"_4CYS@N      42#"Protein"_4CYS@H      140#"Protein"_10ARG@NH2          2.9
-41#"Protein"_4CYS@N      42#"Protein"_4CYS@H      641#"Protein"_46ASN@OC1         54.8
-41#"Protein"_4CYS@N      42#"Protein"_4CYS@H      642#"Protein"_46ASN@OC2         25.8
-65#"Protein"_6SER@N      66#"Protein"_6SER@H      50#"Protein"_4CYS@O              2.0
-65#"Protein"_6SER@N      66#"Protein"_6SER@H      72#"Protein"_6SER@OG             0.1
-65#"Protein"_6SER@N      66#"Protein"_6SER@H      637#"Protein"_46ASN@ND2          0.6
-72#"Protein"_6SER@OG     73#"Protein"_6SER@HG     64#"Protein"_5PRO@O              5.1
-72#"Protein"_6SER@OG     73#"Protein"_6SER@HG     75#"Protein"_6SER@O              0.5
-72#"Protein"_6SER@OG     73#"Protein"_6SER@HG     76#"Protein"_7ILE@N              1.8
-72#"Protein"_6SER@OG     73#"Protein"_6SER@HG     95#"Protein"_8VAL@N             20.0
-72#"Protein"_6SER@OG     73#"Protein"_6SER@HG     111#"Protein"_9ALA@N            20.6
-76#"Protein"_7ILE@N      77#"Protein"_7ILE@H      636#"Protein"_46ASN@OD1          0.4
-76#"Protein"_7ILE@N      77#"Protein"_7ILE@H      637#"Protein"_46ASN@ND2          1.2
-95#"Protein"_8VAL@N      96#"Protein"_8VAL@H      75#"Protein"_6SER@O              0.5
-95#"Protein"_8VAL@N      96#"Protein"_8VAL@H      152#"Protein"_11SER@OG           0.1
-111#"Protein"_9ALA@N     112#"Protein"_9ALA@H     75#"Protein"_6SER@O             16.7
-111#"Protein"_9ALA@N     112#"Protein"_9ALA@H     94#"Protein"_7ILE@O              0.1
-121#"Protein"_10ARG@N    122#"Protein"_10ARG@H    75#"Protein"_6SER@O             42.0
-121#"Protein"_10ARG@N    122#"Protein"_10ARG@H    94#"Protein"_7ILE@O             13.3
-121#"Protein"_10ARG@N    122#"Protein"_10ARG@H    110#"Protein"_8VAL@O             0.2
-121#"Protein"_10ARG@N    122#"Protein"_10ARG@H    170#"Protein"_13PHE@N            0.2
-134#"Protein"_10ARG@NE   135#"Protein"_10ARG@HE   120#"Protein"_9ALA@O             2.1
-134#"Protein"_10ARG@NE   135#"Protein"_10ARG@HE   637#"Protein"_46ASN@ND2          0.2
-134#"Protein"_10ARG@NE   135#"Protein"_10ARG@HE   641#"Protein"_46ASN@OC1         46.9
-134#"Protein"_10ARG@NE   135#"Protein"_10ARG@HE   642#"Protein"_46ASN@OC2         34.5
-137#"Protein"_10ARG@NH1  138#"Protein"_10ARG@HH11 30#"Protein"_2THR@O              6.5
-137#"Protein"_10ARG@NH1  138#"Protein"_10ARG@HH11 144#"Protein"_10ARG@O            0.5
-137#"Protein"_10ARG@NH1  138#"Protein"_10ARG@HH11 189#"Protein"_13PHE@O            0.7
-137#"Protein"_10ARG@NH1  138#"Protein"_10ARG@HH11 198#"Protein"_14ASN@OD1          0.4
-137#"Protein"_10ARG@NH1  138#"Protein"_10ARG@HH11 641#"Protein"_46ASN@OC1          0.2
-137#"Protein"_10ARG@NH1  138#"Protein"_10ARG@HH11 642#"Protein"_46ASN@OC2          0.3
-140#"Protein"_10ARG@NH2  141#"Protein"_10ARG@HH21 30#"Protein"_2THR@O             30.4
-140#"Protein"_10ARG@NH2  141#"Protein"_10ARG@HH21 50#"Protein"_4CYS@O              0.0
-140#"Protein"_10ARG@NH2  141#"Protein"_10ARG@HH21 641#"Protein"_46ASN@OC1         44.3
-140#"Protein"_10ARG@NH2  141#"Protein"_10ARG@HH21 642#"Protein"_46ASN@OC2         49.5
-145#"Protein"_11SER@N    146#"Protein"_11SER@H    94#"Protein"_7ILE@O             64.1
-145#"Protein"_11SER@N    146#"Protein"_11SER@H    110#"Protein"_8VAL@O             9.1
-145#"Protein"_11SER@N    146#"Protein"_11SER@H    152#"Protein"_11SER@OG           0.0
-145#"Protein"_11SER@N    146#"Protein"_11SER@H    156#"Protein"_12ASN@N            0.0
-152#"Protein"_11SER@OG   153#"Protein"_11SER@HG   94#"Protein"_7ILE@O             28.1
-152#"Protein"_11SER@OG   153#"Protein"_11SER@HG   110#"Protein"_8VAL@O             1.0
-152#"Protein"_11SER@OG   153#"Protein"_11SER@HG   156#"Protein"_12ASN@N            0.1
-152#"Protein"_11SER@OG   153#"Protein"_11SER@HG   199#"Protein"_14ASN@ND2          0.1
-156#"Protein"_12ASN@N    157#"Protein"_12ASN@H    110#"Protein"_8VAL@O            43.4
-156#"Protein"_12ASN@N    157#"Protein"_12ASN@H    120#"Protein"_9ALA@O            19.0
-156#"Protein"_12ASN@N    157#"Protein"_12ASN@H    144#"Protein"_10ARG@O            1.4
-156#"Protein"_12ASN@N    157#"Protein"_12ASN@H    164#"Protein"_12ASN@OD1          0.4
-156#"Protein"_12ASN@N    157#"Protein"_12ASN@H    165#"Protein"_12ASN@ND2          0.2
-165#"Protein"_12ASN@ND2  166#"Protein"_12ASN@HD21 110#"Protein"_8VAL@O             8.4
-165#"Protein"_12ASN@ND2  166#"Protein"_12ASN@HD21 120#"Protein"_9ALA@O             0.2
-165#"Protein"_12ASN@ND2  166#"Protein"_12ASN@HD21 155#"Protein"_11SER@O            0.0
-165#"Protein"_12ASN@ND2  166#"Protein"_12ASN@HD21 169#"Protein"_12ASN@O            1.5
-165#"Protein"_12ASN@ND2  166#"Protein"_12ASN@HD21 413#"Protein"_29TYR@OH           9.6
-170#"Protein"_13PHE@N    171#"Protein"_13PHE@H    110#"Protein"_8VAL@O             0.1
-170#"Protein"_13PHE@N    171#"Protein"_13PHE@H    120#"Protein"_9ALA@O            38.4
-170#"Protein"_13PHE@N    171#"Protein"_13PHE@H    144#"Protein"_10ARG@O           20.4
-170#"Protein"_13PHE@N    171#"Protein"_13PHE@H    155#"Protein"_11SER@O            0.4
-170#"Protein"_13PHE@N    171#"Protein"_13PHE@H    164#"Protein"_12ASN@OD1          0.1
-170#"Protein"_13PHE@N    171#"Protein"_13PHE@H    190#"Protein"_14ASN@N            0.0
-190#"Protein"_14ASN@N    191#"Protein"_14ASN@H    144#"Protein"_10ARG@O           11.7
-190#"Protein"_14ASN@N    191#"Protein"_14ASN@H    155#"Protein"_11SER@O           18.7
-190#"Protein"_14ASN@N    191#"Protein"_14ASN@H    169#"Protein"_12ASN@O            3.7
-190#"Protein"_14ASN@N    191#"Protein"_14ASN@H    198#"Protein"_14ASN@OD1          1.9
-190#"Protein"_14ASN@N    191#"Protein"_14ASN@H    199#"Protein"_14ASN@ND2          1.0
-190#"Protein"_14ASN@N    191#"Protein"_14ASN@H    204#"Protein"_15VAL@N            0.0
-199#"Protein"_14ASN@ND2  200#"Protein"_14ASN@HD21 144#"Protein"_10ARG@O            4.7
-199#"Protein"_14ASN@ND2  200#"Protein"_14ASN@HD21 155#"Protein"_11SER@O            6.7
-199#"Protein"_14ASN@ND2  200#"Protein"_14ASN@HD21 189#"Protein"_13PHE@O            0.5
-199#"Protein"_14ASN@ND2  200#"Protein"_14ASN@HD21 243#"Protein"_17ARG@NE           0.1
-199#"Protein"_14ASN@ND2  200#"Protein"_14ASN@HD21 249#"Protein"_17ARG@NH2          0.9
-204#"Protein"_15VAL@N    205#"Protein"_15VAL@H    155#"Protein"_11SER@O            6.9
-204#"Protein"_15VAL@N    205#"Protein"_15VAL@H    169#"Protein"_12ASN@O           37.7
-204#"Protein"_15VAL@N    205#"Protein"_15VAL@H    189#"Protein"_13PHE@O            3.7
-204#"Protein"_15VAL@N    205#"Protein"_15VAL@H    220#"Protein"_16CYS@N            0.0
-204#"Protein"_15VAL@N    205#"Protein"_15VAL@H    230#"Protein"_17ARG@N            0.1
-220#"Protein"_16CYS@N    221#"Protein"_16CYS@H    169#"Protein"_12ASN@O           14.8
-220#"Protein"_16CYS@N    221#"Protein"_16CYS@H    189#"Protein"_13PHE@O           31.3
-220#"Protein"_16CYS@N    221#"Protein"_16CYS@H    203#"Protein"_14ASN@O            0.2
-220#"Protein"_16CYS@N    221#"Protein"_16CYS@H    230#"Protein"_17ARG@N            0.0
-220#"Protein"_16CYS@N    221#"Protein"_16CYS@H    413#"Protein"_29TYR@OH           1.1
-230#"Protein"_17ARG@N    231#"Protein"_17ARG@H    189#"Protein"_13PHE@O            3.5
-230#"Protein"_17ARG@N    231#"Protein"_17ARG@H    203#"Protein"_14ASN@O           16.3
-230#"Protein"_17ARG@N    231#"Protein"_17ARG@H    219#"Protein"_15VAL@O            5.2
-230#"Protein"_17ARG@N    231#"Protein"_17ARG@H    254#"Protein"_18LEU@N            0.0
-230#"Protein"_17ARG@N    231#"Protein"_17ARG@H    333#"Protein"_23GLU@OE1          0.0
-243#"Protein"_17ARG@NE   244#"Protein"_17ARG@HE   198#"Protein"_14ASN@OD1          1.8
-243#"Protein"_17ARG@NE   244#"Protein"_17ARG@HE   254#"Protein"_18LEU@N            0.1
-243#"Protein"_17ARG@NE   244#"Protein"_17ARG@HE   321#"Protein"_22PRO@O            0.3
-243#"Protein"_17ARG@NE   244#"Protein"_17ARG@HE   333#"Protein"_23GLU@OE1          3.5
-246#"Protein"_17ARG@NH1  247#"Protein"_17ARG@HH11 253#"Protein"_17ARG@O            0.7
-246#"Protein"_17ARG@NH1  247#"Protein"_17ARG@HH11 293#"Protein"_20GLY@O            1.3
-246#"Protein"_17ARG@NH1  247#"Protein"_17ARG@HH11 294#"Protein"_21THR@N            0.0
-246#"Protein"_17ARG@NH1  247#"Protein"_17ARG@HH11 307#"Protein"_21THR@O           16.8
-249#"Protein"_17ARG@NH2  250#"Protein"_17ARG@HH21 198#"Protein"_14ASN@OD1          1.7
-249#"Protein"_17ARG@NH2  250#"Protein"_17ARG@HH21 333#"Protein"_23GLU@OE1          1.4
-249#"Protein"_17ARG@NH2  250#"Protein"_17ARG@HH21 334#"Protein"_23GLU@OE2          0.1
-254#"Protein"_18LEU@N    255#"Protein"_18LEU@H    203#"Protein"_14ASN@O            2.2
-254#"Protein"_18LEU@N    255#"Protein"_18LEU@H    219#"Protein"_15VAL@O           38.0
-254#"Protein"_18LEU@N    255#"Protein"_18LEU@H    229#"Protein"_16CYS@O            1.1
-254#"Protein"_18LEU@N    255#"Protein"_18LEU@H    287#"Protein"_20GLY@N            0.3
-287#"Protein"_20GLY@N    288#"Protein"_20GLY@H    229#"Protein"_16CYS@O            1.8
-287#"Protein"_20GLY@N    288#"Protein"_20GLY@H    253#"Protein"_17ARG@O           35.9
-287#"Protein"_20GLY@N    288#"Protein"_20GLY@H    272#"Protein"_18LEU@O           14.9
-287#"Protein"_20GLY@N    288#"Protein"_20GLY@H    273#"Protein"_19PRO@N            0.0
-287#"Protein"_20GLY@N    288#"Protein"_20GLY@H    294#"Protein"_21THR@N            0.1
-287#"Protein"_20GLY@N    288#"Protein"_20GLY@H    304#"Protein"_21THR@OG1          1.1
-294#"Protein"_21THR@N    295#"Protein"_21THR@H    229#"Protein"_16CYS@O            2.7
-294#"Protein"_21THR@N    295#"Protein"_21THR@H    253#"Protein"_17ARG@O           24.4
-294#"Protein"_21THR@N    295#"Protein"_21THR@H    286#"Protein"_19PRO@O            2.1
-294#"Protein"_21THR@N    295#"Protein"_21THR@H    304#"Protein"_21THR@OG1          0.1
-304#"Protein"_21THR@OG1  305#"Protein"_21THR@HG1  229#"Protein"_16CYS@O           10.8
-304#"Protein"_21THR@OG1  305#"Protein"_21THR@HG1  253#"Protein"_17ARG@O            0.7
-304#"Protein"_21THR@OG1  305#"Protein"_21THR@HG1  286#"Protein"_19PRO@O            3.1
-304#"Protein"_21THR@OG1  305#"Protein"_21THR@HG1  293#"Protein"_20GLY@O            4.0
-304#"Protein"_21THR@OG1  305#"Protein"_21THR@HG1  322#"Protein"_23GLU@N            0.2
-304#"Protein"_21THR@OG1  305#"Protein"_21THR@HG1  336#"Protein"_23GLU@O            0.0
-322#"Protein"_23GLU@N    323#"Protein"_23GLU@H    229#"Protein"_16CYS@O            0.4
-322#"Protein"_23GLU@N    323#"Protein"_23GLU@H    307#"Protein"_21THR@O           32.2
-322#"Protein"_23GLU@N    323#"Protein"_23GLU@H    333#"Protein"_23GLU@OE1          0.0
-322#"Protein"_23GLU@N    323#"Protein"_23GLU@H    337#"Protein"_24ALA@N            0.1
-337#"Protein"_24ALA@N    338#"Protein"_24ALA@H    321#"Protein"_22PRO@O           27.5
-337#"Protein"_24ALA@N    338#"Protein"_24ALA@H    347#"Protein"_25ILE@N            0.0
-337#"Protein"_24ALA@N    338#"Protein"_24ALA@H    366#"Protein"_26CYS@N            0.4
-337#"Protein"_24ALA@N    338#"Protein"_24ALA@H    376#"Protein"_27ALA@N            0.0
-347#"Protein"_25ILE@N    348#"Protein"_25ILE@H    321#"Protein"_22PRO@O            5.7
-347#"Protein"_25ILE@N    348#"Protein"_25ILE@H    336#"Protein"_23GLU@O           16.9
-347#"Protein"_25ILE@N    348#"Protein"_25ILE@H    366#"Protein"_26CYS@N            0.0
-347#"Protein"_25ILE@N    348#"Protein"_25ILE@H    376#"Protein"_27ALA@N            0.1
-366#"Protein"_26CYS@N    367#"Protein"_26CYS@H    321#"Protein"_22PRO@O            4.8
-366#"Protein"_26CYS@N    367#"Protein"_26CYS@H    336#"Protein"_23GLU@O           36.8
-366#"Protein"_26CYS@N    367#"Protein"_26CYS@H    346#"Protein"_24ALA@O            0.4
-366#"Protein"_26CYS@N    367#"Protein"_26CYS@H    376#"Protein"_27ALA@N            0.0
-376#"Protein"_27ALA@N    377#"Protein"_27ALA@H    336#"Protein"_23GLU@O           11.1
-376#"Protein"_27ALA@N    377#"Protein"_27ALA@H    346#"Protein"_24ALA@O           18.7
-376#"Protein"_27ALA@N    377#"Protein"_27ALA@H    365#"Protein"_25ILE@O            0.5
-376#"Protein"_27ALA@N    377#"Protein"_27ALA@H    400#"Protein"_29TYR@N            0.1
-386#"Protein"_28THR@N    387#"Protein"_28THR@H    346#"Protein"_24ALA@O            6.5
-386#"Protein"_28THR@N    387#"Protein"_28THR@H    365#"Protein"_25ILE@O           15.2
-386#"Protein"_28THR@N    387#"Protein"_28THR@H    375#"Protein"_26CYS@O            0.7
-386#"Protein"_28THR@N    387#"Protein"_28THR@H    396#"Protein"_28THR@OG1          0.1
-386#"Protein"_28THR@N    387#"Protein"_28THR@H    400#"Protein"_29TYR@N            0.0
-396#"Protein"_28THR@OG1  397#"Protein"_28THR@HG1  346#"Protein"_24ALA@O            4.0
-396#"Protein"_28THR@OG1  397#"Protein"_28THR@HG1  365#"Protein"_25ILE@O            5.5
-396#"Protein"_28THR@OG1  397#"Protein"_28THR@HG1  399#"Protein"_28THR@O            0.4
-396#"Protein"_28THR@OG1  397#"Protein"_28THR@HG1  400#"Protein"_29TYR@N            1.1
-400#"Protein"_29TYR@N    401#"Protein"_29TYR@H    365#"Protein"_25ILE@O           32.7
-400#"Protein"_29TYR@N    401#"Protein"_29TYR@H    375#"Protein"_26CYS@O           10.1
-400#"Protein"_29TYR@N    401#"Protein"_29TYR@H    385#"Protein"_27ALA@O            3.0
-400#"Protein"_29TYR@N    401#"Protein"_29TYR@H    421#"Protein"_30THR@N            0.0
-400#"Protein"_29TYR@N    401#"Protein"_29TYR@H    435#"Protein"_31GLY@N            0.0
-413#"Protein"_29TYR@OH   414#"Protein"_29TYR@HH   164#"Protein"_12ASN@OD1         11.5
-413#"Protein"_29TYR@OH   414#"Protein"_29TYR@HH   169#"Protein"_12ASN@O           13.5
-413#"Protein"_29TYR@OH   414#"Protein"_29TYR@HH   189#"Protein"_13PHE@O            5.4
-421#"Protein"_30THR@N    422#"Protein"_30THR@H    375#"Protein"_26CYS@O           30.9
-421#"Protein"_30THR@N    422#"Protein"_30THR@H    385#"Protein"_27ALA@O           13.0
-421#"Protein"_30THR@N    422#"Protein"_30THR@H    399#"Protein"_28THR@O            0.8
-421#"Protein"_30THR@N    422#"Protein"_30THR@H    435#"Protein"_31GLY@N            0.0
-431#"Protein"_30THR@OG1  432#"Protein"_30THR@HG1  120#"Protein"_9ALA@O             0.7
-431#"Protein"_30THR@OG1  432#"Protein"_30THR@HG1  164#"Protein"_12ASN@OD1          4.6
-431#"Protein"_30THR@OG1  432#"Protein"_30THR@HG1  375#"Protein"_26CYS@O           30.3
-431#"Protein"_30THR@OG1  432#"Protein"_30THR@HG1  385#"Protein"_27ALA@O            2.4
-431#"Protein"_30THR@OG1  432#"Protein"_30THR@HG1  434#"Protein"_30THR@O            0.1
-431#"Protein"_30THR@OG1  432#"Protein"_30THR@HG1  435#"Protein"_31GLY@N            2.2
-431#"Protein"_30THR@OG1  432#"Protein"_30THR@HG1  441#"Protein"_31GLY@O            0.6
-431#"Protein"_30THR@OG1  432#"Protein"_30THR@HG1  442#"Protein"_32CYS@N           15.8
-435#"Protein"_31GLY@N    436#"Protein"_31GLY@H    375#"Protein"_26CYS@O            0.7
-435#"Protein"_31GLY@N    436#"Protein"_31GLY@H    385#"Protein"_27ALA@O           22.3
-435#"Protein"_31GLY@N    436#"Protein"_31GLY@H    399#"Protein"_28THR@O           11.9
-435#"Protein"_31GLY@N    436#"Protein"_31GLY@H    420#"Protein"_29TYR@O            0.6
-442#"Protein"_32CYS@N    443#"Protein"_32CYS@H    385#"Protein"_27ALA@O           27.5
-442#"Protein"_32CYS@N    443#"Protein"_32CYS@H    434#"Protein"_30THR@O            4.0
-442#"Protein"_32CYS@N    443#"Protein"_32CYS@H    610#"Protein"_44TYR@OH           0.0
-452#"Protein"_33ILE@N    453#"Protein"_33ILE@H    40#"Protein"_3CYS@O             55.6
-452#"Protein"_33ILE@N    453#"Protein"_33ILE@H    441#"Protein"_31GLY@O            3.4
-452#"Protein"_33ILE@N    453#"Protein"_33ILE@H    610#"Protein"_44TYR@OH           4.2
-490#"Protein"_35ILE@N    491#"Protein"_35ILE@H    16#"Protein"_1THR@O             56.2
-490#"Protein"_35ILE@N    491#"Protein"_35ILE@H    470#"Protein"_33ILE@O            1.5
-523#"Protein"_37GLY@N    524#"Protein"_37GLY@H    508#"Protein"_35ILE@O            6.5
-523#"Protein"_37GLY@N    524#"Protein"_37GLY@H    509#"Protein"_36PRO@N            0.1
-523#"Protein"_37GLY@N    524#"Protein"_37GLY@H    529#"Protein"_37GLY@O            0.0
-530#"Protein"_38ALA@N    531#"Protein"_38ALA@H    508#"Protein"_35ILE@O            1.6
-530#"Protein"_38ALA@N    531#"Protein"_38ALA@H    522#"Protein"_36PRO@O            2.4
-530#"Protein"_38ALA@N    531#"Protein"_38ALA@H    540#"Protein"_39THR@N            0.1
-530#"Protein"_38ALA@N    531#"Protein"_38ALA@H    550#"Protein"_39THR@OG1          0.0
-530#"Protein"_38ALA@N    531#"Protein"_38ALA@H    553#"Protein"_39THR@O            0.2
-540#"Protein"_39THR@N    541#"Protein"_39THR@H    529#"Protein"_37GLY@O           13.5
-540#"Protein"_39THR@N    541#"Protein"_39THR@H    550#"Protein"_39THR@OG1          0.2
-540#"Protein"_39THR@N    541#"Protein"_39THR@H    553#"Protein"_39THR@O            0.0
-540#"Protein"_39THR@N    541#"Protein"_39THR@H    554#"Protein"_40CYS@N            0.0
-550#"Protein"_39THR@OG1  551#"Protein"_39THR@HG1  529#"Protein"_37GLY@O            0.0
-550#"Protein"_39THR@OG1  551#"Protein"_39THR@HG1  539#"Protein"_38ALA@O            2.7
-550#"Protein"_39THR@OG1  551#"Protein"_39THR@HG1  553#"Protein"_39THR@O            2.7
-550#"Protein"_39THR@OG1  551#"Protein"_39THR@HG1  554#"Protein"_40CYS@N            0.5
-550#"Protein"_39THR@OG1  551#"Protein"_39THR@HG1  563#"Protein"_40CYS@O            1.1
-554#"Protein"_40CYS@N    555#"Protein"_40CYS@H    539#"Protein"_38ALA@O            0.8
-578#"Protein"_42GLY@N    579#"Protein"_42GLY@H    563#"Protein"_40CYS@O            5.9
-578#"Protein"_42GLY@N    579#"Protein"_42GLY@H    585#"Protein"_43ASP@N            0.1
-585#"Protein"_43ASP@N    586#"Protein"_43ASP@H    577#"Protein"_41PRO@O            7.1
-585#"Protein"_43ASP@N    586#"Protein"_43ASP@H    593#"Protein"_43ASP@OD1          2.6
-585#"Protein"_43ASP@N    586#"Protein"_43ASP@H    594#"Protein"_43ASP@OD2          7.1
-585#"Protein"_43ASP@N    586#"Protein"_43ASP@H    597#"Protein"_44TYR@N            0.1
-597#"Protein"_44TYR@N    598#"Protein"_44TYR@H    577#"Protein"_41PRO@O           40.8
-597#"Protein"_44TYR@N    598#"Protein"_44TYR@H    584#"Protein"_42GLY@O            8.9
-597#"Protein"_44TYR@N    598#"Protein"_44TYR@H    593#"Protein"_43ASP@OD1          0.0
-597#"Protein"_44TYR@N    598#"Protein"_44TYR@H    594#"Protein"_43ASP@OD2          0.1
-610#"Protein"_44TYR@OH   611#"Protein"_44TYR@HH   441#"Protein"_31GLY@O           23.0
-618#"Protein"_45ALA@N    619#"Protein"_45ALA@H    50#"Protein"_4CYS@O              6.9
-618#"Protein"_45ALA@N    619#"Protein"_45ALA@H    64#"Protein"_5PRO@O              5.5
-618#"Protein"_45ALA@N    619#"Protein"_45ALA@H    596#"Protein"_43ASP@O            4.9
-618#"Protein"_45ALA@N    619#"Protein"_45ALA@H    628#"Protein"_46ASN@N            0.1
-628#"Protein"_46ASN@N    629#"Protein"_46ASN@H    50#"Protein"_4CYS@O             50.6
-628#"Protein"_46ASN@N    629#"Protein"_46ASN@H    64#"Protein"_5PRO@O              0.2
-628#"Protein"_46ASN@N    629#"Protein"_46ASN@H    617#"Protein"_44TYR@O            0.9
-628#"Protein"_46ASN@N    629#"Protein"_46ASN@H    637#"Protein"_46ASN@ND2          0.8
-637#"Protein"_46ASN@ND2  638#"Protein"_46ASN@HD21 50#"Protein"_4CYS@O              4.5
-637#"Protein"_46ASN@ND2  638#"Protein"_46ASN@HD21 64#"Protein"_5PRO@O              0.2
-637#"Protein"_46ASN@ND2  638#"Protein"_46ASN@HD21 75#"Protein"_6SER@O             31.7
-637#"Protein"_46ASN@ND2  638#"Protein"_46ASN@HD21 627#"Protein"_45ALA@O            0.2
-637#"Protein"_46ASN@ND2  638#"Protein"_46ASN@HD21 641#"Protein"_46ASN@OC1         31.1
-637#"Protein"_46ASN@ND2  638#"Protein"_46ASN@HD21 642#"Protein"_46ASN@OC2         14.8
+#HBond #atom                 mol.             #res Donor-H        mol.              #res Acceptor      Occupancy%   inter?  Label
+   1   1-2...13             "Protein"    1-THR N-H1       "Protein"    1-THR OG1           0.268       0    1@N-H1...1@OG1
+   2   1-2...16             "Protein"    1-THR N-H1       "Protein"    1-THR O             0.073       0    1@N-H1...1@O
+   3   1-2...27             "Protein"    1-THR N-H1       "Protein"    2-THR OG1           0.183       1    1@N-H1...2@OG1
+   4   1-2...334            "Protein"    1-THR N-H1       "Protein"   23-GLU OE2           1.257       1    1@N-H1...23@OE2
+   5   1-2...508            "Protein"    1-THR N-H1       "Protein"   35-ILE O            45.004       1    1@N-H1...35@O
+   6   1-2...522            "Protein"    1-THR N-H1       "Protein"   36-PRO O             2.525       1    1@N-H1...36@O
+   7   1-2...523            "Protein"    1-THR N-H1       "Protein"   37-GLY N             0.207       1    1@N-H1...37@N
+   8   13-14...16           "Protein"    1-THR OG1-HG1    "Protein"    1-THR O             0.110       0    1@OG1-HG1...1@O
+   9   13-14...508          "Protein"    1-THR OG1-HG1    "Protein"   35-ILE O             3.818       1    1@OG1-HG1...35@O
+  10   13-14...522          "Protein"    1-THR OG1-HG1    "Protein"   36-PRO O             6.429       1    1@OG1-HG1...36@O
+  11   13-14...523          "Protein"    1-THR OG1-HG1    "Protein"   37-GLY N             1.781       1    1@OG1-HG1...37@N
+  12   13-14...529          "Protein"    1-THR OG1-HG1    "Protein"   37-GLY O             7.161       1    1@OG1-HG1...37@O
+  13   13-14...530          "Protein"    1-THR OG1-HG1    "Protein"   38-ALA N             2.745       1    1@OG1-HG1...38@N
+  14   13-14...539          "Protein"    1-THR OG1-HG1    "Protein"   38-ALA O             5.880       1    1@OG1-HG1...38@O
+  15   17-18...27           "Protein"    2-THR N-H        "Protein"    2-THR OG1           0.159       0    2@N-H...2@OG1
+  16   27-28...16           "Protein"    2-THR OG1-HG1    "Protein"    1-THR O             2.806       1    2@OG1-HG1...1@O
+  17   27-28...30           "Protein"    2-THR OG1-HG1    "Protein"    2-THR O             2.257       0    2@OG1-HG1...2@O
+  18   27-28...31           "Protein"    2-THR OG1-HG1    "Protein"    3-CYS N             0.439       1    2@OG1-HG1...3@N
+  19   27-28...40           "Protein"    2-THR OG1-HG1    "Protein"    3-CYS O             0.171       1    2@OG1-HG1...3@O
+  20   27-28...137          "Protein"    2-THR OG1-HG1    "Protein"   10-ARG NH1           5.892       1    2@OG1-HG1...10@NH1
+  21   27-28...140          "Protein"    2-THR OG1-HG1    "Protein"   10-ARG NH2           0.830       1    2@OG1-HG1...10@NH2
+  22   27-28...333          "Protein"    2-THR OG1-HG1    "Protein"   23-GLU OE1           2.196       1    2@OG1-HG1...23@OE1
+  23   27-28...334          "Protein"    2-THR OG1-HG1    "Protein"   23-GLU OE2           0.769       1    2@OG1-HG1...23@OE2
+  24   27-28...451          "Protein"    2-THR OG1-HG1    "Protein"   32-CYS O             0.110       1    2@OG1-HG1...32@O
+  25   27-28...452          "Protein"    2-THR OG1-HG1    "Protein"   33-ILE N             0.134       1    2@OG1-HG1...33@N
+  26   27-28...470          "Protein"    2-THR OG1-HG1    "Protein"   33-ILE O             1.647       1    2@OG1-HG1...33@O
+  27   27-28...471          "Protein"    2-THR OG1-HG1    "Protein"   34-ILE N             0.073       1    2@OG1-HG1...34@N
+  28   31-32...16           "Protein"    3-CYS N-H        "Protein"    1-THR O             0.281       1    3@N-H...1@O
+  29   31-32...140          "Protein"    3-CYS N-H        "Protein"   10-ARG NH2           0.171       1    3@N-H...10@NH2
+  30   31-32...451          "Protein"    3-CYS N-H        "Protein"   32-CYS O             0.073       1    3@N-H...32@O
+  31   31-32...452          "Protein"    3-CYS N-H        "Protein"   33-ILE N             0.146       1    3@N-H...33@N
+  32   31-32...470          "Protein"    3-CYS N-H        "Protein"   33-ILE O            61.815       1    3@N-H...33@O
+  33   41-42...30           "Protein"    4-CYS N-H        "Protein"    2-THR O             0.073       1    4@N-H...2@O
+  34   41-42...137          "Protein"    4-CYS N-H        "Protein"   10-ARG NH1           0.037       1    4@N-H...10@NH1
+  35   41-42...140          "Protein"    4-CYS N-H        "Protein"   10-ARG NH2           2.867       1    4@N-H...10@NH2
+  36   41-42...641          "Protein"    4-CYS N-H        "Protein"   46-ASN OC1          54.825       1    4@N-H...46@OC1
+  37   41-42...642          "Protein"    4-CYS N-H        "Protein"   46-ASN OC2          25.766       1    4@N-H...46@OC2
+  38   65-66...50           "Protein"    6-SER N-H        "Protein"    4-CYS O             2.013       1    6@N-H...4@O
+  39   65-66...72           "Protein"    6-SER N-H        "Protein"    6-SER OG            0.073       0    6@N-H...6@OG
+  40   65-66...637          "Protein"    6-SER N-H        "Protein"   46-ASN ND2           0.586       1    6@N-H...46@ND2
+  41   72-73...64           "Protein"    6-SER OG-HG      "Protein"    5-PRO O             5.124       1    6@OG-HG...5@O
+  42   72-73...75           "Protein"    6-SER OG-HG      "Protein"    6-SER O             0.549       0    6@OG-HG...6@O
+  43   72-73...76           "Protein"    6-SER OG-HG      "Protein"    7-ILE N             1.806       1    6@OG-HG...7@N
+  44   72-73...95           "Protein"    6-SER OG-HG      "Protein"    8-VAL N            20.032       1    6@OG-HG...8@N
+  45   72-73...111          "Protein"    6-SER OG-HG      "Protein"    9-ALA N            20.581       1    6@OG-HG...9@N
+  46   76-77...636          "Protein"    7-ILE N-H        "Protein"   46-ASN OD1           0.390       1    7@N-H...46@OD1
+  47   76-77...637          "Protein"    7-ILE N-H        "Protein"   46-ASN ND2           1.208       1    7@N-H...46@ND2
+  48   95-96...75           "Protein"    8-VAL N-H        "Protein"    6-SER O             0.464       1    8@N-H...6@O
+  49   95-96...152          "Protein"    8-VAL N-H        "Protein"   11-SER OG            0.134       1    8@N-H...11@OG
+  50   111-112...75         "Protein"    9-ALA N-H        "Protein"    6-SER O            16.738       1    9@N-H...6@O
+  51   111-112...94         "Protein"    9-ALA N-H        "Protein"    7-ILE O             0.085       1    9@N-H...7@O
+  52   121-122...75         "Protein"   10-ARG N-H        "Protein"    6-SER O            42.028       1    10@N-H...6@O
+  53   121-122...94         "Protein"   10-ARG N-H        "Protein"    7-ILE O            13.273       1    10@N-H...7@O
+  54   121-122...110        "Protein"   10-ARG N-H        "Protein"    8-VAL O             0.207       1    10@N-H...8@O
+  55   121-122...170        "Protein"   10-ARG N-H        "Protein"   13-PHE N             0.183       1    10@N-H...13@N
+  56   134-135...120        "Protein"   10-ARG NE-HE      "Protein"    9-ALA O             2.135       1    10@NE-HE...9@O
+  57   134-135...637        "Protein"   10-ARG NE-HE      "Protein"   46-ASN ND2           0.159       1    10@NE-HE...46@ND2
+  58   134-135...641        "Protein"   10-ARG NE-HE      "Protein"   46-ASN OC1          46.944       1    10@NE-HE...46@OC1
+  59   134-135...642        "Protein"   10-ARG NE-HE      "Protein"   46-ASN OC2          34.452       1    10@NE-HE...46@OC2
+  60   137-138...30         "Protein"   10-ARG NH1-HH11   "Protein"    2-THR O             6.527       1    10@NH1-HH11...2@O
+  61   137-138...144        "Protein"   10-ARG NH1-HH11   "Protein"   10-ARG O             0.512       0    10@NH1-HH11...10@O
+  62   137-138...189        "Protein"   10-ARG NH1-HH11   "Protein"   13-PHE O             0.708       1    10@NH1-HH11...13@O
+  63   137-138...198        "Protein"   10-ARG NH1-HH11   "Protein"   14-ASN OD1           0.415       1    10@NH1-HH11...14@OD1
+  64   137-138...641        "Protein"   10-ARG NH1-HH11   "Protein"   46-ASN OC1           0.159       1    10@NH1-HH11...46@OC1
+  65   137-138...642        "Protein"   10-ARG NH1-HH11   "Protein"   46-ASN OC2           0.256       1    10@NH1-HH11...46@OC2
+  66   140-141...30         "Protein"   10-ARG NH2-HH21   "Protein"    2-THR O            30.426       1    10@NH2-HH21...2@O
+  67   140-141...50         "Protein"   10-ARG NH2-HH21   "Protein"    4-CYS O             0.049       1    10@NH2-HH21...4@O
+  68   140-141...641        "Protein"   10-ARG NH2-HH21   "Protein"   46-ASN OC1          44.272       1    10@NH2-HH21...46@OC1
+  69   140-141...642        "Protein"   10-ARG NH2-HH21   "Protein"   46-ASN OC2          49.530       1    10@NH2-HH21...46@OC2
+  70   145-146...94         "Protein"   11-SER N-H        "Protein"    7-ILE O            64.121       1    11@N-H...7@O
+  71   145-146...110        "Protein"   11-SER N-H        "Protein"    8-VAL O             9.150       1    11@N-H...8@O
+  72   145-146...152        "Protein"   11-SER N-H        "Protein"   11-SER OG            0.024       0    11@N-H...11@OG
+  73   145-146...156        "Protein"   11-SER N-H        "Protein"   12-ASN N             0.037       1    11@N-H...12@N
+  74   152-153...94         "Protein"   11-SER OG-HG      "Protein"    7-ILE O            28.071       1    11@OG-HG...7@O
+  75   152-153...110        "Protein"   11-SER OG-HG      "Protein"    8-VAL O             1.025       1    11@OG-HG...8@O
+  76   152-153...156        "Protein"   11-SER OG-HG      "Protein"   12-ASN N             0.061       1    11@OG-HG...12@N
+  77   152-153...199        "Protein"   11-SER OG-HG      "Protein"   14-ASN ND2           0.073       1    11@OG-HG...14@ND2
+  78   156-157...110        "Protein"   12-ASN N-H        "Protein"    8-VAL O            43.382       1    12@N-H...8@O
+  79   156-157...120        "Protein"   12-ASN N-H        "Protein"    9-ALA O            19.019       1    12@N-H...9@O
+  80   156-157...144        "Protein"   12-ASN N-H        "Protein"   10-ARG O             1.440       1    12@N-H...10@O
+  81   156-157...164        "Protein"   12-ASN N-H        "Protein"   12-ASN OD1           0.403       0    12@N-H...12@OD1
+  82   156-157...165        "Protein"   12-ASN N-H        "Protein"   12-ASN ND2           0.159       0    12@N-H...12@ND2
+  83   165-166...110        "Protein"   12-ASN ND2-HD21   "Protein"    8-VAL O             8.406       1    12@ND2-HD21...8@O
+  84   165-166...120        "Protein"   12-ASN ND2-HD21   "Protein"    9-ALA O             0.195       1    12@ND2-HD21...9@O
+  85   165-166...155        "Protein"   12-ASN ND2-HD21   "Protein"   11-SER O             0.049       1    12@ND2-HD21...11@O
+  86   165-166...169        "Protein"   12-ASN ND2-HD21   "Protein"   12-ASN O             1.501       0    12@ND2-HD21...12@O
+  87   165-166...413        "Protein"   12-ASN ND2-HD21   "Protein"   29-TYR OH            9.625       1    12@ND2-HD21...29@OH
+  88   170-171...110        "Protein"   13-PHE N-H        "Protein"    8-VAL O             0.061       1    13@N-H...8@O
+  89   170-171...120        "Protein"   13-PHE N-H        "Protein"    9-ALA O            38.355       1    13@N-H...9@O
+  90   170-171...144        "Protein"   13-PHE N-H        "Protein"   10-ARG O            20.386       1    13@N-H...10@O
+  91   170-171...155        "Protein"   13-PHE N-H        "Protein"   11-SER O             0.378       1    13@N-H...11@O
+  92   170-171...164        "Protein"   13-PHE N-H        "Protein"   12-ASN OD1           0.073       1    13@N-H...12@OD1
+  93   170-171...190        "Protein"   13-PHE N-H        "Protein"   14-ASN N             0.024       1    13@N-H...14@N
+  94   190-191...144        "Protein"   14-ASN N-H        "Protein"   10-ARG O            11.724       1    14@N-H...10@O
+  95   190-191...155        "Protein"   14-ASN N-H        "Protein"   11-SER O            18.678       1    14@N-H...11@O
+  96   190-191...169        "Protein"   14-ASN N-H        "Protein"   12-ASN O             3.733       1    14@N-H...12@O
+  97   190-191...198        "Protein"   14-ASN N-H        "Protein"   14-ASN OD1           1.891       0    14@N-H...14@OD1
+  98   190-191...199        "Protein"   14-ASN N-H        "Protein"   14-ASN ND2           0.964       0    14@N-H...14@ND2
+  99   190-191...204        "Protein"   14-ASN N-H        "Protein"   15-VAL N             0.037       1    14@N-H...15@N
+ 100   199-200...144        "Protein"   14-ASN ND2-HD21   "Protein"   10-ARG O             4.709       1    14@ND2-HD21...10@O
+ 101   199-200...155        "Protein"   14-ASN ND2-HD21   "Protein"   11-SER O             6.698       1    14@ND2-HD21...11@O
+ 102   199-200...189        "Protein"   14-ASN ND2-HD21   "Protein"   13-PHE O             0.525       1    14@ND2-HD21...13@O
+ 103   199-200...243        "Protein"   14-ASN ND2-HD21   "Protein"   17-ARG NE            0.085       1    14@ND2-HD21...17@NE
+ 104   199-200...249        "Protein"   14-ASN ND2-HD21   "Protein"   17-ARG NH2           0.915       1    14@ND2-HD21...17@NH2
+ 105   204-205...155        "Protein"   15-VAL N-H        "Protein"   11-SER O             6.881       1    15@N-H...11@O
+ 106   204-205...169        "Protein"   15-VAL N-H        "Protein"   12-ASN O            37.697       1    15@N-H...12@O
+ 107   204-205...189        "Protein"   15-VAL N-H        "Protein"   13-PHE O             3.672       1    15@N-H...13@O
+ 108   204-205...220        "Protein"   15-VAL N-H        "Protein"   16-CYS N             0.012       1    15@N-H...16@N
+ 109   204-205...230        "Protein"   15-VAL N-H        "Protein"   17-ARG N             0.061       1    15@N-H...17@N
+ 110   220-221...169        "Protein"   16-CYS N-H        "Protein"   12-ASN O            14.835       1    16@N-H...12@O
+ 111   220-221...189        "Protein"   16-CYS N-H        "Protein"   13-PHE O            31.329       1    16@N-H...13@O
+ 112   220-221...203        "Protein"   16-CYS N-H        "Protein"   14-ASN O             0.159       1    16@N-H...14@O
+ 113   220-221...230        "Protein"   16-CYS N-H        "Protein"   17-ARG N             0.037       1    16@N-H...17@N
+ 114   220-221...413        "Protein"   16-CYS N-H        "Protein"   29-TYR OH            1.110       1    16@N-H...29@OH
+ 115   230-231...189        "Protein"   17-ARG N-H        "Protein"   13-PHE O             3.538       1    17@N-H...13@O
+ 116   230-231...203        "Protein"   17-ARG N-H        "Protein"   14-ASN O            16.274       1    17@N-H...14@O
+ 117   230-231...219        "Protein"   17-ARG N-H        "Protein"   15-VAL O             5.221       1    17@N-H...15@O
+ 118   230-231...254        "Protein"   17-ARG N-H        "Protein"   18-LEU N             0.024       1    17@N-H...18@N
+ 119   230-231...333        "Protein"   17-ARG N-H        "Protein"   23-GLU OE1           0.037       1    17@N-H...23@OE1
+ 120   243-244...198        "Protein"   17-ARG NE-HE      "Protein"   14-ASN OD1           1.806       1    17@NE-HE...14@OD1
+ 121   243-244...254        "Protein"   17-ARG NE-HE      "Protein"   18-LEU N             0.061       1    17@NE-HE...18@N
+ 122   243-244...321        "Protein"   17-ARG NE-HE      "Protein"   22-PRO O             0.256       1    17@NE-HE...22@O
+ 123   243-244...333        "Protein"   17-ARG NE-HE      "Protein"   23-GLU OE1           3.513       1    17@NE-HE...23@OE1
+ 124   246-247...253        "Protein"   17-ARG NH1-HH11   "Protein"   17-ARG O             0.659       0    17@NH1-HH11...17@O
+ 125   246-247...293        "Protein"   17-ARG NH1-HH11   "Protein"   20-GLY O             1.342       1    17@NH1-HH11...20@O
+ 126   246-247...294        "Protein"   17-ARG NH1-HH11   "Protein"   21-THR N             0.037       1    17@NH1-HH11...21@N
+ 127   246-247...307        "Protein"   17-ARG NH1-HH11   "Protein"   21-THR O            16.762       1    17@NH1-HH11...21@O
+ 128   249-250...198        "Protein"   17-ARG NH2-HH21   "Protein"   14-ASN OD1           1.732       1    17@NH2-HH21...14@OD1
+ 129   249-250...333        "Protein"   17-ARG NH2-HH21   "Protein"   23-GLU OE1           1.415       1    17@NH2-HH21...23@OE1
+ 130   249-250...334        "Protein"   17-ARG NH2-HH21   "Protein"   23-GLU OE2           0.098       1    17@NH2-HH21...23@OE2
+ 131   254-255...203        "Protein"   18-LEU N-H        "Protein"   14-ASN O             2.159       1    18@N-H...14@O
+ 132   254-255...219        "Protein"   18-LEU N-H        "Protein"   15-VAL O            37.953       1    18@N-H...15@O
+ 133   254-255...229        "Protein"   18-LEU N-H        "Protein"   16-CYS O             1.074       1    18@N-H...16@O
+ 134   254-255...287        "Protein"   18-LEU N-H        "Protein"   20-GLY N             0.305       1    18@N-H...20@N
+ 135   287-288...229        "Protein"   20-GLY N-H        "Protein"   16-CYS O             1.757       1    20@N-H...16@O
+ 136   287-288...253        "Protein"   20-GLY N-H        "Protein"   17-ARG O            35.903       1    20@N-H...17@O
+ 137   287-288...272        "Protein"   20-GLY N-H        "Protein"   18-LEU O            14.896       1    20@N-H...18@O
+ 138   287-288...273        "Protein"   20-GLY N-H        "Protein"   19-PRO N             0.024       1    20@N-H...19@N
+ 139   287-288...294        "Protein"   20-GLY N-H        "Protein"   21-THR N             0.085       1    20@N-H...21@N
+ 140   287-288...304        "Protein"   20-GLY N-H        "Protein"   21-THR OG1           1.061       1    20@N-H...21@OG1
+ 141   294-295...229        "Protein"   21-THR N-H        "Protein"   16-CYS O             2.672       1    21@N-H...16@O
+ 142   294-295...253        "Protein"   21-THR N-H        "Protein"   17-ARG O            24.448       1    21@N-H...17@O
+ 143   294-295...286        "Protein"   21-THR N-H        "Protein"   19-PRO O             2.074       1    21@N-H...19@O
+ 144   294-295...304        "Protein"   21-THR N-H        "Protein"   21-THR OG1           0.098       0    21@N-H...21@OG1
+ 145   304-305...229        "Protein"   21-THR OG1-HG1    "Protein"   16-CYS O            10.833       1    21@OG1-HG1...16@O
+ 146   304-305...253        "Protein"   21-THR OG1-HG1    "Protein"   17-ARG O             0.708       1    21@OG1-HG1...17@O
+ 147   304-305...286        "Protein"   21-THR OG1-HG1    "Protein"   19-PRO O             3.062       1    21@OG1-HG1...19@O
+ 148   304-305...293        "Protein"   21-THR OG1-HG1    "Protein"   20-GLY O             3.965       1    21@OG1-HG1...20@O
+ 149   304-305...322        "Protein"   21-THR OG1-HG1    "Protein"   23-GLU N             0.232       1    21@OG1-HG1...23@N
+ 150   304-305...336        "Protein"   21-THR OG1-HG1    "Protein"   23-GLU O             0.024       1    21@OG1-HG1...23@O
+ 151   322-323...229        "Protein"   23-GLU N-H        "Protein"   16-CYS O             0.354       1    23@N-H...16@O
+ 152   322-323...307        "Protein"   23-GLU N-H        "Protein"   21-THR O            32.158       1    23@N-H...21@O
+ 153   322-323...333        "Protein"   23-GLU N-H        "Protein"   23-GLU OE1           0.037       0    23@N-H...23@OE1
+ 154   322-323...337        "Protein"   23-GLU N-H        "Protein"   24-ALA N             0.073       1    23@N-H...24@N
+ 155   337-338...321        "Protein"   24-ALA N-H        "Protein"   22-PRO O            27.510       1    24@N-H...22@O
+ 156   337-338...347        "Protein"   24-ALA N-H        "Protein"   25-ILE N             0.012       1    24@N-H...25@N
+ 157   337-338...366        "Protein"   24-ALA N-H        "Protein"   26-CYS N             0.390       1    24@N-H...26@N
+ 158   337-338...376        "Protein"   24-ALA N-H        "Protein"   27-ALA N             0.012       1    24@N-H...27@N
+ 159   347-348...321        "Protein"   25-ILE N-H        "Protein"   22-PRO O             5.673       1    25@N-H...22@O
+ 160   347-348...336        "Protein"   25-ILE N-H        "Protein"   23-GLU O            16.884       1    25@N-H...23@O
+ 161   347-348...366        "Protein"   25-ILE N-H        "Protein"   26-CYS N             0.024       1    25@N-H...26@N
+ 162   347-348...376        "Protein"   25-ILE N-H        "Protein"   27-ALA N             0.085       1    25@N-H...27@N
+ 163   366-367...321        "Protein"   26-CYS N-H        "Protein"   22-PRO O             4.831       1    26@N-H...22@O
+ 164   366-367...336        "Protein"   26-CYS N-H        "Protein"   23-GLU O            36.770       1    26@N-H...23@O
+ 165   366-367...346        "Protein"   26-CYS N-H        "Protein"   24-ALA O             0.354       1    26@N-H...24@O
+ 166   366-367...376        "Protein"   26-CYS N-H        "Protein"   27-ALA N             0.037       1    26@N-H...27@N
+ 167   376-377...336        "Protein"   27-ALA N-H        "Protein"   23-GLU O            11.077       1    27@N-H...23@O
+ 168   376-377...346        "Protein"   27-ALA N-H        "Protein"   24-ALA O            18.714       1    27@N-H...24@O
+ 169   376-377...365        "Protein"   27-ALA N-H        "Protein"   25-ILE O             0.464       1    27@N-H...25@O
+ 170   376-377...400        "Protein"   27-ALA N-H        "Protein"   29-TYR N             0.073       1    27@N-H...29@N
+ 171   386-387...346        "Protein"   28-THR N-H        "Protein"   24-ALA O             6.454       1    28@N-H...24@O
+ 172   386-387...365        "Protein"   28-THR N-H        "Protein"   25-ILE O            15.237       1    28@N-H...25@O
+ 173   386-387...375        "Protein"   28-THR N-H        "Protein"   26-CYS O             0.659       1    28@N-H...26@O
+ 174   386-387...396        "Protein"   28-THR N-H        "Protein"   28-THR OG1           0.110       0    28@N-H...28@OG1
+ 175   386-387...400        "Protein"   28-THR N-H        "Protein"   29-TYR N             0.049       1    28@N-H...29@N
+ 176   396-397...346        "Protein"   28-THR OG1-HG1    "Protein"   24-ALA O             3.965       1    28@OG1-HG1...24@O
+ 177   396-397...365        "Protein"   28-THR OG1-HG1    "Protein"   25-ILE O             5.490       1    28@OG1-HG1...25@O
+ 178   396-397...399        "Protein"   28-THR OG1-HG1    "Protein"   28-THR O             0.439       0    28@OG1-HG1...28@O
+ 179   396-397...400        "Protein"   28-THR OG1-HG1    "Protein"   29-TYR N             1.086       1    28@OG1-HG1...29@N
+ 180   400-401...365        "Protein"   29-TYR N-H        "Protein"   25-ILE O            32.731       1    29@N-H...25@O
+ 181   400-401...375        "Protein"   29-TYR N-H        "Protein"   26-CYS O            10.113       1    29@N-H...26@O
+ 182   400-401...385        "Protein"   29-TYR N-H        "Protein"   27-ALA O             3.038       1    29@N-H...27@O
+ 183   400-401...421        "Protein"   29-TYR N-H        "Protein"   30-THR N             0.049       1    29@N-H...30@N
+ 184   400-401...435        "Protein"   29-TYR N-H        "Protein"   31-GLY N             0.012       1    29@N-H...31@N
+ 185   413-414...164        "Protein"   29-TYR OH-HH      "Protein"   12-ASN OD1          11.541       1    29@OH-HH...12@OD1
+ 186   413-414...169        "Protein"   29-TYR OH-HH      "Protein"   12-ASN O            13.542       1    29@OH-HH...12@O
+ 187   413-414...189        "Protein"   29-TYR OH-HH      "Protein"   13-PHE O             5.380       1    29@OH-HH...13@O
+ 188   421-422...375        "Protein"   30-THR N-H        "Protein"   26-CYS O            30.877       1    30@N-H...26@O
+ 189   421-422...385        "Protein"   30-THR N-H        "Protein"   27-ALA O            13.005       1    30@N-H...27@O
+ 190   421-422...399        "Protein"   30-THR N-H        "Protein"   28-THR O             0.817       1    30@N-H...28@O
+ 191   421-422...435        "Protein"   30-THR N-H        "Protein"   31-GLY N             0.049       1    30@N-H...31@N
+ 192   431-432...120        "Protein"   30-THR OG1-HG1    "Protein"    9-ALA O             0.659       1    30@OG1-HG1...9@O
+ 193   431-432...164        "Protein"   30-THR OG1-HG1    "Protein"   12-ASN OD1           4.624       1    30@OG1-HG1...12@OD1
+ 194   431-432...375        "Protein"   30-THR OG1-HG1    "Protein"   26-CYS O            30.340       1    30@OG1-HG1...26@O
+ 195   431-432...385        "Protein"   30-THR OG1-HG1    "Protein"   27-ALA O             2.367       1    30@OG1-HG1...27@O
+ 196   431-432...434        "Protein"   30-THR OG1-HG1    "Protein"   30-THR O             0.110       0    30@OG1-HG1...30@O
+ 197   431-432...435        "Protein"   30-THR OG1-HG1    "Protein"   31-GLY N             2.245       1    30@OG1-HG1...31@N
+ 198   431-432...441        "Protein"   30-THR OG1-HG1    "Protein"   31-GLY O             0.598       1    30@OG1-HG1...31@O
+ 199   431-432...442        "Protein"   30-THR OG1-HG1    "Protein"   32-CYS N            15.811       1    30@OG1-HG1...32@N
+ 200   435-436...375        "Protein"   31-GLY N-H        "Protein"   26-CYS O             0.708       1    31@N-H...26@O
+ 201   435-436...385        "Protein"   31-GLY N-H        "Protein"   27-ALA O            22.252       1    31@N-H...27@O
+ 202   435-436...399        "Protein"   31-GLY N-H        "Protein"   28-THR O            11.931       1    31@N-H...28@O
+ 203   435-436...420        "Protein"   31-GLY N-H        "Protein"   29-TYR O             0.634       1    31@N-H...29@O
+ 204   442-443...385        "Protein"   32-CYS N-H        "Protein"   27-ALA O            27.473       1    32@N-H...27@O
+ 205   442-443...434        "Protein"   32-CYS N-H        "Protein"   30-THR O             3.977       1    32@N-H...30@O
+ 206   442-443...610        "Protein"   32-CYS N-H        "Protein"   44-TYR OH            0.037       1    32@N-H...44@OH
+ 207   452-453...40         "Protein"   33-ILE N-H        "Protein"    3-CYS O            55.569       1    33@N-H...3@O
+ 208   452-453...441        "Protein"   33-ILE N-H        "Protein"   31-GLY O             3.416       1    33@N-H...31@O
+ 209   452-453...610        "Protein"   33-ILE N-H        "Protein"   44-TYR OH            4.160       1    33@N-H...44@OH
+ 210   490-491...16         "Protein"   35-ILE N-H        "Protein"    1-THR O            56.240       1    35@N-H...1@O
+ 211   490-491...470        "Protein"   35-ILE N-H        "Protein"   33-ILE O             1.549       1    35@N-H...33@O
+ 212   523-524...508        "Protein"   37-GLY N-H        "Protein"   35-ILE O             6.466       1    37@N-H...35@O
+ 213   523-524...509        "Protein"   37-GLY N-H        "Protein"   36-PRO N             0.061       1    37@N-H...36@N
+ 214   523-524...529        "Protein"   37-GLY N-H        "Protein"   37-GLY O             0.012       0    37@N-H...37@O
+ 215   530-531...508        "Protein"   38-ALA N-H        "Protein"   35-ILE O             1.598       1    38@N-H...35@O
+ 216   530-531...522        "Protein"   38-ALA N-H        "Protein"   36-PRO O             2.355       1    38@N-H...36@O
+ 217   530-531...540        "Protein"   38-ALA N-H        "Protein"   39-THR N             0.122       1    38@N-H...39@N
+ 218   530-531...550        "Protein"   38-ALA N-H        "Protein"   39-THR OG1           0.012       1    38@N-H...39@OG1
+ 219   530-531...553        "Protein"   38-ALA N-H        "Protein"   39-THR O             0.183       1    38@N-H...39@O
+ 220   540-541...529        "Protein"   39-THR N-H        "Protein"   37-GLY O            13.468       1    39@N-H...37@O
+ 221   540-541...550        "Protein"   39-THR N-H        "Protein"   39-THR OG1           0.207       0    39@N-H...39@OG1
+ 222   540-541...553        "Protein"   39-THR N-H        "Protein"   39-THR O             0.049       0    39@N-H...39@O
+ 223   540-541...554        "Protein"   39-THR N-H        "Protein"   40-CYS N             0.024       1    39@N-H...40@N
+ 224   550-551...529        "Protein"   39-THR OG1-HG1    "Protein"   37-GLY O             0.037       1    39@OG1-HG1...37@O
+ 225   550-551...539        "Protein"   39-THR OG1-HG1    "Protein"   38-ALA O             2.660       1    39@OG1-HG1...38@O
+ 226   550-551...553        "Protein"   39-THR OG1-HG1    "Protein"   39-THR O             2.745       0    39@OG1-HG1...39@O
+ 227   550-551...554        "Protein"   39-THR OG1-HG1    "Protein"   40-CYS N             0.537       1    39@OG1-HG1...40@N
+ 228   550-551...563        "Protein"   39-THR OG1-HG1    "Protein"   40-CYS O             1.135       1    39@OG1-HG1...40@O
+ 229   554-555...539        "Protein"   40-CYS N-H        "Protein"   38-ALA O             0.756       1    40@N-H...38@O
+ 230   578-579...563        "Protein"   42-GLY N-H        "Protein"   40-CYS O             5.892       1    42@N-H...40@O
+ 231   578-579...585        "Protein"   42-GLY N-H        "Protein"   43-ASP N             0.110       1    42@N-H...43@N
+ 232   585-586...577        "Protein"   43-ASP N-H        "Protein"   41-PRO O             7.149       1    43@N-H...41@O
+ 233   585-586...593        "Protein"   43-ASP N-H        "Protein"   43-ASP OD1           2.574       0    43@N-H...43@OD1
+ 234   585-586...594        "Protein"   43-ASP N-H        "Protein"   43-ASP OD2           7.137       0    43@N-H...43@OD2
+ 235   585-586...597        "Protein"   43-ASP N-H        "Protein"   44-TYR N             0.085       1    43@N-H...44@N
+ 236   597-598...577        "Protein"   44-TYR N-H        "Protein"   41-PRO O            40.795       1    44@N-H...41@O
+ 237   597-598...584        "Protein"   44-TYR N-H        "Protein"   42-GLY O             8.906       1    44@N-H...42@O
+ 238   597-598...593        "Protein"   44-TYR N-H        "Protein"   43-ASP OD1           0.037       1    44@N-H...43@OD1
+ 239   597-598...594        "Protein"   44-TYR N-H        "Protein"   43-ASP OD2           0.073       1    44@N-H...43@OD2
+ 240   610-611...441        "Protein"   44-TYR OH-HH      "Protein"   31-GLY O            23.008       1    44@OH-HH...31@O
+ 241   618-619...50         "Protein"   45-ALA N-H        "Protein"    4-CYS O             6.942       1    45@N-H...4@O
+ 242   618-619...64         "Protein"   45-ALA N-H        "Protein"    5-PRO O             5.465       1    45@N-H...5@O
+ 243   618-619...596        "Protein"   45-ALA N-H        "Protein"   43-ASP O             4.941       1    45@N-H...43@O
+ 244   618-619...628        "Protein"   45-ALA N-H        "Protein"   46-ASN N             0.061       1    45@N-H...46@N
+ 245   628-629...50         "Protein"   46-ASN N-H        "Protein"    4-CYS O            50.640       1    46@N-H...4@O
+ 246   628-629...64         "Protein"   46-ASN N-H        "Protein"    5-PRO O             0.171       1    46@N-H...5@O
+ 247   628-629...617        "Protein"   46-ASN N-H        "Protein"   44-TYR O             0.927       1    46@N-H...44@O
+ 248   628-629...637        "Protein"   46-ASN N-H        "Protein"   46-ASN ND2           0.830       0    46@N-H...46@ND2
+ 249   637-638...50         "Protein"   46-ASN ND2-HD21   "Protein"    4-CYS O             4.477       1    46@ND2-HD21...4@O
+ 250   637-638...64         "Protein"   46-ASN ND2-HD21   "Protein"    5-PRO O             0.183       1    46@ND2-HD21...5@O
+ 251   637-638...75         "Protein"   46-ASN ND2-HD21   "Protein"    6-SER O            31.743       1    46@ND2-HD21...6@O
+ 252   637-638...627        "Protein"   46-ASN ND2-HD21   "Protein"   45-ALA O             0.171       1    46@ND2-HD21...45@O
+ 253   637-638...641        "Protein"   46-ASN ND2-HD21   "Protein"   46-ASN OC1          31.060       0    46@ND2-HD21...46@OC1
+ 254   637-638...642        "Protein"   46-ASN ND2-HD21   "Protein"   46-ASN OC2          14.847       0    46@ND2-HD21...46@OC2
