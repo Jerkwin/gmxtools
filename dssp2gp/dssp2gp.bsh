@@ -1,7 +1,7 @@
 usage="\
 >>>>>>>>>>>>>>>>     dssp2gp    <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
->>>>>>>>>>     2024-01-11 23:12:11     <<<<<<<<<
+>>>>>>>>>>     2024-03-06 12:05:21     <<<<<<<<<
 Usage:   dssp2gp <file.dat|file.xpm> [-DRAW] [-COLOR] [RANGE]
                                      [-t0 t0] [-dt dt] [-tu tu]
 Default: dssp2gp  dssp.dat -xyz -pdb 1:1E9:1 -t0 0 -dt 1 -tu ps
@@ -17,6 +17,9 @@ option:  DRAW:
          -t0: starting time
          -dt: timestep
          -tu: unit of time, fs, ps, ns
+--------------------------------------------------------------------------------
+Log:
+2024-03-06: option bugs for -t0 -dt -tu
 --------------------------------------------------------------------------------"
 #	H = "A-Helix"  4-turn RH helix (α helix).   Min length 4 residues.
 #	G = "3-Helix"  3-turn RH helix (3_10 helix). Min length 3 residues.
@@ -45,9 +48,9 @@ for((i=0; i<N; i++)); do
 	[[ $arg =~ (-p1)|(-p2)|(-p3)|(-p4) ]] && { color=${arg/-/};  opt[$i]=""; }
 	[[ $arg =~ (-rcsb)|(-taylor)       ]] && { color=${arg/-/};  opt[$i]=""; }
 
-	[[ $arg =~ -t0 ]] && { t0=$val; opt[$j]=""; }
-	[[ $arg =~ -dt ]] && { dt=$val; opt[$j]=""; }
-	[[ $arg =~ -tu ]] && { tu=$val; opt[$j]=""; }
+	[[ $arg =~ -t0 ]] && { t0=$val; opt[$i]=""; opt[$j]=""; }
+	[[ $arg =~ -dt ]] && { dt=$val; opt[$i]=""; opt[$j]=""; }
+	[[ $arg =~ -tu ]] && { tu=$val; opt[$i]=""; opt[$j]=""; }
 
 	[[ $arg =~ : ]] && {
 		opt[$i]="";
