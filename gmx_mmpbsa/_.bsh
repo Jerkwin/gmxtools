@@ -1,9 +1,12 @@
 awk '
-function _exp(x) { return x<-100 ? 0 : x>100 ? 1E99 : exp(x) }
+	function min(x, y)    { return x<y ? x : y }
+	function max(x, y)    { return x>y ? x : y }
+	function round(x)     { return int(x+0.5)  }
+	function _exp(x)      { return exp(min(709, max(x, -745))) }
 
 BEGIN {
 
-print exp(-7E2)
+printf "%9.3E\n", _exp(745.2)
 
 }
 
