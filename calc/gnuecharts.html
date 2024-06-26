@@ -91,6 +91,8 @@ tfoot {font: 1em/1.2 Consolas, "Courier New", Monaco;}
 
 		<span class='th'>绘图命令</span><br>
 		<textarea id='cmd' style='width: 95%; height:10%; margin:0px; font: bold 1em Consolas'></textarea><br>
+		对数坐标轴<input type="checkbox" id="logx">x<input type="checkbox" id="logy">y
+		底数<input id="logbase" value='10' style='width:3em; height:1em; margin:0px; font: 1em Consolas'><br>
 
 		<input type='button' class='btn' value='更新绘图' onclick='runCMD()' style='width:100px; height:30px'>
 		<input type='button' class='btn' value='优化结果' onclick='showLM()' style='width:100px; height:30px'><br><br>
