@@ -1,122 +1,141 @@
-# 残基颜色 amino shapely
-RESINFO="ALA A #C8C8C8 #8CFF8C ARG R #145AFF #00007C ASN N #00DCDC #FF7C70 ASP D #E60A0A #A00042 ASH D #FF69B4 #FF00FF CYS C #E6E600 #EEEE70 CYM C #B4B400 #E6E62E CYX C #FAFA00 #F1F186 GLN Q #00DCDC #FF4C4C GLH E #FF69B4 #FF00FF GLU E #E60A0A #660000 GLY G #EBEBEB #EEEEEE HIS H #8282D2 #7070FF HID H #4D4DBF #8F8FFF HIE H #3A3AA1 #2222FF HIP H #8282D2 #7070FF ILE I #0F820F #004C00 LEU L #0F820F #455E45 LYS K #145AFF #4747B8 LYN K #477EFF #5F6FC7 MET M #E6E600 #B8A042 PHE F #3232AA #534C52 PRO P #DC9682 #525252 SER S #FA9600 #FF7042 THR T #FA9600 #B84C00 TRP W #B45AB4 #4F4600 TYR Y #3232AA #8C704C VAL V #0F820F #FF8CFF UNK U #BEA06E #FF00FF "
-resLett(name) = ( _i_=strstrt(RESINFO, name." "), \
-	strlen(name)==3 ? RESINFO[_i_+4:_i_+5] : RESINFO[_i_-4:_i_-1])
-resColor(name, n) = ( _i_=strstrt(RESINFO, name." ")+8*(n-1), \
-	strlen(name)==3 ? RESINFO[_i_+6:_i_+13] : RESINFO[_i_+2:_i_+9])
-
-#HBond #resDonor #resAcceptor Occupancy%
+# 氢键数据
+#HBond   #resDonor #resAcceptor Occupancy%
 $HBdat <<EOD
-   1    2-ILE  15-LYS     98.501
-   2    5-ASP   5-ASP      0.200
-   3    5-ASP   5-ASP      0.300
-   4    6-TYR  33-CYS     19.381
-   5    7-GLY   4-GLU     75.624
-   6    8-LYS   9-CYS      0.100
-   7    8-LYS  29-THR      0.100
-   8    8-LYS  30-ASN      2.098
-   9    8-LYS  30-ASN      3.297
-  10    8-LYS  30-ASN      1.499
-  11    8-LYS  30-ASN      0.100
-  12    8-LYS  30-ASN      0.400
-  13    8-LYS  30-ASN      0.300
-  14    9-CYS  31-CYS     98.302
-  15   10-THR  14-THR     88.811
-  16   10-THR  14-THR      0.400
-  17   10-THR   9-CYS      0.400
-  18   10-THR  14-THR      0.500
-  19   11-TRP  29-THR     10.390
-  20   11-TRP  22-CYS     21.279
-  21   11-TRP  24-CYS      0.200
-  22   11-TRP  28-GLY      1.898
-  23   13-GLY  10-THR     57.942
-  24   13-GLY  11-TRP      8.392
-  25   14-THR  10-THR     16.983
-  26   14-THR  10-THR     49.151
-  27   14-THR  10-THR      1.399
-  28   14-THR  10-THR      2.697
-  29   14-THR  13-GLY      0.200
-  30   14-THR  14-THR      0.100
-  31   15-LYS  12-GLY      0.200
-  32   15-LYS  12-GLY      0.500
-  33   15-LYS  13-GLY      1.099
-  34   15-LYS  13-GLY      2.498
-  35   15-LYS  13-GLY      2.198
-  36   17-CYS   2-ILE     95.005
-  37   18-ARG   3-ALA      0.100
-  38   18-ARG   5-ASP      0.999
-  39   18-ARG   5-ASP      1.299
-  40   18-ARG   3-ALA     13.287
-  41   18-ARG   5-ASP     28.072
-  42   18-ARG   5-ASP     27.373
-  43   19-GLY  16-CYS      0.599
-  44   20-ARG  16-CYS      1.199
-  45   20-ARG  17-CYS     48.851
-  46   20-ARG  18-ARG      0.100
-  47   20-ARG  35-PRO      2.498
-  48   20-ARG   5-ASP     16.184
-  49   20-ARG   5-ASP     29.271
-  50   20-ARG  17-CYS      3.097
-  51   20-ARG   5-ASP      0.200
-  52   20-ARG  18-ARG      0.100
-  53   20-ARG  35-PRO      1.099
-  54   23-ARG  21-PRO     14.785
-  55   23-ARG  32-GLU     44.256
-  56   23-ARG  34-THR      2.498
-  57   23-ARG  25-SER      3.497
-  58   23-ARG  32-GLU      0.999
-  59   23-ARG  25-SER     36.164
-  60   23-ARG  25-SER      0.400
-  61   23-ARG  32-GLU      0.200
-  62   23-ARG  32-GLU     11.788
-  63   25-SER  23-ARG     32.967
-  64   25-SER  30-ASN     18.581
-  65   25-SER  24-CYS      0.500
-  66   25-SER  32-GLU     14.386
-  67   25-SER  32-GLU      1.998
-  68   26-MET  24-CYS      1.399
-  69   26-MET  25-SER      0.100
-  70   27-ILE  24-CYS      2.298
-  71   27-ILE  25-SER     34.565
-  72   28-GLY  24-CYS      8.292
-  73   28-GLY  25-SER     50.250
-  74   28-GLY  26-MET      2.098
-  75   29-THR  27-ILE     21.778
-  76   29-THR  30-ASN      3.197
-  77   30-ASN  27-ILE     11.189
-  78   30-ASN  28-GLY      2.897
-  79   30-ASN  29-THR      0.100
-  80   30-ASN   9-CYS     13.187
-  81   30-ASN  29-THR      2.897
-  82   30-ASN  29-THR      2.498
-  83   31-CYS   9-CYS     20.480
-  84   32-GLU  23-ARG     99.401
-  85   33-CYS   7-GLY     99.800
-  86   34-THR  20-ARG      0.100
-  87   34-THR  21-PRO     98.701
-  88   34-THR  21-PRO      2.498
-  89   34-THR  32-GLU     83.916
-  90   34-THR  33-CYS      0.200
+   1    2-ILE    15-LYS   98.202  1  I2@N-H...K15@O
+   2    5-ASP     5-ASP    2.198  0  D5@N-H...D5@OD1
+   3    5-ASP     5-ASP    0.300  0  D5@N-H...D5@OD2
+   4    6-TYR    33-CYS   46.753  1  Y6@N-H...C33@O
+   5    7-GLY     4-GLU   54.845  1  G7@N-H...E4@O
+   6    7-GLY    33-CYS    0.100  1  G7@N-H...C33@O
+   7    8-LYS     9-CYS    2.897  1  K8@NZ-HZ1...C9@O
+   8    8-LYS     9-CYS    0.300  1  K8@NZ-HZ2...C9@O
+   9    8-LYS     9-CYS    4.496  1  K8@NZ-HZ3...C9@O
+  10    8-LYS    10-THR    2.198  1  K8@NZ-HZ1...T10@OG1
+  11    8-LYS    10-THR    0.699  1  K8@NZ-HZ2...T10@OG1
+  12    8-LYS    10-THR    0.899  1  K8@NZ-HZ3...T10@OG1
+  13    8-LYS    29-THR    0.100  1  K8@NZ-HZ1...T29@O
+  14    8-LYS    30-ASN   10.589  1  K8@NZ-HZ1...N30@OD1
+  15    8-LYS    30-ASN    7.792  1  K8@NZ-HZ2...N30@OD1
+  16    8-LYS    30-ASN    5.495  1  K8@NZ-HZ3...N30@OD1
+  17    9-CYS    31-CYS   96.304  1  C9@N-H...C31@O
+  18   10-THR    14-THR   78.921  1  T10@N-H...T14@OG1
+  19   10-THR    14-THR    3.796  1  T10@N-H...T14@O
+  20   10-THR     9-CYS    0.200  1  T10@OG1-HG1...C9@O
+  21   10-THR    14-THR    4.895  1  T10@OG1-HG1...T14@OG1
+  22   11-TRP    22-CYS    2.398  1  W11@NE1-HE1...C22@O
+  23   13-GLY    10-THR   56.943  1  G13@N-H...T10@O
+  24   13-GLY    11-TRP   11.489  1  G13@N-H...W11@O
+  25   14-THR    10-THR   17.083  1  T14@N-H...T10@OG1
+  26   14-THR    10-THR   62.837  1  T14@N-H...T10@O
+  27   14-THR     8-LYS    0.400  1  T14@OG1-HG1...K8@O
+  28   14-THR    10-THR    7.892  1  T14@OG1-HG1...T10@OG1
+  29   14-THR    10-THR    1.998  1  T14@OG1-HG1...T10@O
+  30   14-THR    14-THR    0.300  0  T14@OG1-HG1...T14@O
+  31   15-LYS    12-GLY    0.100  1  K15@NZ-HZ1...G12@O
+  32   15-LYS    12-GLY    0.599  1  K15@NZ-HZ2...G12@O
+  33   15-LYS    13-GLY    0.100  1  K15@NZ-HZ1...G13@O
+  34   15-LYS    13-GLY    2.498  1  K15@NZ-HZ2...G13@O
+  35   15-LYS    13-GLY    0.300  1  K15@NZ-HZ3...G13@O
+  36   15-LYS    16-CYS    0.100  1  K15@NZ-HZ3...C16@O
+  37   17-CYS     2-ILE   95.904  1  C17@N-H...I2@O
+  38   18-ARG     5-ASP    1.099  1  R18@NH1-HH12...D5@OD1
+  39   18-ARG    20-ARG    0.100  1  R18@NH1-HH11...R20@NH2
+  40   18-ARG     3-ALA    0.400  1  R18@NH2-HH21...A3@O
+  41   18-ARG     3-ALA    0.100  1  R18@NH2-HH22...A3@O
+  42   18-ARG     5-ASP   10.490  1  R18@NH2-HH22...D5@OD1
+  43   18-ARG     5-ASP    0.100  1  R18@NH2-HH22...D5@OD2
+  44   19-GLY    16-CYS    0.300  1  G19@N-H...C16@O
+  45   20-ARG    16-CYS    3.397  1  R20@N-H...C16@O
+  46   20-ARG    17-CYS   65.834  1  R20@N-H...C17@O
+  47   20-ARG    18-ARG   50.849  1  R20@NE-HE...R18@O
+  48   20-ARG    19-GLY    1.399  1  R20@NE-HE...G19@O
+  49   20-ARG    20-ARG    0.200  0  R20@NE-HE...R20@N
+  50   20-ARG    35-PRO    8.991  1  R20@NE-HE...P35@OC2
+  51   20-ARG    17-CYS    5.395  1  R20@NH1-HH11...C17@O
+  52   20-ARG    35-PRO    0.200  1  R20@NH1-HH11...P35@OC1
+  53   20-ARG    35-PRO   48.751  1  R20@NH1-HH11...P35@OC2
+  54   20-ARG    35-PRO    5.594  1  R20@NH1-HH12...P35@OC2
+  55   20-ARG    18-ARG   13.686  1  R20@NH2-HH21...R18@O
+  56   20-ARG    19-GLY    0.400  1  R20@NH2-HH21...G19@O
+  57   20-ARG    35-PRO    3.397  1  R20@NH2-HH21...P35@OC2
+  58   20-ARG    35-PRO    2.697  1  R20@NH2-HH22...P35@OC2
+  59   23-ARG    21-PRO    7.093  1  R23@N-H...P21@O
+  60   23-ARG    32-GLU   54.046  1  R23@N-H...E32@O
+  61   23-ARG    34-THR    1.199  1  R23@N-H...T34@OG1
+  62   23-ARG    32-GLU    0.300  1  R23@NE-HE...E32@OE1
+  63   23-ARG    34-THR    9.590  1  R23@NE-HE...T34@OG1
+  64   23-ARG    32-GLU    7.892  1  R23@NH2-HH21...E32@OE1
+  65   23-ARG    32-GLU    0.300  1  R23@NH2-HH21...E32@OE2
+  66   23-ARG    34-THR    0.999  1  R23@NH2-HH21...T34@OG1
+  67   25-SER    30-ASN   86.913  1  S25@N-H...N30@O
+  68   25-SER    29-THR   95.105  1  S25@OG-HG...T29@OG1
+  69   26-MET    24-CYS   19.281  1  M26@N-H...C24@O
+  70   27-ILE    25-SER   12.787  1  I27@N-H...S25@OG
+  71   27-ILE    25-SER   46.653  1  I27@N-H...S25@O
+  72   28-GLY    26-MET    0.200  1  G28@N-H...M26@N
+  73   28-GLY    26-MET    0.400  1  G28@N-H...M26@O
+  74   29-THR    25-SER   29.171  1  T29@N-H...S25@OG
+  75   29-THR    27-ILE    1.698  1  T29@N-H...I27@O
+  76   30-ASN    25-SER   61.738  1  N30@N-H...S25@OG
+  77   30-ASN    29-THR    0.400  1  N30@ND2-HD21...T29@OG1
+  78   30-ASN    32-GLU    1.199  1  N30@ND2-HD21...E32@OE1
+  79   30-ASN    32-GLU    1.598  1  N30@ND2-HD22...E32@OE1
+  80   30-ASN    32-GLU    5.095  1  N30@ND2-HD22...E32@OE2
+  81   31-CYS     9-CYS    1.998  1  C31@N-H...C9@O
+  82   31-CYS    30-ASN    6.893  1  C31@N-H...N30@OD1
+  83   32-GLU    23-ARG   98.202  1  E32@N-H...R23@O
+  84   33-CYS     7-GLY   99.500  1  C33@N-H...G7@O
+  85   34-THR    21-PRO   72.128  1  T34@N-H...P21@O
+  86   34-THR    32-GLU    8.891  1  T34@N-H...E32@O
+  87   34-THR    21-PRO   10.490  1  T34@OG1-HG1...P21@O
+  88   34-THR    23-ARG    0.400  1  T34@OG1-HG1...R23@NH1
+  89   34-THR    32-GLU   12.787  1  T34@OG1-HG1...E32@OE1
+  90   34-THR    32-GLU   21.079  1  T34@OG1-HG1...E32@O
+  91   34-THR    34-THR    0.799  0  T34@OG1-HG1...T34@O
 EOD
-
+# 获取每条氢键的残基编号, 占据率
 resD(i) = int(substr(word($HBdat[i],2), 1, strstrt(word($HBdat[i],2), "-")-1))
 resA(i) = int(substr(word($HBdat[i],3), 1, strstrt(word($HBdat[i],3), "-")-1))
 occ(i)  = word($HBdat[i],4)
 
+# 残基: 三字母 单字母 amino颜色 shapely颜色
+RESINFO=  " ALA A #C8C8C8 #8CFF8C ARG R #145AFF #00007C ASN N #00DCDC #FF7C70 ASP D #E60A0A #A00042" \
+		. " ASH D #FF69B4 #FF00FF CYS C #E6E600 #EEEE70 CYM C #B4B400 #E6E62E CYX C #FAFA00 #F1F186" \
+		. " GLN Q #00DCDC #FF4C4C GLH E #FF69B4 #FF00FF GLU E #E60A0A #660000 GLY G #EBEBEB #EEEEEE" \
+		. " HIS H #8282D2 #7070FF HID H #4D4DBF #8F8FFF HIE H #3A3AA1 #2222FF HIP H #8282D2 #7070FF" \
+		. " ILE I #0F820F #004C00 LEU L #0F820F #455E45 LYS K #145AFF #4747B8 LYN K #477EFF #5F6FC7" \
+		. " MET M #E6E600 #B8A042 PHE F #3232AA #534C52 PRO P #DC9682 #525252 SER S #FA9600 #FF7042" \
+		. " THR T #FA9600 #B84C00 TRP W #B45AB4 #4F4600 TYR Y #3232AA #8C704C VAL V #0F820F #FF8CFF" \
+		. " UNK U #BEA06E #FF00FF"
+# 根据残基名称获取其字母, 颜色
+resLett(name) = ( _i_=strstrt(RESINFO, " ".name." "), \
+	strlen(name)==3 ? RESINFO[_i_+5:_i_+5] : RESINFO[_i_-3:_i_-1])
+resColor(name, n) = ( _i_=strstrt(RESINFO, " ".name." ")+8*(n-1), \
+	strlen(name)==3 ? RESINFO[_i_+7:_i_+14] : RESINFO[_i_+3:_i_+10])
+
+# 获取残基编号范围
 resMin=1E9; resMax=0
 do for[i=1:|$HBdat|] {
 	resMin=min(resMin, resD(i)); resMax=max(resMax, resD(i))
 	resMin=min(resMin, resA(i)); resMax=max(resMax, resA(i))
 }
+# 获取每个残基名称
 array resName[resMax]
 do for[i=1:|$HBdat|] {
 	str=word($HBdat[i],2); k=strstrt(str,"-"); idx=int(str[1:k-1]); resName[idx]=str[k+1:k+3]
 	str=word($HBdat[i],3); k=strstrt(str,"-"); idx=int(str[1:k-1]); resName[idx]=str[k+1:k+3]
 }
 
-Radi=10; dR=1.5; Rext=Radi+dR; mode=3; color=1
-eval set_pal('cm_plasma')
+
+# 绘制选项
+mode=3        # 图形模式, 1: 圆; 2: 圆弧; 3: 方块
+color=1       # 残基颜色, 1: amino; 2: shapely
+Radi=10       # 内圆半径
+dR=1.5        # 圆圈宽度
+Rext=Radi+dR  # 外圆半径
+#eval set_pal('cm_plasma')    # 占据率颜色方案
 eval set_pal('cm_kindlmann 1 0')
+eval set_pal('cm_heat 1 0')
 
 set size square
 set angle degrees
@@ -132,11 +151,11 @@ td(i)  = ang(resD(i)+wd)
 ta(i)  = ang(resA(i)+wa)
 
 do for [i=resMin:resMax] {
-	if(mode==1) { dt=1; wd=wa=0; 
+	if(mode==1) { dt=1; wd=wa=0;
 		set obj i circ at Radi*cos(ang(i)), Radi*sin(ang(i)) size .8 \
 			fs solid fc rgb resColor(resName[i], color)
 	}
-	if(mode==2) { dt=.5; wd=0; wa=0.5; 
+	if(mode==2) { dt=.5; wd=0; wa=0.5;
 		set obj i circ at 0,0 size Radi arc [ang(i):ang(i+1)] lw 10 \
 		nowedge fs solid border lc rgb resColor(resName[i], color)
 	}
@@ -151,35 +170,40 @@ do for [i=resMin:resMax] {
 	}
 }
 
+set parametric
+set angle degrees
+
 # 立方贝塞尔曲线
 Bp(t, p0, p1, p2, p3) = p0*(1-t)**3 + 3*p1*t*(1-t)**2 + 3*p2*t*t*(1-t) + p3*t*t*t
 
 Bx(t, x0, x3, r0, a0, r3, a3) = Bp(t, x0, x0+r0*cos(a0), x3+r3*cos(a3), x3)
 By(t, y0, y3, r0, a0, r3, a3) = Bp(t, y0, y0+r0*sin(a0), y3+r3*sin(a3), y3)
 
-Bezier(t, xy, p0, p3, r0, a0, r3, a3) = ( \
-	Bp(t, p0, \
-	(xy eq "x" ? p0+r0*cos(a0) : p0+r0*sin(a0)), \
-	(xy eq "x" ? p3+r3*cos(a3) : p3+r3*sin(a3)), p3) )
-#plot [0:1] \
-	Bx(t, 0, 5, r0, 180, r3, 90),      \
-	By(t, 0, 5, r0, 180, r3, 90) w l,  \
-	Bezier(t, "x", 0, 4, r0, 180, r3, 90 ), \
-	Bezier(t, "y", 0, 4, r0, 180, r3, 90 ) w l
-
-set parametric
-set angle degrees
 plot \
 	for [i=1:|$HBdat|] [0:1:.1] '+'  \
 		u (Bx(t, Radi*cos(td(i)), Radi*cos(ta(i)), Radi/2, td(i)+180, Radi/2, ta(i)+180)) \
 		: (By(t, Radi*sin(td(i)), Radi*sin(ta(i)), Radi/2, td(i)+180, Radi/2, ta(i)+180)) \
-		w l lw 1 lc rgb rgba(occ(i),0,70,.5 ) , \
+		w l lw 1 lc rgb rgba(occ(i),0,100,.5) , \
 	for [i=resMin:resMax] [0:0] '+' \
-		u ((Radi+dR)*cos(ang(i))):((Radi+dR)*sin(ang(i))):(resName[i])\
+		u ((Radi+dR)*cos(ang(i))):((Radi+dR)*sin(ang(i))):(sprintf("%0s%d", resLett(resName[i]),i)) \
 		: (ang(i)<270?ang(i)-180:ang(i)) \
 		w labels rot var t""
 
 exit
+
+
+r0=5;r3=5
+Bezier(t, xy, p0, p3, r0, a0, r3, a3) = ( \
+	Bp(t, p0, \
+	(xy eq "x" ? p0+r0*cos(a0) : p0+r0*sin(a0)), \
+	(xy eq "x" ? p3+r3*cos(a3) : p3+r3*sin(a3)), p3) )
+plot [0:1] \
+	Bx(t, 0, 5, r0, 180, r3, 90),      \
+	By(t, 0, 5, r0, 180, r3, 90) w l,  \
+	Bezier(t, "x", 0, 4, r0, 180, r3, 90 ), \
+	Bezier(t, "y", 0, 4, r0, 180, r3, 90 ) w l
+exit
+
 
 # 弯曲贝塞尔箭头
 

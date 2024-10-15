@@ -1,7 +1,7 @@
 usage="\
 >>>>>>>>>>>>>>>>     dssp2gp    <<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<
->>>>>>>>>>     2024-03-06 12:05:21     <<<<<<<<<
+>>>>>>>>>>     2024-09-21 23:50:22     <<<<<<<<<
 Usage:   dssp2gp <file.dat|file.xpm> [-DRAW] [-COLOR] [RANGE]
                                      [-t0 t0] [-dt dt] [-tu tu]
 Default: dssp2gp  dssp.dat -xyz -pdb 1:1E9:1 -t0 0 -dt 1 -tu ps
@@ -19,6 +19,8 @@ option:  DRAW:
          -tu: unit of time, fs, ps, ns
 --------------------------------------------------------------------------------
 Log:
+2024-09-21: fix bugs of color
+            add 2 more ss~count plots
 2024-03-06: option bugs for -t0 -dt -tu
 --------------------------------------------------------------------------------"
 #	H = "A-Helix"  4-turn RH helix (α helix).   Min length 4 residues.
@@ -130,14 +132,13 @@ END { Pi=4*atan2(1,1)
 	else      ny=length(zv[1])
 	if(ny<maxRes) maxRes=ny
 
+	print "# α-Helix     3_{10}-Helix      π-Helix    PPII-Helix       β-Sheet       β-Bridge      Turn          Bend          Coil"
 	n=split("gmx vmd pdb rcsb taylor p1 p2 p3 p4 "color, arr)
 	for(i=1; i<=n; i++) {
-		for(v=1; v<=9; v++) {
+		for(v=9; v>=1; v--) {
 			for(ss in vss) if(vss[ss]==v) printf "c"v"=\""c[ss, arr[i]]"\"; ";
-			for(ss in vss) if(vss[ss]==v) printf "c"v"=\""c[ss, arr[i]]"\"; ">fileName"~count.gp"
 		}
 		print "#"arr[i]
-		print "#"arr[i] >fileName"~count.gp"
 	}
 
 	if(!xyz) {
@@ -171,12 +172,13 @@ END { Pi=4*atan2(1,1)
 		}
 	}
 
-	printf "\n$data <<EOD\n# residue index: %d-%d\n" \
+	Fcount=fileName"~count.gp"
+	printf "$data <<EOD\n# residue index: %d-%d\n" \
 		"#      Time(%s)    %11s%11s%11s%11s%11s%11s%11s%11s%11s%16s\n",
 		minRes, maxRes, tu,
 		name["H"], name["G"], name["I"], name["P"],
 		name["E"], name["B"], name["T"], name["S"],
-		name["~"], name["="] >fileName"~count.gp"
+		name["~"], name["="] >Fcount
 
 	nobj=0
 
@@ -197,7 +199,7 @@ END { Pi=4*atan2(1,1)
 		printf "%15.6f%11d%11d%11d%11d%11d%11d%11d%11d%11d%11d\n", x,
 			nss["H"], nss["G"], nss["I"], nss["P"],
 			nss["E"], nss["B"], nss["T"], nss["S"],
-			nss["~"], nss["="] >fileName"~count.gp"
+			nss["~"], nss["="] >Fcount
 
 		if(!xyz) {
 			for(j=minRes-1; j<maxRes; j++) {
@@ -208,23 +210,37 @@ END { Pi=4*atan2(1,1)
 		}
 	}
 
-	print "EOD\n"                                                                                 \
-		"\nset output \"ss~count.png\""                                                           \
-		"\nset term pngcairo enhanced truecolor font \"HelveticaNeueLT Pro 85 Hv,85\" \\"         \
-		"\n\tfontscale 1 linewidth 20 pointscale 5 size 6000,4000"                                \
-		"\nset tics out nomirror;"                                                                \
-		"\nset key out reverse Left spacing 2 samplen 1/2"                                        \
-		"\nset xl\"Time("tu")\"; set yl\"res%\";"                                                 \
-		"\nf=100./"ny";\nplot [0:] [0:100] $data \\"                                              \
-		"\n   u 1:(100-sum[i=2:2 ]column(i)*f) w filledcur y=0 fc rgb c9 t\"α-Helix     \", \\"   \
-		"\n\"\" u 1:(100-sum[i=2:3 ]column(i)*f) w filledcur y=0 fc rgb c8 t\"3_{10}-Helix\", \\" \
-		"\n\"\" u 1:(100-sum[i=2:4 ]column(i)*f) w filledcur y=0 fc rgb c7 t\"π-Helix     \", \\" \
-		"\n\"\" u 1:(100-sum[i=2:5 ]column(i)*f) w filledcur y=0 fc rgb c6 t\"PPII-Helix  \", \\" \
-		"\n\"\" u 1:(100-sum[i=2:6 ]column(i)*f) w filledcur y=0 fc rgb c5 t\"β-Sheet     \", \\" \
-		"\n\"\" u 1:(100-sum[i=2:7 ]column(i)*f) w filledcur y=0 fc rgb c4 t\"β-Bridge    \", \\" \
-		"\n\"\" u 1:(100-sum[i=2:8 ]column(i)*f) w filledcur y=0 fc rgb c3 t\"Turn        \", \\" \
-		"\n\"\" u 1:(100-sum[i=2:9 ]column(i)*f) w filledcur y=0 fc rgb c2 t\"Bend        \", \\" \
-		"\n\"\" u 1:(100-sum[i=2:10]column(i)*f) w filledcur y=0 fc rgb c1 t\"Coil        \"" >fileName"~count.gp"
+	print "EOD" \
+		"\n\nt= \"α-Helix 3_{10}-Helix π-Helix PPII-Helix β-Sheet β-Bridge Turn Bend Coil \"" >Fcount
+
+	n=split("gmx vmd pdb rcsb taylor p1 p2 p3 p4 "color, arr)
+	for(i=1; i<=n; i++) {
+		printf "c= \"">fileName"~count.gp"
+		for(v=9; v>=1; v--) {
+			for(ss in vss) if(vss[ss]==v) printf c[ss, arr[i]]" " >Fcount
+		}
+		print "\" #"arr[i] >Fcount
+	}
+
+	print "\nset term pngcairo enhanced truecolor font \"HelveticaNeueLT Pro 85 Hv,85\" \\" \
+		"\n\tfontscale 1 linewidth 20 pointscale 5 size 6000,4000"                          \
+		"\nset tics out nomirror;"                                                          \
+		"\nset key out reverse Left spacing 2 samplen 1/2"                                  \
+		"\n\nf=100./"ny                          \
+		"\nset xl\"Time("tu")\"; set yl\"res%\"" \
+		"\nset xr [0:"(x)"];  set yr [0:100]"    \
+		"\n\nset output \"ss~count.png\""        \
+		"\nplot       $data u 1:(100)                       w filledcur y=0 fc rgb word(c, 1) t word(t, 1), \\" \
+		"\nfor[i=2:9] $data u 1:(100-sum[k=2:i]column(k)*f) w filledcur y=0 fc rgb word(c, i) t word(t, i)"     \
+		"\n\nset output \"ss~count-sm.png\""     \
+		"\nplot       $data u 1:(100)                       sm bezier w filledcur y=0 fc rgb word(c, 1) t word(t, 1), \\" \
+		"\nfor[i=2:9] $data u 1:(100-sum[k=2:i]column(k)*f) sm bezier w filledcur y=0 fc rgb word(c, i) t word(t, i)"     \
+		"\n\nset output \"ss~count-hist.png\""  \
+		"\nset style data histogram"            \
+		"\nset style histogram rowstacked"      \
+		"\nset style fill solid"                \
+		"\nplot for [i=10:2:-1] $data u (column(i)*f) lw 0 lc rgb word(c, i-1) t word(t, i-1)"  >Fcount
+
 
 	if(!xyz) print "\n$data <<EOD\n0 0 0\n0 0 0\n0 0 0\n0 0 0"
 	print "EOD\n"
