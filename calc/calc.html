@@ -1045,7 +1045,7 @@ function setVal(name, id) {
 
 	$('inputValue').innerHTML='输入表达式: '+$(id).value+' = '+mathEval($(id).value)
 	if(name!='Energy') {
-		val=mathEval($(id).value+'*'+id); // 转换为基本单位
+		val=mathEval('('+$(id).value+')*'+id); // 转换为基本单位
 		for(i=0; i<unit.length; i++) {
 			if(unit[i].id!=id) {
 				if(unit[i].id!='C_K' && unit[i].id!='C_Pa'
@@ -1066,6 +1066,7 @@ function setVal(name, id) {
 	} else {
 		val=mathEval($(id).value)
 		txt=drvUnit[id]
+
 		if(txt) {
 			if(txt=='Rinvm') { val=mathEval(1/val+'*m2'+id); txt='invm' }
 			else if(txt=='RinvHz') { val=mathEval(1/val+'/Hz2'+id); txt='Hz' }
@@ -1088,16 +1089,17 @@ function setVal(name, id) {
 			txt=drvUnit[tmp]
 			if(txt) {
 				if(txt=='Rinvm') {
-					val=1/$('invm').value
+					val=mathEval('1/('+$('invm').value+')')
 					if(unit[i].id!=id2) unit[i].value=fmt(mathEval(val+'*m2'+tmp))
 				}
 				else if(txt=='RinvHz') {
-					val=1/$('Hz').value
+					val=mathEval('1/('+$('Hz').value+')')
 					if(unit[i].id!=id2) unit[i].value=fmt(mathEval(val+'/Hz2'+tmp))
 				} else {
-					val=$(txt).value
+					val=mathEval($(txt).value)
 					if(unit[i].id!=id2) unit[i].value=fmt(mathEval(val+'*'+txt+'2'+tmp))
 				}
+
 			}
 		}
 	}
