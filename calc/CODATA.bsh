@@ -1,0 +1,25 @@
+awk ' BEGIN{
+	txt="joule J  atomic=mass=unit amu  electron=volt eV  hartree Hatr  hertz Hz  inverse=meter invm  kelvin K  kilogram kg"
+	n=split(txt, arr)
+	for(i=1; i<=n-1; i+=2) { gsub("=", " ", arr[i]); id[arr[i]]=arr[i+1] }
+}
+
+/atomic mass constant/ {print}
+/atomic unit of energy/ {print}
+/atomic unit of length/ {print}
+/atomic unit of time/ {print}
+/atomic unit of force/ {print}
+/Rydberg constant times hc in J/ {print}
+/vacuum electric permittivity/ {print}
+/vacuum mag. permeability / {print}
+/proton mass/ {print}
+/electron mass/ {print}
+/Newtonian constant of gravitation/ {print}
+
+/relationship/ {
+	sub("relationship", "=")
+	for(str in id) { sub(str"-", id[str]"2", $0); gsub(str, id[str], $0) }
+	gsub(/ +/, ""); gsub(/[=|]/, "   ")
+	print
+}
+' CODATA-2022.txt >_2022
