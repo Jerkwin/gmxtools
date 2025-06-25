@@ -1,12 +1,13 @@
 echo -e "\
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   gmx_hbdat    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Jicun Li    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->>>>>>>>>>>>>>>>>>>>>>>>>>     2024-01-20 15:42:55     <<<<<<<<<<<<<<<<<<<<<<<<<\n
+>>>>>>>>>>>>>>>>>>>>>>>>>>     2025-06-12 14:53:38     <<<<<<<<<<<<<<<<<<<<<<<<<\n
 >>   Usage: gmx_hbdat -s     *.tpr  -n     *.ndx  -m     *.xpm
 >> Default: gmx_hbdat -s topol.tpr  -n hbond.ndx  -m hbmap.xpm
 
 --------------------------------------------------------------------------------
 >> Log:
+   2025-06-12: fix \r\n bug
    2022-06-25: add #res for atoms
    2023-06-05: revise output
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
@@ -26,7 +27,7 @@ for((i=0; i<N; i++)); do
 	[[ $arg =~ -m   ]] && { xpm=$val; }
 done
 
-$dump -s $tpr -quiet 2>>/dev/null | awk -v ndx=$ndx -v xpm=$xpm '
+$dump -s $tpr -quiet 2>>/dev/null | awk -v RS="\r?\n" -v ndx=$ndx -v xpm=$xpm '
 	BEGIN {
 		isHB=0; nhb=0
 		while(getline < ndx ) {
@@ -92,7 +93,7 @@ $dump -s $tpr -quiet 2>>/dev/null | awk -v ndx=$ndx -v xpm=$xpm '
 		fmt="%4d   %-20s %-"maxlen"s %8s %-9s  %-"maxlen"s %8s %-9s %9.3f    %4d    %-s\n"
 		for(i=1; i<=nhb; i++) {
 			split(Label[don[i]]" "Label[hyd[i]]" "Label[acc[i]], arr)
-			
+
 			n=arr[3]; sub(/[^0-9]+/, "", n)
 			s=arr[3]; sub(/[0-9]+/,  "", s)
 			tag=sname[s]""n"@"arr[4]"-"arr[8]
@@ -103,7 +104,7 @@ $dump -s $tpr -quiet 2>>/dev/null | awk -v ndx=$ndx -v xpm=$xpm '
 			printf fmt, i,
 				arr[1]"-"arr[5]"..."arr[9],
 				arr[2],  arr[3], arr[4]"-"arr[8],
-				arr[10], arr[11], arr[12], occ[nhb-i+1], 
+				arr[10], arr[11], arr[12], occ[nhb-i+1],
 				arr[3]==arr[11]? 0:1, tag
 		}
 	}
