@@ -114,15 +114,15 @@ code {
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Len">长度&nbsp;&nbsp;
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Mas">质量&nbsp;&nbsp;
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Tim">时间&nbsp;&nbsp;
-		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Eng">能量&nbsp;&nbsp;
+		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Eng" checked>能量&nbsp;&nbsp;
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Frc">力  &nbsp;&nbsp;
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Prs">压强&nbsp;&nbsp;
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Con">浓度&nbsp;&nbsp;
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="Rho">密度&nbsp;&nbsp;
 		<input type="radio" onclick="setUnit(this.id)" name="unit" id="VDW">VDW参数<br>
-		<span style='font: .6em Consolas;'>
+		<span style='font: .5em Consolas;'>
 		<ol><li>支持js函数: <code>**</code> <code>pow</code> <code>sqrt</code> <code>exp</code> <code>log</code>; <code>abs</code> <code>ceil</code> <code>floor</code>; <code>min</code> <code>max</code> <code>round</code> <code>random</code>; <code>sin</code> <code>cos</code> <code>tan</code>; <code>asin</code> <code>acos</code> <code>atan</code> <code>atan2</code></li><li>
-		支持常量符号:<code>pi</code>; <code>c</code>:真空光速; <code>Na</code>:阿伏加德罗常数; <code>qe</code>:基元电荷; <code>ang</code>:埃; <code>nm</code>nm: 纳米; <code>h</code>:普朗克常数; <code>hbar</code>:h/2pi; <code>amu</code>:原子质量单位; <code>ha</code>:原子能量单位; <code>bohr</code>:原子长度单位; <code>kb</code>:玻尔兹曼常数; <code>mu0</code>:介磁常数; <code>eps0</code>:介电常数; <code>me</code>:电子质量; <code>mp</code>:质子质量; <code>g</code>:标准重力加速度; <code>G</code>:万有引力常数; <code>atm</code>:标准大气压; <code>P0</code>:标准压力; <code>T0</code>:标准温度; <code>R</code>:摩尔气体常数; <code>c2j</code>:卡焦互换; <code>j2c</code>:焦卡互换; <code>debye</code>:偶极矩单位德拜</li>
+		支持常量符号:<code>pi</code>; <code>c</code>:真空光速; <code>Na</code>:阿伏加德罗常数; <code>qe</code>:基元电荷; <code>ang</code>:埃; <code>nm</code>nm: 纳米; <code>h</code>:普朗克常数; <code>hbar</code>:h/2pi; <code>amu</code>:原子质量单位; <code>ha</code>:原子能量单位; <code>bohr</code>:原子长度单位; <code>kb</code>:玻尔兹曼常数; <code>mu0</code>:介磁常数; <code>eps0</code>:介电常数; <code>me</code>:电子质量; <code>mp</code>:质子质量; <code>g</code>:标准重力加速度; <code>G</code>:万有引力常数; <code>atm</code>:标准大气压; <code>Po</code>:标准压力; <code>To</code>:标准温度; <code>R</code>:摩尔气体常数; <code>c2J</code>:卡焦互换; <code>j2c</code>:焦卡互换; <code>debye</code>:偶极矩单位德拜</li>
 		</ol><strong id='inputValue'></strong> </span>
 		<table id="TabLen" style="display: none;">
 		<tbody><tr><td>
@@ -139,14 +139,39 @@ code {
 		</td></tr>
 		<tr><td>
 			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_bohr"> 玻尔(Bohr)<br>
-			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_ang"> 埃(&#197;)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_Ang"> 埃(&#197;)<br>
 		</td></tr>
 		<tr><td>
-			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_pnt"> 点(point)<br>
 			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_inch"> 英寸(inch)<br>
 			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_foot"> 英尺(foot)<br>
 			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_yard"> 码(yard)<br>
 			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_mile"> 英里(mile)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_pnt"> 点(point)<br>
+		</td></tr>
+		<tr><td>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_lity"> 光年(light-year)<br>
+		</td></tr>
+		<tr><td>
+			微软 Office 字号<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_el"> 特大号<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_le"> 大特号<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_ex"> 特号<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_la"> 初号<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_me"> 小初<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_n1"> 一号(显字)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_s1"> 小一<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_n2"> 二号(明字)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_s2"> 小二<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_n3"> 三号(中字)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_s3"> 小三<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_n4"> 四号(行字)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_s4"> 小四<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_n5"> 五号(解字)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_s5"> 小五<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_n6"> 六号(注字)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_s6"> 小六<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_n7"> 七号(珍字)<br>
+			<input type="box" name="Length" onInput="setVal(this.name,this.id)" id="L_n8"> 八号<br>
 		</td></tr>
 		</table>
 
@@ -214,7 +239,7 @@ code {
 			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Mcal_mol"> 兆卡/摩尔(Mcal/mol)<br>
 		</td></tr>
 		<tr><td>
-			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Hatr"> 哈垂(Hartree)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Ha"> 哈垂(Hartree)<br>
 			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Ry"> 里德伯(Rydberg)<br>
 
 		</td></tr>
@@ -247,7 +272,7 @@ code {
 			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Emm"> 毫米(mm)<br>
 			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Eum"> 微米(&mu;m)<br>
 			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Enm"> 纳米(nm)<br>
-			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="Eang"> 埃(&#197;)<br>
+			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="EAng"> 埃(&#197;)<br>
 		</td></tr>
 		<tr><td>
 			<input type="box" name="Energy" onInput="setVal(this.name, this.id)" id="invm"> 波数(m<sup>-1</sup>)<br>
@@ -743,108 +768,127 @@ code {
 <script>
 var $=function(id){return document.getElementById(id)}
 
+pi=Math.PI
 c=299792458           // exact 真空光速
-Navg=6.02214076E23    // exact 阿付加德罗常数
-echg=1.602176634E-19  // exact 基元电荷
-ang=1.E-10            // exact 埃
-nm=1.E-9              // exact 纳米
+e=qe=1.602176634E-19  // exact 基元电荷
 h=6.62607015E-34      // exact 普朗克常数
+
+Na=6.02214076E23    // exact 阿付加德罗常数
 kb=1.380649E-23       // exact 玻尔兹曼常数
-g=9.80665             // exact 标准重力加速度
+Po=100000             // exact 标准压力
 atm=101325            // exact 标准大气压
-P0=100000             // exact 标准压力
-T0=298.15             // exact 标准压力
-R=8.314462618         // exact 摩尔气体常数
-c2j=4.184             // exact 卡焦互换
+g=9.80665             // exact 标准重力加速度
+To=298.15             // exact 标准压力
+T0=273.15             // exact 标准压力
+c2J=4.184             // exact 卡焦互换
+
+nm=1.E-9              // exact 纳米
+Ang=A=1.E-10            // exact 埃
 debye=1.E-21/c        // exact Debye
 
-hbar=.5*h/Math.PI     // 原子作用单位
-Na=Navg
-qe=echg
-pi=Math.PI
-j2cal=1./c2j
+R=Na*kb         // exact 摩尔气体常数
+hbar=.5*h/pi     // 原子作用单位
+J2c=1./c2J
+hc=h*c
 
-amu=1.66053906660E-27    // 原子质量单位
-ha=4.3597447222071E-18   // 原子能量单位
-bohr=5.29177210903E-11   // 原子长度单位
+amu  = 1.66053906892e-27 // 原子质量单位
+Ha   = 4.3597447222060e-18 // 原子能量单位
+bohr = 5.29177210544e-11 // 原子长度单位
+eps0 = 8.8541878188e-12 // 介电常数
+mu0  = 4*pi*1e-7 // 介磁常数
+me   = emas= 9.1093837139e-31 // 电子质量
+mp   = pmas= 1.67262192595e-27 // 质子质量
+G    = 6.67430e-11 // 万有引力常数
+aut  = 2.4188843265864e-17
+auf  = 8.2387235038e-8
+Rinf = 2.1798723611030e-18
 
-eps0=8.8541878128E-12    // 介电常数
-mu0 = 1.25663706212E-6   // 介磁常数
-me=9.1093837015E-31      // 电子质量
-mp=1.67262192369E-27     // 质子质量
+amu2eV   = 9.3149410372e8    // 0.0000000029e8|eV
+amu2Ha   = 3.4231776922e7    // 0.0000000011e7|E_h
+amu2Hz   = 2.25234272185e23  // 0.00000000070e23|Hz
+amu2invm = 7.5130066209e14   // 0.0000000023e14|m^-1
+amu2J    = 1.49241808768e-10 // 0.00000000046e-10|J
+amu2K    = 1.08095402067e13  // 0.00000000034e13|K
+amu2kg   = 1.66053906892e-27 // 0.00000000052e-27|kg
 
-G=6.67430E-11            // 万有引力常数
+eV2amu   = 1.07354410083e-9   // 0.00000000033e-9|u
+eV2Ha    = 3.6749322175665e-2 // 0.0000000000040e-2|E_h
 
-emas     = 9.1093837015e-31
-pmas     = 1.67262192369e-27
+Ha2amu   = 2.92126231797e-8    // 0.00000000091e-8|u
+Ha2eV    = 27.211386245981     // 0.000000000030|eV
+Ha2Hz    = 6.5796839204999e15  // 0.0000000000072e15|Hz
+Ha2invm  = 2.1947463136314e7   // 0.0000000000024e7|m^-1
+Ha2J     = 4.3597447222060e-18 // 0.0000000000048e-18|J
+Ha2K     = 3.1577502480398e5   // 0.0000000000034e5|K
+Ha2kg    = 4.8508702095419e-35 // 0.0000000000053e-35|kg
 
-aut      = 2.4188843265857e-17
-auf      = 8.2387234983e-8
+Hz2amu   = 4.4398216590e-24    // 0.0000000014e-24|u
+Hz2Ha    = 1.5198298460574e-16 // 0.0000000000017e-16|E_h
 
-Rinf     = 2.1798723611035e-18    //  0.000 000 000 0042 e-18  J
+invm2amu = 1.33102504824e-15  // 0.00000000041e-15|u
+invm2Ha  = 4.5563352529132e-8 // 0.0000000000050e-8|E_h
 
-amu2eV    =    9.3149410242e8      //  0.0000000028e8eV
-amu2Hatr  =    3.4231776874e7      //  0.0000000010e7E_h
-amu2Hz    =    2.25234271871e23    //  0.00000000068e23Hz
-amu2invm  =    7.5130066104e14     //  0.0000000023e14m^-1
-amu2J     =    1.49241808560e-10   //  0.00000000045e-10J
-amu2K     =    1.08095401916e13    //  0.00000000033e13K
-amu2kg    =    1.66053906660e-27   //  0.00000000050e-27kg
-eV2amu    =    1.07354410233e-9    //  0.00000000032e-9u
-eV2Hatr   =    3.6749322175655e-2  //  0.0000000000071e-2E_h
-eV2Hz     =    2.417989242e14      //  (exact)Hz
-eV2invm   =    8.065543937e5       //  (exact)m^-1
-eV2J      =    1.602176634e-19     //  (exact)J
-eV2K      =    1.160451812e4       //  (exact)K
-eV2kg     =    1.782661921e-36     //  (exact)kg
-Hatr2amu  =    2.92126232205e-8    //  0.00000000088e-8u
-Hatr2eV   =   27.211386245988      //  0.000000000053eV
-Hatr2Hz   =    6.579683920502e15   //  0.000000000013e15Hz
-Hatr2invm =    2.1947463136320e7   //  0.0000000000043e7m^-1
-Hatr2J    =    4.3597447222071e-18 //  0.0000000000085e-18J
-Hatr2K    =    3.1577502480407e5   //  0.0000000000061e5K
-Hatr2kg   =    4.8508702095432e-35 //  0.0000000000094e-35kg
-Hz2amu    =    4.4398216652e-24    //  0.0000000013e-24u
-Hz2eV     =    4.135667696e-15     //  (exact)eV
-Hz2Hatr   =    1.5198298460570e-16 //  0.0000000000029e-16E_h
-Hz2invm   =    3.335640951e-9      //  (exact)m^-1
-Hz2J      =    6.62607015e-34      //  (exact)J
-Hz2K      =    4.799243073e-11     //  (exact)K
-Hz2kg     =    7.372497323e-51     //  (exact)kg
-invm2amu  =    1.33102505010e-15   //  0.00000000040e-15u
-invm2eV   =    1.239841984e-6      //  (exact)eV
-invm2Hatr =    4.5563352529120e-8  //  0.0000000000088e-8E_h
-invm2Hz   =      299792458         //  (exact)Hz
-invm2J    =    1.986445857e-25     //  (exact)J
-invm2K    =    1.438776877e-2      //  (exact)K
-invm2kg   =    2.210219094e-42     //  (exact)kg
-J2amu     =    6.7005352565e9      //  0.0000000020e9u
-J2eV      =    6.241509074e18      //  (exact)eV
-J2Hatr    =    2.2937122783963e17  //  0.0000000000045e17E_h
-J2Hz      =    1.509190179e33      //  (exact)Hz
-J2invm    =    5.034116567e24      //  (exact)m^-1
-J2K       =    7.242970516e22      //  (exact)K
-J2kg      =    1.112650056e-17     //  (exact)kg
-K2amu     =    9.2510873014e-14    //  0.0000000028e-14u
-K2eV      =    8.617333262e-5      //  (exact)eV
-K2Hatr    =    3.1668115634556e-6  //  0.0000000000061e-6E_h
-K2Hz      =    2.083661912e10      //  (exact)Hz
-K2invm    =   69.50348004          //  (exact)m^-1
-K2J       =    1.380649e-23        //  (exact)J
-K2kg      =    1.536179187e-40     //  (exact)kg
-kg2amu    =    6.0221407621e26     //  0.0000000018e26u
-kg2eV     =    5.609588603e35      //  (exact)eV
-kg2Hatr   =    2.0614857887409e34  //  0.0000000000040e34E_h
-kg2Hz     =    1.356392489e50      //  (exact)Hz
-kg2invm   =    4.524438335e41      //  (exact)m^-1
-kg2J      =    8.987551787e16      //  (exact)J
-kg2K      =    6.509657260e39      //  (exact)K
+J2amu    = 6.7005352471e9     // 0.0000000021e9|u
+J2Ha     = 2.2937122783969e17 // 0.0000000000025e17|E_h
+
+K2amu    = 9.2510872884e-14   // 0.0000000029e-14|u
+K2Ha     = 3.1668115634564e-6 // 0.0000000000035e-6|E_h
+
+kg2amu   = 6.0221407537e26    // 0.0000000019e26|u
+kg2Ha    = 2.0614857887415e34 // 0.0000000000022e34|E_h
+
+eV2Hz    =  e/h       //  2.417989242e14
+eV2invm  =  e/hc      //  8.065543937e5
+eV2J     =  e         //  1.602176634e-19
+eV2K     =  e/kb      //  1.160451812e4
+eV2kg    =  e/(c*c)   //  1.782661921e-36
+
+Hz2eV    =  h/e       //  4.135667696e-15
+Hz2invm  =  1/c       //  3.335640951e-9
+Hz2J     =  h         //  6.62607015e-34
+Hz2K     =  h/kb      //  4.799243073e-11
+Hz2kg    =  h/(c*c)   //  7.372497323e-51
+
+invm2eV  =  hc/e      //  1.239841984e-6
+invm2Hz  =  c         //  299792458
+invm2J   =  hc        //  1.986445857e-25
+invm2K   =  hc/kb     //  1.438776877e-2
+invm2kg  =  h/c       //  2.210219094e-42
+
+J2eV     =  1/e       //  6.241509074e18
+J2Hz     =  1/h       //  1.509190179e33
+J2invm   =  1/hc      //  5.034116567e24
+J2K      =  1/kb      //  7.242970516e22
+J2kg     =  1/(c*c)   //  1.112650056e-17
+
+K2eV     =  kb/e      //  8.617333262e-5
+K2Hz     =  kb/h      //  2.083661912e10
+K2invm   =  kb/hc     // 69.50348004
+K2J      =  kb        //  1.380649e-23
+K2kg     =  kb/(c*c)  //  1.536179187e-40
+
+kg2eV    =  c*c/e     //  5.609588603e35
+kg2Hz    =  c*c/h     //  1.356392489e50
+kg2invm  =  c/h       //  4.524438335e41
+kg2J     =  c*c       //  8.987551787e16
+kg2K     =  c*c/kb    //  6.509657260e39
 
 L_m    =1.0;   L_km =1.E3;  L_cm =1.E-2;  L_mm =1.E-3;
-L_um   =1.E-6; L_nm =1.E-9; L_pm =1.E-12; L_fm =1.E-15
-L_bohr  =bohr;   L_ang =1.E-10
-L_pnt  =.0254/72.; L_inch =.0254; L_foot =.3048
-L_yard =.9144; L_mile =1609.344
+L_um   =1.E-6; L_nm =nm; L_pm =1.E-12; L_fm =1.E-15
+L_bohr =bohr;  L_Ang =Ang
+L_pnt  =.0254/72; L_inch =.0254; L_foot =.3048
+L_yard =.9144;     L_mile =1609.344;
+
+L_n1 = 26   * L_pnt;  L_el = 72   * L_pnt;
+L_s1 = 24   * L_pnt;  L_le = 63   * L_pnt;
+L_n2 = 22   * L_pnt;  L_ex = 54   * L_pnt;
+L_s2 = 18   * L_pnt;  L_la = 42   * L_pnt;
+L_n3 = 16   * L_pnt;  L_me = 36   * L_pnt;
+L_s3 = 15   * L_pnt;  L_n6 =  7.5 * L_pnt;
+L_n4 = 14   * L_pnt;  L_s6 =  6.5 * L_pnt;
+L_s4 = 12   * L_pnt;  L_n7 =  5.5 * L_pnt;
+L_n5 = 10.5 * L_pnt;  L_n8 =  5   * L_pnt;
+L_s5 =  9   * L_pnt;
 
 M_kg=1.0; M_g=1E-3; M_mg=1E-6; M_ug=1E-9
 M_emas=emas; M_pmas=pmas; M_amu=amu2kg
@@ -855,32 +899,34 @@ T_s=1.; T_minu=60; T_h=3600; T_d=86400
 T_ms=1E-3; T_us=1E-6; T_ns=1E-9; T_ps=1E-12; T_fs=1E-15; T_as=1E-18
 T_au=aut; T_m=30*T_d; T_a=365*T_d; T_am=29.53*T_d; T_aa=365.2422*T_d
 
+L_lity=c*T_aa
+
 cal=4.184
-J2cal      = 1./cal
-J2erg      = 1./1.E-7
-J2kJ_mol   = Navg/1000.
-J2kcal_mol = Navg/1000.*J2cal
-J2MJ_mol   = Navg/1.E6
-J2Mcal_mol = Navg/1.E6*J2cal
-J2Emd      = 1./(amu*(ang/T_fs)**2)
+J2cal      = 1/cal
+J2erg      = 1E7
+J2kJ_mol   = Na/1000.
+J2kcal_mol = Na/1000.*J2cal
+J2MJ_mol   = Na/1.E6
+J2Mcal_mol = Na/1.E6*J2cal
+J2Emd      = 1./(amu*(Ang/T_fs)**2)
 J2Emd2     = 1./(amu*(nm /T_ps)**2)
 J2Ry       = 1./Rinf
 invm2invcm=1.E-2
-Hatr2Ee2bohr=1.
-Hatr2Ee2A=ang/bohr
-Hatr2Ee2nm=nm/bohr
+Ha2Ee2bohr=1.
+Ha2Ee2A=Ang/bohr
+Ha2Ee2nm=nm/bohr
 
-m2Em=1; m2Ecm=1E2;  m2Emm=1E3;     m2Eum=1.E6;   m2Enm=1.E9; m2Eang=1.E10
+m2Em=1; m2Ecm=1E2;  m2Emm=1E3;     m2Eum=1.E6;   m2Enm=1.E9; m2EAng=1.E10
 eV2MeV=1.E-6; eV2GeV=1.E-9; eV2TeV=1.E-12; eV2PeV=1.E-15
 Hz2MHz=1.E-6; Hz2GHz=1.E-9; Hz2THz=1.E-12; Hz2PHz=1.E-15
 Hz2Es=T_s; Hz2Ems=T_ms; Hz2Eus=T_us; Hz2Ens=T_ns; Hz2Eps=T_ps; Hz2Efs=T_fs; Hz2Eas=T_as
 
 F_N=1.0; F_dyn=1E-5; F_mN=1E-3; F_uN=1E-6; F_nN=1E-9; F_pN=1E-12
-F_au=auf; F_auA=Hatr2J/L_ang
-F_e2A=auf*bohr*bohr/(ang*ang); F_e2nm=auf*bohr*bohr/(nm*nm);
-F_mpc=1/J2kcal_mol/L_ang; F_gmx=1/J2kJ_mol/L_nm
-F_md=1/J2kJ_mol/L_ang
-F_amu1=amu2kg*ang/T_fs**2;
+F_au=auf; F_auA=Ha2J/L_Ang
+F_e2A=auf*bohr*bohr/(Ang*Ang); F_e2nm=auf*bohr*bohr/(nm*nm);
+F_mpc=1/J2kcal_mol/L_Ang; F_gmx=1/J2kJ_mol/L_nm
+F_md=1/J2kJ_mol/L_Ang
+F_amu1=amu2kg*Ang/T_fs**2;
 F_amu2=amu2kg*nm/T_ps**2;
 
 P_Pa=1.; P_kPa=1E3; P_MPa=1E6; P_GPa=1E9
@@ -888,10 +934,10 @@ P_dyncm=1E-1; P_bar=1E5; P_atm=101325
 P_mmH2O=1.004514556*g; P_mmHg=13.5951*g; P_Torr=P_mmHg
 
 F_Pam=1.0
-F_MPaA=P_MPa*ang**2; F_MPanm=P_MPa*nm**2
-F_GPaA=P_GPa*ang**2; F_GPanm=P_GPa*nm**2
+F_MPaA=P_MPa*Ang**2; F_MPanm=P_MPa*nm**2
+F_GPaA=P_GPa*Ang**2; F_GPanm=P_GPa*nm**2
 
-C_M=1.; C_mM=1E-3; C_uM=1E-6; C_A3=1/Navg*1E27; C_cm3=1/Navg*1E3; C_nm3=1/Navg*1E24
+C_M=1.; C_mM=1E-3; C_uM=1E-6; C_A3=1/Na*1E27; C_cm3=1/Na*1E3; C_nm3=1/Na*1E24
 
 R_gmL=1.; R_gL=1.E-3; R_amuA3=amu2kg*1E30*1E-3
 
@@ -1035,8 +1081,8 @@ function setVal(name, id) {
 		'MeV':'eV', 'GeV':'eV', 'TeV':'eV', 'PeV':'eV',
 		'MHz':'Hz', 'GHz':'Hz', 'PHz':'Hz', 'THz':'Hz',
 		'Em':'Rinvm', 'Ecm':'Rinvm', 'Emm':'Rinvm',
-		'Eum':'Rinvm', 'Enm':'Rinvm', 'Eang':'Rinvm',
-		'Ee2bohr':'Hatr', 'Ee2A':'Hatr', 'Ee2nm':'Hatr',
+		'Eum':'Rinvm', 'Enm':'Rinvm', 'EAng':'Rinvm',
+		'Ee2bohr':'Ha', 'Ee2A':'Ha', 'Ee2nm':'Ha',
 		'Es': 'RinvHz', 'Ems': 'RinvHz', 'Eus': 'RinvHz',
 		'Ens': 'RinvHz', 'Eps': 'RinvHz', 'Efs': 'RinvHz',
 		'Eas': 'RinvHz'}

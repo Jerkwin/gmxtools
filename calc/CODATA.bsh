@@ -1,25 +1,50 @@
+CODATA=CODATA-2018.txt
+CODATA=CODATA-2022.txt
+
 awk ' BEGIN{
 	txt="joule J  atomic=mass=unit amu  electron=volt eV  hartree Hatr  hertz Hz  inverse=meter invm  kelvin K  kilogram kg"
 	n=split(txt, arr)
 	for(i=1; i<=n-1; i+=2) { gsub("=", " ", arr[i]); id[arr[i]]=arr[i+1] }
 }
 
-/atomic mass constant/ {print}
-/atomic unit of energy/ {print}
-/atomic unit of length/ {print}
-/atomic unit of time/ {print}
-/atomic unit of force/ {print}
-/Rydberg constant times hc in J/ {print}
-/vacuum electric permittivity/ {print}
-/vacuum mag. permeability / {print}
-/proton mass/ {print}
-/electron mass/ {print}
-/Newtonian constant of gravitation/ {print}
+/atomic mass constant  /              {sub(/[^|]*\|/,"");sub(/\|.*/,"");gsub(/ /,""); amu=$0 }
+/atomic unit of energy/               {sub(/[^|]*\|/,"");sub(/\|.*/,"");gsub(/ /,""); ha=$0  }
+/atomic unit of length/               {sub(/[^|]*\|/,"");sub(/\|.*/,"");gsub(/ /,""); bohr=$0}
+/atomic unit of time/                 {sub(/[^|]*\|/,"");sub(/\|.*/,"");gsub(/ /,""); aut=$0 }
+/atomic unit of force/                {sub(/[^|]*\|/,"");sub(/\|.*/,"");gsub(/ /,""); auf=$0 }
+/Rydberg constant times hc in J/      {sub(/[^|]*\|/,"");sub(/\|.*/,"");gsub(/ /,""); Rinf=$0}
+/vacuum electric permittivity/        {sub(/[^|]*\|/,"");sub(/\|.*/,"");gsub(/ /,""); eps0=$0}
+/vacuum mag. permeability /           {sub(/[^|]*\|/,"");sub(/\|.*/,"");gsub(/ /,""); mu0=$0 }
+/proton mass  /                       {sub(/[^|]*\|/,"");sub(/\|.*/,"");gsub(/ /,""); mp=$0  }
+/electron mass  /                     {sub(/[^|]*\|/,"");sub(/\|.*/,"");gsub(/ /,""); me=$0  }
+/Newtonian constant of gravitation  / {sub(/[^|]*\|/,"");sub(/\|.*/,"");gsub(/ /,""); G=$0   }
 
 /relationship/ {
 	sub("relationship", "=")
 	for(str in id) { sub(str"-", id[str]"2", $0); gsub(str, id[str], $0) }
-	gsub(/ +/, ""); gsub(/[=|]/, "   ")
-	print
+	gsub(/ +/, "");
+	sub(/\|/, "");sub(/\|/, " // ")
+	gsub(/\.\.\./, "")
+	sub(/=/, " = ")
+	eng=eng"\n"$0
 }
-' CODATA-2022.txt >_2022
+
+END {
+	print \
+	"amu  = "amu , "// 原子质量单位\n",
+	"ha   = "ha  , "// 原子能量单位\n",
+	"bohr = "bohr, "// 原子长度单位\n",
+	"eps0 = "eps0, "// 介电常数\n",
+	"mu0  = "mu0 , "// 介磁常数\n",
+	"me   = "me  , "// 电子质量\n",
+	"mp   = "mp  , "// 质子质量\n",
+	"G    = "G   , "// 万有引力常数\n",
+	"emas = "me,   "\n",
+	"pmas = "mp,   "\n",
+	"aut  = "aut , "\n",
+	"auf  = "auf , "\n",
+	"Rinf = "Rinf, "\n",
+	eng
+
+}
+' $CODATA

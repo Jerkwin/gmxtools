@@ -1,96 +1,70 @@
-alpha particle-electron mass ratio                          |7294.299 541 42          |0.000 000 24            |
-alpha particle-proton mass ratio                            |3.972 599 690 09         |0.000 000 000 22        |
-atomic mass constant                                        |1.660 539 066 60 e-27    |0.000 000 000 50 e-27   | kg
-atomic mass constant energy equivalent                      |1.492 418 085 60 e-10    |0.000 000 000 45 e-10   | J
-atomic mass constant energy equivalent in MeV               |931.494 102 42           |0.000 000 28            | MeV
-amu2eV      9.3149410242e8   0.0000000028e8   eV
-amu2Hatr      3.4231776874e7   0.0000000010e7   E_h
-amu2Hz      2.25234271871e23   0.00000000068e23   Hz
-amu2invm      7.5130066104e14   0.0000000023e14   m^-1
-amu2J      1.49241808560e-10   0.00000000045e-10   J
-amu2K      1.08095401916e13   0.00000000033e13   K
-amu2kg      1.66053906660e-27   0.00000000050e-27   kg
-atomic unit of energy                                       |4.359 744 722 2071 e-18  |0.000 000 000 0085 e-18 | J
-atomic unit of force                                        |8.238 723 4983 e-8       |0.000 000 0012 e-8      | N
-atomic unit of length                                       |5.291 772 109 03 e-11    |0.000 000 000 80 e-11   | m
-atomic unit of time                                         |2.418 884 326 5857 e-17  |0.000 000 000 0047 e-17 | s
-deuteron-electron mass ratio                                |3670.482 967 88          |0.000 000 13            |
-deuteron-proton mass ratio                                  |1.999 007 501 39         |0.000 000 000 11        |
-electron mass                                               |9.109 383 7015 e-31      |0.000 000 0028 e-31     | kg
-electron mass energy equivalent                             |8.187 105 7769 e-14      |0.000 000 0025 e-14     | J
-electron mass energy equivalent in MeV                      |0.510 998 950 00         |0.000 000 000 15        | MeV
-electron mass in u                                          |5.485 799 090 65 e-4     |0.000 000 000 16 e-4    | u
-electron-proton mass ratio                                  |5.446 170 214 87 e-4     |0.000 000 000 33 e-4    |
-eV2amu      1.07354410233e-9   0.00000000032e-9   u
-eV2Hatr      3.6749322175655e-2   0.0000000000071e-2   E_h
-eV2Hz      2.417989242...e14   (exact)   Hz
-eV2invm      8.065543937...e5   (exact)   m^-1
-eV2J      1.602176634e-19   (exact)   J
-eV2K      1.160451812...e4   (exact)   K
-eV2kg      1.782661921...e-36   (exact)   kg
-Hatr2amu      2.92126232205e-8   0.00000000088e-8   u
-Hatr2eV      27.211386245988   0.000000000053   eV
-Hatr2Hz      6.579683920502e15   0.000000000013e15   Hz
-Hatr2invm      2.1947463136320e7   0.0000000000043e7   m^-1
-Hatr2J      4.3597447222071e-18   0.0000000000085e-18   J
-Hatr2K      3.1577502480407e5   0.0000000000061e5   K
-Hatr2kg      4.8508702095432e-35   0.0000000000094e-35   kg
-helion-electron mass ratio                                  |5495.885 280 07          |0.000 000 24            |
-helion-proton mass ratio                                    |2.993 152 671 67         |0.000 000 000 13        |
-Hz2amu      4.4398216652e-24   0.0000000013e-24   u
-Hz2eV      4.135667696...e-15   (exact)   eV
-Hz2Hatr      1.5198298460570e-16   0.0000000000029e-16   E_h
-Hz2invm      3.335640951...e-9   (exact)   m^-1
-Hz2J      6.62607015e-34   (exact)   J
-Hz2K      4.799243073...e-11   (exact)   K
-Hz2kg      7.372497323...e-51   (exact)   kg
-invm2amu      1.33102505010e-15   0.00000000040e-15   u
-invm2eV      1.239841984...e-6   (exact)   eV
-invm2Hatr      4.5563352529120e-8   0.0000000000088e-8   E_h
-invm2Hz      299792458   (exact)   Hz
-invm2J      1.986445857...e-25   (exact)   J
-invm2K      1.438776877...e-2   (exact)   K
-invm2kg      2.210219094...e-42   (exact)   kg
-J2amu      6.7005352565e9   0.0000000020e9   u
-J2eV      6.241509074...e18   (exact)   eV
-J2Hatr      2.2937122783963e17   0.0000000000045e17   E_h
-J2Hz      1.509190179...e33   (exact)   Hz
-J2invm      5.034116567...e24   (exact)   m^-1
-J2K      7.242970516...e22   (exact)   K
-J2kg      1.112650056...e-17   (exact)   kg
-K2amu      9.2510873014e-14   0.0000000028e-14   u
-K2eV      8.617333262...e-5   (exact)   eV
-K2Hatr      3.1668115634556e-6   0.0000000000061e-6   E_h
-K2Hz      2.083661912...e10   (exact)   Hz
-K2invm      69.50348004...   (exact)   m^-1
-K2J      1.380649e-23   (exact)   J
-K2kg      1.536179187...e-40   (exact)   kg
-kg2amu      6.0221407621e26   0.0000000018e26   u
-kg2eV      5.609588603...e35   (exact)   eV
-kg2Hatr      2.0614857887409e34   0.0000000000040e34   E_h
-kg2Hz      1.356392489...e50   (exact)   Hz
-kg2invm      4.524438335...e41   (exact)   m^-1
-kg2J      8.987551787...e16   (exact)   J
-kg2K      6.509657260...e39   (exact)   K
-muon-electron mass ratio                                    |206.768 2830             |0.000 0046              |
-muon-proton mass ratio                                      |0.112 609 5264           |0.000 000 0025          |
-neutron-electron mass ratio                                 |1838.683 661 73          |0.000 000 89            |
-neutron-proton mass difference                              |2.305 574 35 e-30        |0.000 000 82 e-30       | kg
-neutron-proton mass difference energy equivalent            |2.072 146 89 e-13        |0.000 000 74 e-13       | J
-neutron-proton mass difference energy equivalent in MeV     |1.293 332 36             |0.000 000 46            | MeV
-neutron-proton mass difference in u                         |1.388 449 33 e-3         |0.000 000 49 e-3        | u
-neutron-proton mass ratio                                   |1.001 378 419 31         |0.000 000 000 49        |
-Newtonian constant of gravitation                           |6.674 30 e-11            |0.000 15 e-11           | m^3 kg^-1 s^-2
-Newtonian constant of gravitation over h-bar c              |6.708 83 e-39            |0.000 15 e-39           | (GeV/c^2)^-2
-proton-electron mass ratio                                  |1836.152 673 43          |0.000 000 11            |
-proton mass                                                 |1.672 621 923 69 e-27    |0.000 000 000 51 e-27   | kg
-proton mass energy equivalent                               |1.503 277 615 98 e-10    |0.000 000 000 46 e-10   | J
-proton mass energy equivalent in MeV                        |938.272 088 16           |0.000 000 29            | MeV
-proton mass in u                                            |1.007 276 466 621        |0.000 000 000 053       | u
-Rydberg constant times hc in J                              |2.179 872 361 1035 e-18  |0.000 000 000 0042 e-18 | J
-tau-electron mass ratio                                     |3477.23                  |0.23                    |
-tau-proton mass ratio                                       |1.893 76                 |0.000 13                |
-triton-electron mass ratio                                  |5496.921 535 73          |0.000 000 27            |
-triton-proton mass ratio                                    |2.993 717 034 14         |0.000 000 000 15        |
-vacuum electric permittivity                                |8.854 187 8128 e-12      |0.000 000 0013 e-12     | F m^-1
-vacuum mag. permeability                                    |1.256 637 062 12 e-6     |0.000 000 000 19 e-6    | N A^-2
+amu  = 1.66053906660e-27 // 原子质量单位
+ ha   = 4.3597447222071e-18 // 原子能量单位
+ bohr = 5.29177210903e-11 // 原子长度单位
+ eps0 = 8.8541878128e-12 // 介电常数
+ mu0  = 1.25663706212e-6 // 介磁常数
+ me   = 9.1093837015e-31 // 电子质量
+ mp   = 1.67262192369e-27 // 质子质量
+ G    = 6.67430e-11 // 万有引力常数
+ emas = 9.1093837015e-31 
+ pmas = 1.67262192369e-27 
+ aut  = 2.4188843265857e-17 
+ auf  = 8.2387234983e-8 
+ Rinf = 2.1798723611035e-18 
+ 
+amu2eV = 9.3149410242e8 // 0.0000000028e8|eV
+amu2Hatr = 3.4231776874e7 // 0.0000000010e7|E_h
+amu2Hz = 2.25234271871e23 // 0.00000000068e23|Hz
+amu2invm = 7.5130066104e14 // 0.0000000023e14|m^-1
+amu2J = 1.49241808560e-10 // 0.00000000045e-10|J
+amu2K = 1.08095401916e13 // 0.00000000033e13|K
+amu2kg = 1.66053906660e-27 // 0.00000000050e-27|kg
+eV2amu = 1.07354410233e-9 // 0.00000000032e-9|u
+eV2Hatr = 3.6749322175655e-2 // 0.0000000000071e-2|E_h
+eV2Hz = 2.417989242e14 // (exact)|Hz
+eV2invm = 8.065543937e5 // (exact)|m^-1
+eV2J = 1.602176634e-19 // (exact)|J
+eV2K = 1.160451812e4 // (exact)|K
+eV2kg = 1.782661921e-36 // (exact)|kg
+Hatr2amu = 2.92126232205e-8 // 0.00000000088e-8|u
+Hatr2eV = 27.211386245988 // 0.000000000053|eV
+Hatr2Hz = 6.579683920502e15 // 0.000000000013e15|Hz
+Hatr2invm = 2.1947463136320e7 // 0.0000000000043e7|m^-1
+Hatr2J = 4.3597447222071e-18 // 0.0000000000085e-18|J
+Hatr2K = 3.1577502480407e5 // 0.0000000000061e5|K
+Hatr2kg = 4.8508702095432e-35 // 0.0000000000094e-35|kg
+Hz2amu = 4.4398216652e-24 // 0.0000000013e-24|u
+Hz2eV = 4.135667696e-15 // (exact)|eV
+Hz2Hatr = 1.5198298460570e-16 // 0.0000000000029e-16|E_h
+Hz2invm = 3.335640951e-9 // (exact)|m^-1
+Hz2J = 6.62607015e-34 // (exact)|J
+Hz2K = 4.799243073e-11 // (exact)|K
+Hz2kg = 7.372497323e-51 // (exact)|kg
+invm2amu = 1.33102505010e-15 // 0.00000000040e-15|u
+invm2eV = 1.239841984e-6 // (exact)|eV
+invm2Hatr = 4.5563352529120e-8 // 0.0000000000088e-8|E_h
+invm2Hz = 299792458 // (exact)|Hz
+invm2J = 1.986445857e-25 // (exact)|J
+invm2K = 1.438776877e-2 // (exact)|K
+invm2kg = 2.210219094e-42 // (exact)|kg
+J2amu = 6.7005352565e9 // 0.0000000020e9|u
+J2eV = 6.241509074e18 // (exact)|eV
+J2Hatr = 2.2937122783963e17 // 0.0000000000045e17|E_h
+J2Hz = 1.509190179e33 // (exact)|Hz
+J2invm = 5.034116567e24 // (exact)|m^-1
+J2K = 7.242970516e22 // (exact)|K
+J2kg = 1.112650056e-17 // (exact)|kg
+K2amu = 9.2510873014e-14 // 0.0000000028e-14|u
+K2eV = 8.617333262e-5 // (exact)|eV
+K2Hatr = 3.1668115634556e-6 // 0.0000000000061e-6|E_h
+K2Hz = 2.083661912e10 // (exact)|Hz
+K2invm = 69.50348004 // (exact)|m^-1
+K2J = 1.380649e-23 // (exact)|J
+K2kg = 1.536179187e-40 // (exact)|kg
+kg2amu = 6.0221407621e26 // 0.0000000018e26|u
+kg2eV = 5.609588603e35 // (exact)|eV
+kg2Hatr = 2.0614857887409e34 // 0.0000000000040e34|E_h
+kg2Hz = 1.356392489e50 // (exact)|Hz
+kg2invm = 4.524438335e41 // (exact)|m^-1
+kg2J = 8.987551787e16 // (exact)|J
+kg2K = 6.509657260e39 // (exact)|K
